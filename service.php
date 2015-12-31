@@ -18,6 +18,7 @@ class Perfil extends Service
 		{
 			$responseContent = array("email" => $emailToLookup);
 			$response = new Response();
+			$response->setResponseSubject("No encontramos un perfil para ese usuario");
 			$response->createFromTemplate("inexistent.tpl", $responseContent);
 			return $response;
 		}
@@ -146,6 +147,7 @@ class Perfil extends Service
 
 		// create a new Response object and input the template and the content
 		$response = new Response();
+		$response->setResponseSubject("Perfil de Apretaste");
 		$response->createFromTemplate("profile.tpl", $responseContent, $image);
 		return $response;
 	}
@@ -306,11 +308,12 @@ class Perfil extends Service
 		$responseContent = array(
 			"editedProfileValues" => $editedProfileValues,
 			"noProfileValuesWereEdited" => count($editedProfileValues)==0,
-			"editProfileText" => $this->createProfileEditableText($profile),
+			"editProfileText" => $this->utils->createProfileEditableText($profile->email),
 		);
 
 		// send response to the user
 		$response = new Response();
+		$response->setResponseSubject("Su perfil ha sido editado");
 		$response->createFromTemplate("confirmation.tpl", $responseContent);
 		return $response;
 	}
