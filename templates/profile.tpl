@@ -1,7 +1,7 @@
 <center>
 	{if ! empty($profile->picture)}
 		<table cellpadding="3"><tr><td bgcolor="#202020">
-		{img src="{$profile->picture}" alt="Picture" width="300"}
+		{img src="{$profile->thumbnail}" alt="Picture" width="300"}
 		</td></tr></table>
 	{else}
 		{noimage width="300" height="200" text="Tristemente ...<br/>Sin foto de perfil :'-("}
