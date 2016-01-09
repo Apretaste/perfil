@@ -148,7 +148,7 @@ class Perfil extends Service {
 
 		// full location
 		$location = ". Aunque prefiero no decir de donde soy";
-		if (!empty($province))
+		if ( ! empty($province))
 			$location = ". Vivo en " . $province . $city;
 
 		// get highest educational level
@@ -179,24 +179,24 @@ class Perfil extends Service {
 
 		// create the message
 		$message = "Hola y bienvenido a mi perfil. Yo soy $fullName";
-		if (!empty($age))
+		if ( ! empty($age))
 			$message .= ", tengo $age a&ntilde;os";
-		if (!empty($gender))
+		if ( ! empty($gender))
 			$message .= ", soy $gender";
-		if (!empty($skin))
+		if ( ! empty($skin))
 			$message .= ", soy $skin";
-		if (!empty($eyes))
+		if ( ! empty($eyes))
 			$message .= ", de ojos $eyesTone (color $eyes)";
-		if (!empty($eyes))
+		if ( ! empty($eyes))
 			$message .= ", soy de pelo $hair";
-		if (!empty($bodyType))
+		if ( ! empty($bodyType))
 			$message .= " y $bodyType";
 		$message .= $location;
-		if (!empty($education))
+		if ( ! empty($education))
 			$message .= ", $education";
-		if (!empty($profile->occupation))
+		if ( ! empty($profile->occupation))
 			$message .= ", trabajo como {$profile->occupation}";
-		if (!empty($maritalStatus))
+		if ( ! empty($maritalStatus))
 			$message .= " y $maritalStatus";
 		$message .= ".";
 
@@ -232,11 +232,10 @@ class Perfil extends Service {
 		$email = $request->email;
 		$body = $request->body;
 		$attachments = $request->attachments;
-
 /*
 		$object = new stdClass();
-		$object->path = '/var/www/Core/temp/test.jpg';
-		$object->type = 'image/jpg';
+		$object->path = '/var/www/Core/temp/me.jpg';
+		$object->type = 'image/jpeg';
 		$attachments = array($object);
 		$body="
 		NOMBRE = Salvi Pascual
@@ -255,7 +254,7 @@ class Perfil extends Service {
 		";
 */
 		// move the first image attached to the profiles directory
-		$isImageAttached = 0;
+		$isImageAttached = false;
 		if (count($attachments) > 0)
 		{
 			$di = \Phalcon\DI\FactoryDefault::getDefault();
@@ -266,18 +265,16 @@ class Perfil extends Service {
 				if ($attach->type == "image/jpg")
 				{
 					// save the original copy
-					$large = "$wwwroot/public/profile/$email.jpg";
+					$large = "$wwwroot/public/profile/$email.jpeg";
 					copy($attach->path, $large);
 					$this->utils->optimizeImage($large);
-					chmod($large, 0777);
 
 					// create the thumbnail
 					$thumbnail = "$wwwroot/public/profile/thumbnail/$email.jpg";
 					copy($attach->path, $thumbnail);
-					chmod($thumbnail, 0777);
 					$this->utils->optimizeImage($thumbnail, 300);
 
-					$isImageAttached = 1;
+					$isImageAttached = true;
 					break;
 				}
 			}
@@ -285,94 +282,17 @@ class Perfil extends Service {
 
 		// rules to math the body
 		$rules = array(
-			array(
-				"CUMPLEANOS",
-				"date",
-				null),
-			array(
-				"PROVINCIA",
-				"enum",
-				array(
-					'PINAR_DEL_RIO',
-					'LA_HABANA',
-					'ARTEMISA',
-					'MAYABEQUE',
-					'MATANZAS',
-					'VILLA_CLARA',
-					'CIENFUEGOS',
-					'SANTI_SPIRITUS',
-					'CIEGO_DE_AVILA',
-					'CAMAGUEY',
-					'LAS_TUNAS',
-					'HOLGUIN',
-					'GRANMA',
-					'SANTIAGO_DE_CUBA',
-					'GUANTANAMO',
-					'ISLA_DE_LA_JUVENTUD')),
-			array(
-				"SEXO",
-				"gender",
-				null),
-			array(
-				"NIVEL ESCOLAR",
-				"enum",
-				array(
-					'PRIMARIO',
-					'SECUNDARIO',
-					'TECNICO',
-					'UNIVERSITARIO',
-					'POSTGRADUADO',
-					'DOCTORADO',
-					'OTRO')),
-			array(
-				"ESTADO CIVIL",
-				"enum",
-				array(
-					'SOLTERO',
-					'SALIENDO',
-					'COMPROMETIDO',
-					'CASADO')),
-			array(
-				"PELO",
-				"enum",
-				array(
-					'TRIGUENO',
-					'CASTANO',
-					'RUBIO',
-					'NEGRO',
-					'ROJO',
-					'BLANCO',
-					'OTRO')),
-			array(
-				"PIEL",
-				"enum",
-				array(
-					'NEGRO',
-					'BLANCO',
-					'MESTIZO',
-					'OTRO')),
-			array(
-				"OJOS",
-				"enum",
-				array(
-					'NEGRO',
-					'CARMELITA',
-					'VERDE',
-					'AZUL',
-					'AVELLANA',
-					'OTRO')),
-			array(
-				"CUERPO",
-				"enum",
-				array(
-					'DELGADO',
-					'MEDIO',
-					'EXTRA',
-					'ATLETICO')),
-			array(
-				"INTERESES",
-				"list",
-				null));
+			array("CUMPLEANOS","date",null),
+			array("PROVINCIA","enum",array('PINAR_DEL_RIO','LA_HABANA','ARTEMISA','MAYABEQUE','MATANZAS','VILLA_CLARA','CIENFUEGOS','SANTI_SPIRITUS','CIEGO_DE_AVILA','CAMAGUEY','LAS_TUNAS','HOLGUIN','GRANMA','SANTIAGO_DE_CUBA','GUANTANAMO','ISLA_DE_LA_JUVENTUD')),
+			array("SEXO","gender",null),
+			array("NIVEL ESCOLAR","enum",array('PRIMARIO','SECUNDARIO','TECNICO','UNIVERSITARIO','POSTGRADUADO','DOCTORADO','OTRO')),
+			array("ESTADO CIVIL","enum",array('SOLTERO','SALIENDO','COMPROMETIDO','CASADO')),
+			array("PELO","enum",array('TRIGUENO','CASTANO','RUBIO','NEGRO','ROJO','BLANCO','OTRO')),
+			array("PIEL","enum",array('NEGRO','BLANCO','MESTIZO','OTRO')),
+			array("OJOS","enum",array('NEGRO','CARMELITA','VERDE','AZUL','AVELLANA','OTRO')),
+			array("CUERPO","enum",array('DELGADO','MEDIO','EXTRA','ATLETICO')),
+			array("INTERESES","list",null)
+		);
 
 		// parse the text
 		$surveyParser = new SurveyParser();
@@ -380,16 +300,19 @@ class Perfil extends Service {
 
 		// create the query and save new on the database
 		$editedProfileValues = array();
-		if (count($res) > 0) {
+		if (count($res) > 0)
+		{
 			// get the name
 			$namePieces = null;
-			if (!empty($res['NOMBRE'])) {
+			if ( ! empty($res['NOMBRE']))
+			{
 				$namePieces = $this->utils->fullNameToNamePieces($res['NOMBRE']);
 			}
 
 			// get the interests
 			$interests = null;
-			if (!empty($res['INTERESES'])) {
+			if ( ! empty($res['INTERESES']))
+			{
 				$interests = implode(",", $res['INTERESES']);
 			}
 
@@ -401,34 +324,22 @@ class Perfil extends Service {
 				middle_name='{$namePieces[1]}', 
 				last_name='{$namePieces[2]}', 
 				mother_name='{$namePieces[3]}',";
-			if (!empty($res['CUMPLEANOS']))
-				$query .= "date_of_birth='{$res['CUMPLEANOS']}',";
-			if (!empty($res['SEXO']))
-				$query .= "gender='{$res['SEXO']}',";
-			if (!empty($res['OJOS']))
-				$query .= "eyes='{$res['OJOS']}',";
-			if (!empty($res['PIEL']))
-				$query .= "skin='{$res['PIEL']}',";
-			if (!empty($res['CUERPO']))
-				$query .= "body_type='{$res['CUERPO']}',";
-			if (!empty($res['PELO']))
-				$query .= "hair='{$res['PELO']}',";
-			if (!empty($res['PROVINCIA']))
-				$query .= "province='{$res['PROVINCIA']}',";
-			if (!empty($res['CIUDAD']))
-				$query .= "city='{$res['CIUDAD']}',";
-			if (!empty($res['NIVEL ESCOLAR']))
-				$query .= "highest_school_level='{$res['NIVEL ESCOLAR']}',";
-			if (!empty($res['PROFESION']))
-				$query .= "occupation='{$res['PROFESION']}',";
-			if (!empty($res['ESTADO CIVIL']))
-				$query .= "marital_status='{$res['ESTADO CIVIL']}',";
-			if (!empty($interests))
-				$query .= "interests='$interests',";
+			if ( ! empty($res['CUMPLEANOS'])) $query .= "date_of_birth='{$res['CUMPLEANOS']}',";
+			if ( ! empty($res['SEXO'])) $query .= "gender='{$res['SEXO']}',";
+			if ( ! empty($res['OJOS'])) $query .= "eyes='{$res['OJOS']}',";
+			if ( ! empty($res['PIEL'])) $query .= "skin='{$res['PIEL']}',";
+			if ( ! empty($res['CUERPO'])) $query .= "body_type='{$res['CUERPO']}',";
+			if ( ! empty($res['PELO'])) $query .= "hair='{$res['PELO']}',";
+			if ( ! empty($res['PROVINCIA'])) $query .= "province='{$res['PROVINCIA']}',";
+			if ( ! empty($res['CIUDAD'])) $query .= "city='{$res['CIUDAD']}',";
+			if ( ! empty($res['NIVEL ESCOLAR'])) $query .= "highest_school_level='{$res['NIVEL ESCOLAR']}',";
+			if ( ! empty($res['PROFESION'])) $query .= "occupation='{$res['PROFESION']}',";
+			if ( ! empty($res['ESTADO CIVIL'])) $query .= "marital_status='{$res['ESTADO CIVIL']}',";
+			if ( ! empty($interests)) $query .= "interests='$interests',";
+			if ($isImageAttached) $query .= "picture='1',";
 			$query .= "
 				last_update_date=CURRENT_TIMESTAMP, 
-				updated_by_user=1, 
-				picture=$isImageAttached 
+				updated_by_user=1
 			WHERE email='$email'";
 			$query = preg_replace("/\s+/", " ", $query);
 
@@ -437,23 +348,22 @@ class Perfil extends Service {
 			$connection->deepQuery($query);
 
 			// edit changed fields to go on the confirmation
-			foreach ($res as $key => $value) {
-				if (!empty($value)) {
+			foreach ($res as $key => $value)
+			{
+				if ( ! empty($value))
+				{
 					$valueToShow = $value;
-					if ($key == "CUMPLEANOS")
-						$valueToShow = strftime("%d de %B del %Y", strtotime($value));
-					if ($key == "PROVINCIA")
-						$valueToShow = str_replace("_", " ", $value);
-					if ($key == "INTERESES")
-						$valueToShow = implode(", ", $value);
-
+					if ($key == "CUMPLEANOS") $valueToShow = strftime("%d de %B del %Y", strtotime($value));
+					if ($key == "PROVINCIA") $valueToShow = str_replace("_", " ", $value);
+					if ($key == "INTERESES") $valueToShow = implode(", ", $value);
 					$editedProfileValues[$key] = $valueToShow;
 				}
 			}
 		}
 
-		// alert the user if the picture was udpatated
-		if ($isImageAttached) {
+		// alert the user if the picture was updated
+		if ($isImageAttached)
+		{
 			$editedProfileValues["IMAGE"] = "New image";
 		}
 
@@ -480,28 +390,25 @@ class Perfil extends Service {
 	 * @param Request $request
 	 * @return array
 	 */
-	private function getEmailsFromRequest($request) {
-
+	private function getEmailsFromRequest($request)
+	{
 		$db = new Connection();
-
 		$query = explode(" ", $request->query);
-
 		$parts = array();
 
-		foreach ($query as $q) {
+		foreach ($query as $q)
+		{
 			$part = trim($q);
-			if ($part !== '')
-				$parts[] = $part;
+			if ($part !== '') $parts[] = $part;
 		}
 
 		$emails = array();
-		foreach ($parts as $part) {
+		foreach ($parts as $part)
+		{
 			$find = $db->deepQuery("SELECT email FROM person WHERE username = '{$part}';");
 
-			if (isset($find[0])) {
-				$emails[] = $find[0]->email;
-			} else
-				$emails[] = $part;
+			if (isset($find[0])) $emails[] = $find[0]->email;
+			else $emails[] = $part;
 		}
 
 		return $emails;
