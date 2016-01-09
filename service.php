@@ -262,10 +262,10 @@ class Perfil extends Service {
 
 			foreach ($attachments as $attach)
 			{
-				if ($attach->type == "image/jpg")
+				if ($attach->type == "image/jpeg")
 				{
 					// save the original copy
-					$large = "$wwwroot/public/profile/$email.jpeg";
+					$large = "$wwwroot/public/profile/$email.jpg";
 					copy($attach->path, $large);
 					$this->utils->optimizeImage($large);
 
