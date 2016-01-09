@@ -36,7 +36,7 @@ class Perfil extends Service {
 		$profile = $this->utils->getPerson($emailToLookup);
 
 		// get the full name, or the email
-		$fullName = empty($profile->full_name) ? $profile->email : $profile->full_name;
+		$fullName = empty($profile->full_name) ? $profile->username : $profile->full_name;
 
 		// get the age
 		$age = empty($profile->date_of_birth) ? "" : date_diff(date_create($profile->date_of_birth), date_create('today'))->y;
