@@ -1,5 +1,5 @@
 <center>
-	{if ! empty($profile->picture)}
+	{if ! empty($profile->thumbnail)}
 		<table cellpadding="3"><tr><td bgcolor="#202020">
 		{img src="{$profile->thumbnail}" alt="Picture" width="300"}
 		</td></tr></table>

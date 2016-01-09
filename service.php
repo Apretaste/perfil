@@ -232,10 +232,11 @@ class Perfil extends Service {
 		$email = $request->email;
 		$body = $request->body;
 		$attachments = $request->attachments;
+
 /*
 		$object = new stdClass();
-		$object->path = '/var/www/Core/temp/test.png';
-		$object->type = 'image/png';
+		$object->path = '/var/www/Core/temp/test.jpg';
+		$object->type = 'image/jpg';
 		$attachments = array($object);
 		$body="
 		NOMBRE = Salvi Pascual
@@ -262,7 +263,7 @@ class Perfil extends Service {
 
 			foreach ($attachments as $attach)
 			{
-				if ($attach->type == "image/png")
+				if ($attach->type == "image/jpg")
 				{
 					// save the original copy
 					$large = "$wwwroot/public/profile/$email.jpg";
