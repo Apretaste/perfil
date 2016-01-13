@@ -433,18 +433,19 @@ class Perfil extends Service
 			$connection->deepQuery($query);
 
 			// edit changed fields to go on the confirmation
-			foreach ($res as $key => $value) {
-				if (!empty($value)) {
-					$valueToShow = $value;
-					if ($key == "CUMPLEANOS")
-						$valueToShow = strftime("%d de %B del %Y", strtotime($value));
-					if ($key == "PROVINCIA")
-						$valueToShow = str_replace("_", " ", $value);
-					if ($key == "INTERESES")
-						$valueToShow = implode(", ", $value);
-					$editedProfileValues[$key] = $valueToShow;
+			if (is_array($res))
+				foreach ($res as $key => $value) {
+					if (!empty($value)) {
+						$valueToShow = $value;
+						if ($key == "CUMPLEANOS")
+							$valueToShow = strftime("%d de %B del %Y", strtotime($value));
+						if ($key == "PROVINCIA")
+							$valueToShow = str_replace("_", " ", $value);
+						if ($key == "INTERESES")
+							$valueToShow = implode(", ", $value);
+						$editedProfileValues[$key] = $valueToShow;
+					}
 				}
-			}
 		}
 
 		// alert the user if the picture was updated
@@ -478,28 +479,32 @@ class Perfil extends Service
 	private function getEmailsFromRequest($request)
 	{
 		$db = new Connection();
-		$query = explode(" ", $request->query);
+		$emails = array();
 		$parts = array();
 
-		foreach ($query as $q) {
-			$part = trim($q);
-			if ($part !== '') {
-				if ($part[0] == '@')
-					$part = substr($part, 1);
-				$parts[] = $part;
+		if (trim($request->query) != '') {
+
+			$query = explode(" ", $request->query);
+
+			foreach ($query as $q) {
+				$part = trim($q);
+				if ($part !== '') {
+					if ($part[0] == '@')
+						$part = substr($part, 1);
+					$parts[] = $part;
+				}
+			}
+
+
+			foreach ($parts as $part) {
+				$find = $db->deepQuery("SELECT email FROM person WHERE username = '{$part}';");
+
+				if (isset($find[0]))
+					$emails[] = $find[0]->email;
+				else
+					$emails[] = $part;
 			}
 		}
-
-		$emails = array();
-		foreach ($parts as $part) {
-			$find = $db->deepQuery("SELECT email FROM person WHERE username = '{$part}';");
-
-			if (isset($find[0]))
-				$emails[] = $find[0]->email;
-			else
-				$emails[] = $part;
-		}
-
 		return $emails;
 	}
 }
