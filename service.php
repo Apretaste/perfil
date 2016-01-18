@@ -10,23 +10,24 @@ class Perfil extends Service
 	 * */
 	public function _main(Request $request)
 	{
-		$request->query = trim($request->query);
-
-		$email = $this->getEmailsFromRequest($request);
-
-		if (isset($email[0])) {
-			if ($this->utils->personExist($email[0]))
-				$request->query = $email[0];
-			else
-				$request->query = '';
-		}
-
-		// get the email for the profile if the user pass it through the query
+		// get the email or the username for the profile
+ 		$request->query = trim($request->query, "@ ");
 		$emailToLookup = empty($request->query) ? $request->email : $request->query;
 
+		// get the email for the profile
+		$isEmail = true;
+		if ( ! filter_var($emailToLookup, FILTER_VALIDATE_EMAIL))
+		{
+			$connection = new Connection();
+			$person = $connection->deepQuery("SELECT email FROM person WHERE username='$emailToLookup'");
+			$emailToLookup = empty($person) ? "@$emailToLookup" : $person[0]->email;
+			$isEmail = false;
+		}
+
 		// check if the person exist. If not, message the requestor
-		if (!$this->utils->personExist($emailToLookup)) {
-			$responseContent = array("email" => $emailToLookup);
+		if ( ! $this->utils->personExist($emailToLookup))
+		{
+			$responseContent = array("email" => $emailToLookup, "isEmail" => $isEmail);
 			$response = new Response();
 			$response->setResponseSubject("No encontramos un perfil para ese usuario");
 			$response->createFromTemplate("inexistent.tpl", $responseContent);
@@ -448,7 +449,8 @@ class Perfil extends Service
 		}
 
 		// alert the user if the picture was updated
-		if ($isImageAttached) {
+		if ($isImageAttached)
+		{
 			$editedProfileValues["IMAGE"] = "New image";
 		}
 
@@ -460,46 +462,12 @@ class Perfil extends Service
 			"editedProfileValues" => $editedProfileValues,
 			"noProfileValuesWereEdited" => count($editedProfileValues) == 0,
 			"editProfileText" => $this->utils->createProfileEditableText($profile->email),
-			);
+		);
 
 		// send response to the user
 		$response = new Response();
 		$response->setResponseSubject("Su perfil ha sido editado");
 		$response->createFromTemplate("confirmation.tpl", $responseContent);
 		return $response;
-	}
-
-	/**
-	 * Return a list of emails from request query
-	 * 
-	 * @param Request $request
-	 * @return array
-	 */
-	private function getEmailsFromRequest($request)
-	{
-		$db = new Connection();
-		$query = explode(" ", $request->query);
-		$parts = array();
-
-		foreach ($query as $q) {
-			$part = trim($q);
-			if ($part !== '') {
-				if ($part[0] == '@')
-					$part = substr($part, 1);
-				$parts[] = $part;
-			}
-		}
-
-		$emails = array();
-		foreach ($parts as $part) {
-			$find = $db->deepQuery("SELECT email FROM person WHERE username = '{$part}';");
-
-			if (isset($find[0]))
-				$emails[] = $find[0]->email;
-			else
-				$emails[] = $part;
-		}
-
-		return $emails;
 	}
 }
