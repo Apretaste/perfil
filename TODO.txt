@@ -1,0 +1,17 @@
+new methods:
+
+nombre
+foto
+-----------
+cumpleanos
+profesion
+provincia
+ciudad
+sexo
+nivel escolar
+estado civil
+pelo
+ojos
+cuerpo
+intereses
+orientacion sexual
