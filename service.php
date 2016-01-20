@@ -6,31 +6,31 @@ class Perfil extends Service
     /**
      * Function called once this service is called
      *
-     * @param
-     *            Request
+     * @param  Request $request
      * @return Response
      *
      */
     public function _main (Request $request)
     {
-        $request->query = trim($request->query);
-        
-        $email = $this->getEmailsFromRequest($request);
-        
-        if (isset($email[0])) {
-            if ($this->utils->personExist($email[0]))
-                $request->query = $email[0];
-            else
-                $request->query = '';
-        }
-        
-        // get the email for the profile if the user pass it through the query
+        // get the email or the username for the profile
+        $request->query = trim($request->query, "@ ");
         $emailToLookup = empty($request->query) ? $request->email : $request->query;
+        
+        // get the email for the profile
+        $isEmail = true;
+        if (! filter_var($emailToLookup, FILTER_VALIDATE_EMAIL)) {
+            $connection = new Connection();
+            $person = $connection->deepQuery(
+                    "SELECT email FROM person WHERE username='$emailToLookup'");
+            $emailToLookup = empty($person) ? "@$emailToLookup" : $person[0]->email;
+            $isEmail = false;
+        }
         
         // check if the person exist. If not, message the requestor
         if (! $this->utils->personExist($emailToLookup)) {
             $responseContent = array(
-                    "email" => $emailToLookup
+                    "email" => $emailToLookup,
+                    "isEmail" => $isEmail
             );
             $response = new Response();
             $response->setResponseSubject(
@@ -669,8 +669,10 @@ class Perfil extends Service
     /**
      * Function called when the profile is edited
      *
-     * @param Request $request            
+     * @param
+     *            Request
      * @return Response
+     *
      */
     public function _editar (Request $request)
     {
@@ -891,6 +893,7 @@ class Perfil extends Service
 				last_update_date=CURRENT_TIMESTAMP, 
 				updated_by_user=1
 			WHERE email='$email'";
+            
             $query = preg_replace("/\s+/", " ", $query);
             
             // update in the database
@@ -898,20 +901,19 @@ class Perfil extends Service
             $connection->deepQuery($query);
             
             // edit changed fields to go on the confirmation
-            if (is_array($res))
-                foreach ($res as $key => $value) {
-                    if (! empty($value)) {
-                        $valueToShow = $value;
-                        if ($key == "CUMPLEANOS")
-                            $valueToShow = strftime("%d de %B del %Y", 
-                                    strtotime($value));
-                        if ($key == "PROVINCIA")
-                            $valueToShow = str_replace("_", " ", $value);
-                        if ($key == "INTERESES")
-                            $valueToShow = implode(", ", $value);
-                        $editedProfileValues[$key] = $valueToShow;
-                    }
+            foreach ($res as $key => $value) {
+                if (! empty($value)) {
+                    $valueToShow = $value;
+                    if ($key == "CUMPLEANOS")
+                        $valueToShow = strftime("%d de %B del %Y", 
+                                strtotime($value));
+                    if ($key == "PROVINCIA")
+                        $valueToShow = str_replace("_", " ", $value);
+                    if ($key == "INTERESES")
+                        $valueToShow = implode(", ", $value);
+                    $editedProfileValues[$key] = $valueToShow;
                 }
+            }
         }
         
         // alert the user if the picture was updated
@@ -935,44 +937,6 @@ class Perfil extends Service
         $response->setResponseSubject("Su perfil ha sido editado");
         $response->createFromTemplate("confirmation.tpl", $responseContent);
         return $response;
-    }
-
-    /**
-     * Return a list of emails from request query
-     *
-     * @param Request $request            
-     * @return array
-     */
-    private function getEmailsFromRequest ($request)
-    {
-        $db = new Connection();
-        $emails = array();
-        $parts = array();
-        
-        if (trim($request->query) != '') {
-            
-            $query = explode(" ", $request->query);
-            
-            foreach ($query as $q) {
-                $part = trim($q);
-                if ($part !== '') {
-                    if ($part[0] == '@')
-                        $part = substr($part, 1);
-                    $parts[] = $part;
-                }
-            }
-            
-            foreach ($parts as $part) {
-                $find = $db->deepQuery(
-                        "SELECT email FROM person WHERE username = '{$part}';");
-                
-                if (isset($find[0]))
-                    $emails[] = $find[0]->email;
-                else
-                    $emails[] = $part;
-            }
-        }
-        return $emails;
     }
 
     private function update ($sqlset, $email)
