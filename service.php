@@ -6,7 +6,7 @@ class Perfil extends Service
     /**
      * Function called once this service is called
      *
-     * @param  Request $request
+     * @param Request $request            
      * @return Response
      *
      */
@@ -133,7 +133,7 @@ class Perfil extends Service
             $province = "Villa Clara";
         if ($profile->province == "CIENFUEGOS")
             $province = "Cienfuegos";
-        if ($profile->province == "SANTI_SPIRITUS")
+        if ($profile->province == "SANCTI_SPIRITUS")
             $province = "Sancti Sp&iacute;ritus";
         if ($profile->province == "CIEGO_DE_AVILA")
             $province = "Ciego de &Aacute;vila";
@@ -277,7 +277,17 @@ class Perfil extends Service
      */
     public function _profesion (Request $request)
     {
-        return $this->subserviceSimple($request, 'ocupation');
+        return $this->subserviceSimple($request, 'occupation');
+    }
+
+    /**
+     * Subservice RELIGION
+     *
+     * @param Request $request            
+     */
+    public function _religion (Request $request)
+    {
+        return $this->subserviceSimple($request, 'religion');
     }
 
     /**
@@ -296,7 +306,7 @@ class Perfil extends Service
                 'MATANZAS',
                 'VILLA_CLARA',
                 'CIENFUEGOS',
-                'SANTI_SPIRITUS',
+                'SANCTI_SPIRITUS',
                 'CIEGO_DE_AVILA',
                 'CAMAGUEY',
                 'LAS_TUNAS',
@@ -328,6 +338,8 @@ class Perfil extends Service
             $this->update("city = '{$query}'", $request->email);
         else
             $this->update("city = null", $request->email);
+        
+        return new Response();
     }
 
     /**
@@ -391,9 +403,10 @@ class Perfil extends Service
         $query = strtoupper(trim($request->query));
         
         // if the query is empty, set to null the field
-        if (empty($query))
+        if (empty($query)) {
             $this->update("$field = null", $request->email);
-        else {
+            return new Response();
+        } else {
             
             // search for $synonymous
             if (isset($synonymous[$query]))
@@ -404,6 +417,7 @@ class Perfil extends Service
                 
                 // update the field
                 $this->update("$field = '$query'", $request->email);
+                return new Response();
             } else {
                 
                 // wrong query, return a response with selectable list
@@ -432,8 +446,7 @@ class Perfil extends Service
      * @param string $field            
      * @param string $prefix            
      */
-    private function subserviceSimple (Request $request, string $field, 
-            string $prefix = null)
+    private function subserviceSimple (Request $request, $field, $prefix = null)
     {
         if (! is_null($prefix))
             if (stripos($request->query, $prefix) === 0)
@@ -441,10 +454,18 @@ class Perfil extends Service
         
         $value = trim($request->query);
         
+        $value = str_replace(
+                array(
+                        "'",
+                        "`"
+                ), "", $value);
+        
         if (! empty($value))
             $this->update("$field = '$value'", $request->email);
         else
             $this->update("$field = null", $request->email);
+        
+        return new Response();
     }
 
     /**
@@ -476,6 +497,8 @@ class Perfil extends Service
             $query = "'" . strftime("%Y-%m-%d", $date->getTimestamp()) . "'";
         
         $this->update("$field = $query", $request->email);
+        
+        return new Response();
     }
 
     /**
@@ -550,7 +573,13 @@ class Perfil extends Service
                         'AZUL',
                         'AVELLANA',
                         'OTRO'
-                ), 'Diga el color de sus ojos');
+                ), 'Diga el color de sus ojos', null, 
+                array(
+                        'NEGROS' => 'NEGRO',
+                        'CARMELITAS' => 'CARMELITA',
+                        'VERDES' => 'VERDE',
+                        'AZULES' => 'AZUL'
+                ));
     }
 
     /**
@@ -615,6 +644,8 @@ class Perfil extends Service
         
         $this->update('picture = ' . ($isImageAttached ? '1' : '0'), 
                 $request->email);
+        
+        return new Response();
     }
 
     /**
@@ -633,7 +664,8 @@ class Perfil extends Service
                 array(
                         'HOMOSEXUAL' => 'HOMO',
                         'HETEROSEXUAL' => 'HETERO',
-                        'BISEXUAL' => 'BI'
+                        'BISEXUAL' => 'BI',
+                        'GAY' => 'HOMO'
                 ));
     }
 
@@ -662,15 +694,16 @@ class Perfil extends Service
                         'OTRO'
                 ), 'Diga su color de piel', null, 
                 array(
-                        'BLANCA' => 'BLANCO'
+                        'BLANCA' => 'BLANCO',
+                        'NEGRA' => 'NEGRO',
+                        'MESTIZA' => 'MESTIZO'
                 ));
     }
 
     /**
      * Function called when the profile is edited
      *
-     * @param
-     *            Request
+     * @param Request $request            
      * @return Response
      *
      */
@@ -678,267 +711,31 @@ class Perfil extends Service
     {
         // get the text to parse
         $email = $request->email;
-        $body = $request->body;
-        $attachments = $request->attachments;
-        /*
-         * $object = new stdClass();
-         * $object->path = '/var/www/Core/temp/me.jpg';
-         * $object->type = 'image/jpeg';
-         * $attachments = array($object);
-         * $body="
-         * NOMBRE = Salvi Pascual
-         * CUMPLEANOS = 23/11/1985
-         * PROFESION = Programador
-         * PROVINCIA = havana
-         * CIUDAD = Miami-Dade
-         * SEXO = M
-         * NIVEL ESCOLAR = master
-         * ESTADO CIVIL = casado
-         * PELO = trigueno
-         * PIEL = blanca
-         * OJOS = verdes
-         * CUERPO = medio
-         * INTERESES = Networking, Amistad, Programacion, Apretaste, un trambia
-         * llamado deseo, una valiente jugada, porno pa ricardo, dimlo cantando,
-         * la politica no cabe en la azucarera
-         * ";
-         */
-        // move the first image attached to the profiles directory
-        $isImageAttached = false;
-        if (count($attachments) > 0) {
-            $di = \Phalcon\DI\FactoryDefault::getDefault();
-            $wwwroot = $di->get('path')['root'];
-            
-            foreach ($attachments as $attach) {
-                if ($attach->type == "image/jpeg") {
-                    // save the original copy
-                    $large = "$wwwroot/public/profile/$email.jpg";
-                    copy($attach->path, $large);
-                    $this->utils->optimizeImage($large);
-                    
-                    // create the thumbnail
-                    $thumbnail = "$wwwroot/public/profile/thumbnail/$email.jpg";
-                    copy($attach->path, $thumbnail);
-                    $this->utils->optimizeImage($thumbnail, 300);
-                    
-                    $isImageAttached = true;
-                    break;
-                }
-            }
-        }
         
-        // rules to math the body
-        $rules = array(
-                array(
-                        "CUMPLEANOS",
-                        "date",
-                        null
-                ),
-                array(
-                        "PROVINCIA",
-                        "enum",
-                        array(
-                                'PINAR_DEL_RIO',
-                                'LA_HABANA',
-                                'ARTEMISA',
-                                'MAYABEQUE',
-                                'MATANZAS',
-                                'VILLA_CLARA',
-                                'CIENFUEGOS',
-                                'SANTI_SPIRITUS',
-                                'CIEGO_DE_AVILA',
-                                'CAMAGUEY',
-                                'LAS_TUNAS',
-                                'HOLGUIN',
-                                'GRANMA',
-                                'SANTIAGO_DE_CUBA',
-                                'GUANTANAMO',
-                                'ISLA_DE_LA_JUVENTUD'
-                        )
-                ),
-                array(
-                        "SEXO",
-                        "gender",
-                        null
-                ),
-                array(
-                        "NIVEL ESCOLAR",
-                        "enum",
-                        array(
-                                'PRIMARIO',
-                                'SECUNDARIO',
-                                'TECNICO',
-                                'UNIVERSITARIO',
-                                'POSTGRADUADO',
-                                'DOCTORADO',
-                                'OTRO'
-                        )
-                ),
-                array(
-                        "ESTADO CIVIL",
-                        "enum",
-                        array(
-                                'SOLTERO',
-                                'SALIENDO',
-                                'COMPROMETIDO',
-                                'CASADO'
-                        )
-                ),
-                array(
-                        "PELO",
-                        "enum",
-                        array(
-                                'TRIGUENO',
-                                'CASTANO',
-                                'RUBIO',
-                                'NEGRO',
-                                'ROJO',
-                                'BLANCO',
-                                'OTRO'
-                        )
-                ),
-                array(
-                        "PIEL",
-                        "enum",
-                        array(
-                                'NEGRO',
-                                'BLANCO',
-                                'MESTIZO',
-                                'OTRO'
-                        )
-                ),
-                array(
-                        "OJOS",
-                        "enum",
-                        array(
-                                'NEGRO',
-                                'CARMELITA',
-                                'VERDE',
-                                'AZUL',
-                                'AVELLANA',
-                                'OTRO'
-                        )
-                ),
-                array(
-                        "CUERPO",
-                        "enum",
-                        array(
-                                'DELGADO',
-                                'MEDIO',
-                                'EXTRA',
-                                'ATLETICO'
-                        )
-                ),
-                array(
-                        "INTERESES",
-                        "list",
-                        null
-                )
+        $person = $this->utils->getPerson($email);
+        $person->interests = implode(", ", $person->interests);
+        $person->province = str_replace("_", " ", $person->province);
+        $person->gender = $person->gender == 'F' ? "Femenino" : "Masculino";
+        $content = get_object_vars($person);
+        
+        // create the images to send to the response
+        $di = \Phalcon\DI\FactoryDefault::getDefault();
+        $wwwroot = $di->get('path')['root'];
+        $image = empty($person->thumbnail) ? array() : array(
+                $person->thumbnail
         );
         
-        // parse the text
-        $surveyParser = new SurveyParser();
-        $res = $surveyParser->parse($body, $rules);
-        
-        // create the query and save new on the database
-        $editedProfileValues = array();
-        if (count($res) > 0) {
-            // get the name
-            $namePieces = null;
-            if (! empty($res['NOMBRE'])) {
-                $namePieces = $this->utils->fullNameToNamePieces($res['NOMBRE']);
-            }
-            
-            // get the interests
-            $interests = null;
-            if (! empty($res['INTERESES'])) {
-                $interests = implode(",", $res['INTERESES']);
-            }
-            
-            // create query
-            $query = "UPDATE person SET ";
-            if ($namePieces)
-                $query .= "
-				first_name='{$namePieces[0]}', 
-				middle_name='{$namePieces[1]}', 
-				last_name='{$namePieces[2]}', 
-				mother_name='{$namePieces[3]}',";
-            if (! empty($res['CUMPLEANOS']))
-                $query .= "date_of_birth='{$res['CUMPLEANOS']}',";
-            if (! empty($res['SEXO']))
-                $query .= "gender='{$res['SEXO']}',";
-            if (! empty($res['OJOS']))
-                $query .= "eyes='{$res['OJOS']}',";
-            if (! empty($res['PIEL']))
-                $query .= "skin='{$res['PIEL']}',";
-            if (! empty($res['CUERPO']))
-                $query .= "body_type='{$res['CUERPO']}',";
-            if (! empty($res['PELO']))
-                $query .= "hair='{$res['PELO']}',";
-            if (! empty($res['PROVINCIA']))
-                $query .= "province='{$res['PROVINCIA']}',";
-            if (! empty($res['CIUDAD']))
-                $query .= "city='{$res['CIUDAD']}',";
-            if (! empty($res['NIVEL ESCOLAR']))
-                $query .= "highest_school_level='{$res['NIVEL ESCOLAR']}',";
-            if (! empty($res['PROFESION']))
-                $query .= "occupation='{$res['PROFESION']}',";
-            if (! empty($res['ESTADO CIVIL']))
-                $query .= "marital_status='{$res['ESTADO CIVIL']}',";
-            if (! empty($interests))
-                $query .= "interests='$interests',";
-            if ($isImageAttached)
-                $query .= "picture='1',";
-            $query .= "
-				last_update_date=CURRENT_TIMESTAMP, 
-				updated_by_user=1
-			WHERE email='$email'";
-            
-            $query = preg_replace("/\s+/", " ", $query);
-            
-            // update in the database
-            $connection = new Connection();
-            $connection->deepQuery($query);
-            
-            // edit changed fields to go on the confirmation
-            foreach ($res as $key => $value) {
-                if (! empty($value)) {
-                    $valueToShow = $value;
-                    if ($key == "CUMPLEANOS")
-                        $valueToShow = strftime("%d de %B del %Y", 
-                                strtotime($value));
-                    if ($key == "PROVINCIA")
-                        $valueToShow = str_replace("_", " ", $value);
-                    if ($key == "INTERESES")
-                        $valueToShow = implode(", ", $value);
-                    $editedProfileValues[$key] = $valueToShow;
-                }
-            }
-        }
-        
-        // alert the user if the picture was updated
-        if ($isImageAttached) {
-            $editedProfileValues["IMAGE"] = "New image";
-        }
-        
-        // get the full user profile
-        $profile = $this->utils->getPerson($request->email);
-        
-        // create a json object to send to the template
-        $responseContent = array(
-                "editedProfileValues" => $editedProfileValues,
-                "noProfileValuesWereEdited" => count($editedProfileValues) == 0,
-                "editProfileText" => $this->utils->createProfileEditableText(
-                        $profile->email)
-        );
-        
-        // send response to the user
         $response = new Response();
-        $response->setResponseSubject("Su perfil ha sido editado");
-        $response->createFromTemplate("confirmation.tpl", $responseContent);
+        $response->setResponseSubject('Edite su perfil');
+        $response->createFromTemplate('profile_edit.tpl', $content, $image);
         return $response;
     }
 
+    /**
+     *
+     * @param unknown $sqlset            
+     * @param unknown $email            
+     */
     private function update ($sqlset, $email)
     {
         $query = "UPDATE person SET $sqlset, last_update_date=CURRENT_TIMESTAMP, updated_by_user=1	WHERE email='$email'";
