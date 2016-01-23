@@ -287,7 +287,48 @@ class Perfil extends Service
      */
     public function _religion (Request $request)
     {
-        return $this->subserviceSimple($request, 'religion');
+        $religions = array(
+                'ATEISMO',
+                'SECULARISMO',
+                'AGNOSTICISMO',
+                'CATOLICISMO',
+                'CRISTIANISMO',
+                'ISLAM',
+                'RAFTAFARISMO',
+                'UNIVERSALISMO',
+                'UNITARISMO',
+                'NEOPAGANISMO',
+                'TENRIKYO',
+                'ZOROASTRISMO',
+                'CAODAISMO',
+                'SINTOISMO',
+                'JAINISMO',
+                'BAHAI',
+                'JUDAISMO',
+                'ESPIRITISMO',
+                'SIJISMO',
+                'CHAMANISMO',
+                'TRADICIONAL CHINA',
+                'HINDUISMO',
+                'BUDISMO',
+                'TAOISMO',
+                'OTRA'
+        );
+        
+        $synon = array(
+                'ATEO' => 'ATEISMO',
+                'SECULAR' => 'SECULARISMO',
+                'AGNOSTICO' => 'AGNOSTICISMO',
+                'CATOLICO' => 'CATOLICISMO',
+                'CRISTIANO' => 'CRISTIANISMO',
+                'BUDISTA' => 'BUDISMO',
+                'CHAMAN' => 'CHAMAMISMO',
+                'TAOISTA' => 'TAOISMO',
+                'ESPIRITISTA' => 'ESPIRITISMO'
+        );
+        
+        return $this->subserviceEnum($request, 'religion', $religions, 
+                'Dinos tu religion o si careces de ella', null, $synon);
     }
 
     /**

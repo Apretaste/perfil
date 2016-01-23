@@ -197,7 +197,32 @@
 	<tr>
 		<td valign="top">Religi&oacute;n</td>
 		<td valign="top"><b>{$religion}</b></td>
-		<td valign="top">{button size="small" color="green" caption="Cambiar" href="PERFIL RELIGION {$religion}"}</td>
+		<td valign="top">
+			{link caption="Ate&iacute;smo" href="PERFIL RELIGION ATEISMO"}
+			{link caption="Secularismo" href="PERFIL RELIGION SECULARISMO"}
+     		{link caption="Agnosticismo" href="PERFIL RELIGION AGNOSTICISMO"}
+         	{link caption="Catolicismo" href="PERFIL RELIGION CATOLICISMO"}
+         	{link caption="Cristianismo" href="PERFIL RELIGION CRISTIANISMO"}
+         	{link caption="Islam" href="PERFIL RELIGION ISLAM"}
+         	{link caption="Raftafarismo" href="PERFIL RELIGION RAFTAFARISMO"}
+         	{link caption="Universalismo" href="PERFIL RELIGION UNIVERSALISMO"}
+         	{link caption="Unitarismo" href="PERFIL RELIGION UNITARISMO"}
+            {link caption="Neopaganismo" href="PERFIL RELIGION NEOPAGANISMO"}
+            {link caption="Tenrikyo" href="PERFIL RELIGION TENRIKYO"}
+            {link caption="Zoroastrismo" href="PERFIL RELIGION ZOROASTRISMO"}
+            {link caption="Caodaismo" href="PERFIL RELIGION CAODAISMO"}
+            {link caption="Sintoismo" href="PERFIL RELIGION SINTOISMO"}
+            {link caption="Jainismo" href="PERFIL RELIGION JAINISMO"}
+            {link caption="Bahai" href="PERFIL RELIGION BAHAI"}
+            {link caption="Judaismo" href="PERFIL RELIGION JUDAISMO"}
+            {link caption="Espiritismo" href="PERFIL RELIGION ESPIRITISMO"}
+            {link caption="Sijismo" href="PERFIL RELIGION SIJISMO"}
+            {link caption="Chamanismo" href="PERFIL RELIGION CHAMANISMO"}
+            {link caption="Tradicional China" href="PERFIL RELIGION TRADICIONAL CHINA"}
+            {link caption="Hinduismo" href="PERFIL RELIGION HINDUISMO"}
+            {link caption="Budismo" href="PERFIL RELIGION BUDISMO"}
+            {link caption="Taoismo" href="PERFIL RELIGION TAOISMO"}
+            {link caption="Otra" href="PERFIL RELIGION OTRA"}</td>
 		<td valign="top" width="100" align="right">{button size="small" color="red" caption="Quitar" href="PERFIL RELIGION"}</td>
 	</tr>
 	<tr><td valign="top" colspan="4"><hr/></td></tr>
