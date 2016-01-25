@@ -131,7 +131,7 @@
 		<td valign="top"><b>{$highest_school_level}</b></td>
 		<td valign="top">{link caption="Primaria" href="PERFIL NIVEL PRIMARIO"}
 			{link caption="Secundaria" href="PERFIL NIVEL SECUNDARIO"}
-			{link caption="T&eacute;nico" href="PERFIL NIVEl TECNICO"}
+			{link caption="T&eacute;cnico" href="PERFIL NIVEl TECNICO"}
 			{link caption="Universitario" href="PERFIL NIVEl UNIVERSITARIO"}
 			{link caption="Postgraduado" href="PERFIL NIVEl POSTGRADUADO"}
 			{link caption="Doctorado" href="PERFIL NIVEl DOCTORADO"}
@@ -154,21 +154,36 @@
 		<td valign="top">Provincia</td>
 		<td valign="top"><b>{$province}</b></td>
 		<td valign="top">
-			{link caption="Pinar del R&iacute;o" href="PERFIL PINAR_DEL_RIO"}&nbsp;&nbsp;
-			{link caption="La Habana" href="PERFIL PROVINCIA LA_HABANA"}&nbsp;&nbsp;
-			{link caption="Artemisa" href="PERFIL PROVINCIA ARTEMISA"}&nbsp;&nbsp;
-			{link caption="Mayabeque" href="PERFIL PROVINCIA MAYABEQUE"}&nbsp;&nbsp;
-			{link caption="Matanzas" href="PERFIL PROVINCIA MATANZAS"}&nbsp;&nbsp; 
-			{link caption="Villa Clara" href="PERFIL PROVINCIA VILLA CLARA"}&nbsp;&nbsp; 
-			{link caption="Cienfuegos" href="PERFIL PROVINCIA CIENFUEGOS"}&nbsp;&nbsp;  
-			{link caption="Sancti Sp&iacute;ritus" href="PERFIL PROVINCIA SANCTI_SPIRITUS"}&nbsp;&nbsp; 
-			{link caption="Ciego de &Aacute;vila" href="PERFIL PROVINCIA CIEGO_DE_AVILA"}&nbsp;&nbsp;
-			{link caption="Camag&uuml;ey" href="PERFIL PROVINCIA CAMAGUEY"}&nbsp;&nbsp;
-			{link caption="Las Tunas" href="PERFIL PROVINCIA LAS_TUNAS"}&nbsp;&nbsp;
-			{link caption="Holgu&iacute;n" href="PERFIL PROVINCIA HOLGUIN"}&nbsp;&nbsp; 
-			{link caption="Granma" href="PERFIL PROVINCIA GRANMA"}&nbsp;&nbsp;
-			{link caption="Santiago de Cuba" href="PERFIL SANTIAGO_DE_CUBA"}&nbsp;&nbsp;
-			{link caption="Guant&aacute;namo" href="PERFIL GUANTANAMO"}&nbsp;&nbsp;<br/> 
+			{link caption="Pinar del R&iacute;o" href="PERFIL PINAR_DEL_RIO"}
+			{separator}
+			{link caption="La Habana" href="PERFIL PROVINCIA LA_HABANA"}
+			{separator}
+			{link caption="Artemisa" href="PERFIL PROVINCIA ARTEMISA"}
+			{separator}
+			{link caption="Mayabeque" href="PERFIL PROVINCIA MAYABEQUE"}
+			{separator}
+			{link caption="Matanzas" href="PERFIL PROVINCIA MATANZAS"}
+			{separator} 
+			{link caption="Villa Clara" href="PERFIL PROVINCIA VILLA CLARA"}
+			{separator} 
+			{link caption="Cienfuegos" href="PERFIL PROVINCIA CIENFUEGOS"}
+			{separator}  
+			{link caption="Sancti Sp&iacute;ritus" href="PERFIL PROVINCIA SANCTI_SPIRITUS"}
+			{separator} 
+			{link caption="Ciego de &Aacute;vila" href="PERFIL PROVINCIA CIEGO_DE_AVILA"}
+			{separator}
+			{link caption="Camag&uuml;ey" href="PERFIL PROVINCIA CAMAGUEY"}
+			{separator}
+			{link caption="Las Tunas" href="PERFIL PROVINCIA LAS_TUNAS"}
+			{separator}
+			{link caption="Holgu&iacute;n" href="PERFIL PROVINCIA HOLGUIN"}
+			{separator} 
+			{link caption="Granma" href="PERFIL PROVINCIA GRANMA"}
+			{separator}
+			{link caption="Santiago de Cuba" href="PERFIL SANTIAGO_DE_CUBA"}
+			{separator}
+			{link caption="Guant&aacute;namo" href="PERFIL GUANTANAMO"}
+			{separator}
 			{link caption="Isla de la Juventud" href="PERFIL ISLA_DE_LA_JUVENTUD"}
 		</td>
 		<td valign="top" width="100" align="right">{button size="small" color="red" caption="Quitar" href="PERFIL PROVINCIA"}</td>
