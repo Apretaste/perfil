@@ -1,244 +1,239 @@
 <h1>Edite su perfil</h1>
-<center>
-{if ! empty($thumbnail)}
-	<table cellpadding="3"><tr><td valign="top" bgcolor="#202020">
-	{img src="{$thumbnail}" alt="Picture" width="300"}
-	</td></tr></table>
-	{button href="PERFIL FOTO" body="Adjunte su foto de perfil" caption="Cambiar" size="small"}
-	{button href="PERFIL FOTO" caption="Quitar" size="small"}<br/>
-{else}
-	{noimage width="300" height="200" text="Tristemente ...<br/>Sin foto de perfil :'-("}
-	{button href="PERFIL FOTO" body="Adjunte su foto de perfil" caption="Agregar" size="small"}	
-{/if}
-</center>
-<hr/>
+
+<hr />
 {space5}
 <table width="100%">
+	<!-- PICTURE -->
+	<tr>
+		<td>FOTO</td>
+		<td valign="middle">{if ! empty($thumbnail)} {img
+			src="{$thumbnail}" alt="Picture" width="100"} {/if}</td>
+		<td valign="middle">{button href="PERFIL FOTO" body="Adjunte su
+			foto de perfil" caption="Cambiar" size="small"}</td>
+	</tr>
+	<tr>
+		<td valign="middle" colspan="4"><hr /></td>
+	</tr>
 	<!-- NAME -->
 	<tr>
-		<td valign="top">Nombre</td>
-		<td valign="top"><b>{$full_name}</b></td>
-		<td valign="top">{button size="small" color="green" caption="Cambiar" href="PERFIL NOMBRE {$full_name}"}</td> 
-		<td valign="top" width="100" align="right">{button size="small" color="red" caption="Quitar" href="PERFIL NOMBRE"}</td>
+		<td valign="middle">Nombre</td>
+		<td valign="middle"><b>{$full_name}</b></td>
+		<td valign="middle">{button size="small" color="green"
+			caption="Cambiar" href="PERFIL NOMBRE {$full_name}"}</td>
 	</tr>
-	<tr><td valign="top" colspan="4"><hr/></td></tr>
-	
+	<tr>
+		<td valign="middle" colspan="4"><hr /></td>
+	</tr>
+
 	<!-- GENDER -->
 	<tr>
-		<td valign="top">Sexo</td>
-		<td valign="top"><b>{$gender}</b></td>
-		<td valign="top">
-		{link caption="Masculino" href="PERFIL SEXO MASCULINO"}
-		{link caption="Femenino" href="PERFIL SEXO FEMENINO"}
-		</td>
-		<td valign="top" width="100" align="right">{button size="small" color="red" caption="Quitar" href="PERFIL SEXO"}</td>
+		<td valign="middle">Sexo</td>
+		<td valign="middle"><b>{$gender}</b></td>
+		<td valign="middle">{link caption="Masculino" href="PERFIL SEXO
+			MASCULINO"}{separator} {link caption="Femenino" href="PERFIL SEXO
+			FEMENINO"}</td>
 	</tr>
-	<tr><td valign="top" colspan="4"><hr/></td></tr>
-	
+	<tr>
+		<td valign="middle" colspan="4"><hr /></td>
+	</tr>
+
 	<!-- SEXUAL ORIENTATION -->
 	<tr>
-		<td valign="top">Orientaci&oacute;n sexual</td>
-		<td valign="top"><b>{$sexual_orientation}</b></td>
-		<td valign="top">
-			{link caption="Hetero" href="PERFIL ORIENTACION HETERO"} <small>|</small>
-			{link caption="Gay" href="PERFIL ORIENTACION HOMO"} <small>|</small>
-			{link caption="Bi" href="PERFIL ORIENTACION BI"}</td>
-		<td valign="top" width="100" align="right">{button size="small" color="red" caption="Quitar" href="PERFIL ORIENTACION"}</td>
+		<td valign="middle">Orientaci&oacute;n sexual</td>
+		<td valign="middle"><b>{$sexual_orientation}</b></td>
+		<td valign="middle">{link caption="Hetero" href="PERFIL
+			ORIENTACION HETERO"} {separator} {link caption="Gay" href="PERFIL
+			ORIENTACION HOMO"} {separator} {link caption="Bi" href="PERFIL
+			ORIENTACION BI"}</td>
 	</tr>
-	<tr><td valign="top" colspan="4"><hr/></td></tr>
-	
+	<tr>
+		<td valign="middle" colspan="4"><hr /></td>
+	</tr>
+
 	<!-- DAY OF BIRTH -->
 	<tr>
-		<td valign="top">Cumplea&ntilde;os</td>
-		<td valign="top"><b>{$date_of_birth}</b></td>
-		<td valign="top">{button size="small" color="green" caption="Cambiar" href="PERFIL CUMPLEANOS {$date_of_birth}"}</td>
-		<td valign="top" width="100" align="right">{button size="small" color="red" caption="Quitar" href="PERFIL CUMPLEANOS"}</td>
+		<td valign="middle">Cumplea&ntilde;os</td>
+		<td valign="middle"><b>{$date_of_birth}</b></td>
+		<td valign="middle">{button size="small" color="green"
+			caption="Cambiar" href="PERFIL CUMPLEANOS {$date_of_birth}" body="Hemos preparado un correo para ti para que puedas cambiar tu fecha de cumpleanos. Escribela despues de la palabra CUMPLEANOS en el asunto"}</td>
 	</tr>
-	<tr><td valign="top" colspan="4"><hr/></td></tr>
-	
+	<tr>
+		<td valign="middle" colspan="4"><hr /></td>
+	</tr>
+
 	<!-- BODY TYPE -->
 	<tr>
-		<td valign="top">Cuerpo</td>
-		<td valign="top"><b>{$body_type}</b></td>
-		<td valign="top">
-		{link caption="Delgado" href="PERFIL CUERPO DELGADO"}
-		{link caption="Medio" href="PERFIL CUERPO MEDIO"}
-		{link caption="Extra" href="PERFIL CUERPO EXTRA"}
-		{link caption="Cambiar" href="PERFIL CUERPO ATLETICO"}
-		</td>
-		<td valign="top" width="100" align="right">{button size="small" color="red" caption="Quitar" href="PERFIL CUERPO"}</td>
+		<td valign="middle">Cuerpo</td>
+		<td valign="middle"><b>{$body_type}</b></td>
+		<td valign="middle">{link caption="Delgado" href="PERFIL CUERPO
+			DELGADO"}{separator} {link caption="Medio" href="PERFIL CUERPO
+			MEDIO"}{separator} {link caption="Extra" href="PERFIL CUERPO
+			EXTRA"}{separator} {link caption="Cambiar" href="PERFIL CUERPO
+			ATLETICO"}</td>
 	</tr>
-	<tr><td valign="top" colspan="4"><hr/></td></tr>
-	
+	<tr>
+		<td valign="middle" colspan="4"><hr /></td>
+	</tr>
+
 	<!-- EYES -->
-	<tr>	
-		<td valign="top">Ojos</td>
-		<td valign="top"><b>{$eyes}</b></td>
-		<td valign="top">
-			{link caption="Negros" href="PERFIL OJOS NEGRO"}
-			{link caption="Carmelitas" href="PERFIL OJOS CARMELITA"}
-			{link caption="Verdes" href="PERFIL OJOS VERDE"}
-			{link caption="Azules" href="PERFIL OJOS AZUL"}
-			{link caption="Avellana" href="PERFIL OJOS AVELLANA"}
-			{link caption="Otro color" href="PERFIL OJOS OTRO"}</td>	
-		<td valign="top" width="100" align="right">{button size="small" color="red" caption="Quitar" href="PERFIL OJOS"}</td>
+	<tr>
+		<td valign="middle">Ojos</td>
+		<td valign="middle"><b>{$eyes}</b></td>
+		<td valign="middle">{link caption="Negros" href="PERFIL OJOS
+			NEGRO"}{separator} {link caption="Carmelitas" href="PERFIL OJOS
+			CARMELITA"}{separator} {link caption="Verdes" href="PERFIL OJOS
+			VERDE"}{separator} {link caption="Azules" href="PERFIL OJOS
+			AZUL"}{separator} {link caption="Avellana" href="PERFIL OJOS
+			AVELLANA"}{separator} {link caption="Otro color" href="PERFIL OJOS
+			OTRO"}</td>
 	</tr>
-	<tr><td valign="top" colspan="4"><hr/></td></tr>
-	
+	<tr>
+		<td valign="middle" colspan="4"><hr /></td>
+	</tr>
+
 	<!-- HAIR -->
 	<tr>
-		<td valign="top">Pelo</td>
-		<td valign="top"><b>{$hair}</b></td>
-		<td valign="top">{link caption="Trigue&ntilde;o" href="PERFIL PELO TRIGUENO"}
-			{link caption="Casta&ntilde;o" href="PERFIL PELO CASTANO"}
-			{link caption="Rubio" href="PERFIL PELO RUBIO"}
-			{link caption="Negro" href="PERFIL PELO NEGRO"}
-			{link caption="Rojo" href="PERFIL PELO ROJO"}
-			{link caption="Blanco" href="PERFIL PELO BLANCO"}
-			{link caption="Otro" href="PERFIL PELO OTRO"}</td>
-		<td valign="top" width="100" align="right">{button size="small" color="red" caption="Quitar" href="PERFIL PELO"}</td>
+		<td valign="middle">Pelo</td>
+		<td valign="middle"><b>{$hair}</b></td>
+		<td valign="middle">{link caption="Trigue&ntilde;o" href="PERFIL
+			PELO TRIGUENO"}{separator} {link caption="Casta&ntilde;o"
+			href="PERFIL PELO CASTANO"}{separator} {link caption="Rubio"
+			href="PERFIL PELO RUBIO"}{separator} {link caption="Negro"
+			href="PERFIL PELO NEGRO"}{separator} {link caption="Rojo"
+			href="PERFIL PELO ROJO"}{separator} {link caption="Blanco"
+			href="PERFIL PELO BLANCO"}{separator} {link caption="Otro"
+			href="PERFIL PELO OTRO"}</td>
 	</tr>
-	<tr><td valign="top" colspan="4"><hr/></td></tr>
-	
+	<tr>
+		<td valign="middle" colspan="4"><hr /></td>
+	</tr>
+
 	<!-- SKIN -->
 	<tr>
-		<td valign="top">Color de piel</td>
-		<td valign="top"><b>{$skin}</b></td>
-		<td valign="top">
-		{link caption="Blanca" href="PERFIL PIEL BLANCO"}
-		{link caption="Negra" href="PERFIL PIEL NEGRO"}
-		{link caption="Mestiza" href="PERFIL PIEL MESTIZO"}
-		{link caption="Otro" href="PERFIL PIEL OTRO"}</td>
-		<td valign="top" width="100" align="right">{button size="small" color="red" caption="Quitar" href="PERFIL PIEL"}</td>
+		<td valign="middle">Color de piel</td>
+		<td valign="middle"><b>{$skin}</b></td>
+		<td valign="middle">{link caption="Blanca" href="PERFIL PIEL
+			BLANCO"}{separator} {link caption="Negra" href="PERFIL PIEL
+			NEGRO"}{separator} {link caption="Mestiza" href="PERFIL PIEL
+			MESTIZO"}{separator} {link caption="Otro" href="PERFIL PIEL OTRO"}</td>
 	</tr>
-	
+
 	<!-- MARITAL STATUS -->
-	<tr><td valign="top" colspan="4"><hr/></td></tr>
 	<tr>
-		<td valign="top">Estado civil</td>
-		<td valign="top"><b>{$marital_status}</b></td>
-		<td valign="top">{link caption="Soltero" href="PERFIL ESTADO SOLTERO"}
-			{link caption="Saliendo" href="PERFIL ESTADO SALIENDO"}
-			{link caption="Comprometido" href="PERFIL ESTADO COMPROMETIDO"}
-			{link caption="Casado" href="PERFIL ESTADO CASADO"}</td>
-		<td valign="top" width="100" align="right">{button size="small" color="red" caption="Quitar" href="PERFIL ESTADO"}</td>
+		<td valign="middle" colspan="4"><hr /></td>
 	</tr>
-	<tr><td valign="top" colspan="4"><hr/></td></tr>
-	
+	<tr>
+		<td valign="middle">Estado civil</td>
+		<td valign="middle"><b>{$marital_status}</b></td>
+		<td valign="middle">{link caption="Soltero" href="PERFIL ESTADO
+			SOLTERO"}{separator} {link caption="Saliendo" href="PERFIL ESTADO
+			SALIENDO"}{separator} {link caption="Comprometido" href="PERFIL
+			ESTADO COMPROMETIDO"}{separator} {link caption="Casado" href="PERFIL
+			ESTADO CASADO"}</td>
+	</tr>
+	<tr>
+		<td valign="middle" colspan="4"><hr /></td>
+	</tr>
+
 	<!-- HIGHEST SCHOOL LEVEL-->
 	<tr>
-		<td valign="top">Nivel escolar</td>
-		<td valign="top"><b>{$highest_school_level}</b></td>
-		<td valign="top">{link caption="Primaria" href="PERFIL NIVEL PRIMARIO"}
-			{link caption="Secundaria" href="PERFIL NIVEL SECUNDARIO"}
-			{link caption="T&eacute;cnico" href="PERFIL NIVEl TECNICO"}
-			{link caption="Universitario" href="PERFIL NIVEl UNIVERSITARIO"}
-			{link caption="Postgraduado" href="PERFIL NIVEl POSTGRADUADO"}
-			{link caption="Doctorado" href="PERFIL NIVEl DOCTORADO"}
-			{link caption="Otro" href="PERFIL NIVEl OTRO"}</td>
-		<td valign="top" width="100" align="right">{button size="small" color="red" caption="Quitar" href="PERFIL NIVEL"}</td>
+		<td valign="middle">Nivel escolar</td>
+		<td valign="middle"><b>{$highest_school_level}</b></td>
+		<td valign="middle">{link caption="Primaria" href="PERFIL NIVEL
+			PRIMARIO"}{separator} {link caption="Secundaria" href="PERFIL NIVEL
+			SECUNDARIO"}{separator} {link caption="T&eacute;cnico" href="PERFIL
+			NIVEl TECNICO"}{separator} {link caption="Universitario" href="PERFIL
+			NIVEl UNIVERSITARIO"}{separator} {link caption="Postgraduado"
+			href="PERFIL NIVEl POSTGRADUADO"}{separator} {link
+			caption="Doctorado" href="PERFIL NIVEl DOCTORADO"}{separator} {link
+			caption="Otro" href="PERFIL NIVEl OTRO"}</td>
 	</tr>
-	<tr><td valign="top" colspan="4"><hr/></td></tr>
-	
+	<tr>
+		<td valign="middle" colspan="4"><hr /></td>
+	</tr>
+
 	<!-- OCCUPATION -->
 	<tr>
-		<td valign="top">Profesi&oacute;n</td>
-		<td valign="top"><b>{$occupation}</b></td>
-		<td valign="top">{button size="small" color="green" caption="Cambiar" href="PERFIL PROFESION {$occupation}"}</td>
-		<td valign="top" width="100" align="right">{button size="small" color="red" caption="Quitar" href="PERFIL PROFESION"}</td>
+		<td valign="middle">Profesi&oacute;n</td>
+		<td valign="middle"><b>{$occupation}</b></td>
+		<td valign="middle">{button size="small" color="green"
+			caption="Cambiar" href="PERFIL PROFESION {$occupation}"}</td>
 	</tr>
-	<tr><td valign="top" colspan="4"><hr/></td></tr>
-	
+	<tr>
+		<td valign="middle" colspan="4"><hr /></td>
+	</tr>
+
 	<!-- PROVINCE-->
 	<tr>
-		<td valign="top">Provincia</td>
-		<td valign="top"><b>{$province}</b></td>
-		<td valign="top">
-			{link caption="Pinar del R&iacute;o" href="PERFIL PINAR_DEL_RIO"}
-			{separator}
-			{link caption="La Habana" href="PERFIL PROVINCIA LA_HABANA"}
-			{separator}
-			{link caption="Artemisa" href="PERFIL PROVINCIA ARTEMISA"}
-			{separator}
-			{link caption="Mayabeque" href="PERFIL PROVINCIA MAYABEQUE"}
-			{separator}
-			{link caption="Matanzas" href="PERFIL PROVINCIA MATANZAS"}
-			{separator} 
-			{link caption="Villa Clara" href="PERFIL PROVINCIA VILLA CLARA"}
-			{separator} 
-			{link caption="Cienfuegos" href="PERFIL PROVINCIA CIENFUEGOS"}
-			{separator}  
-			{link caption="Sancti Sp&iacute;ritus" href="PERFIL PROVINCIA SANCTI_SPIRITUS"}
-			{separator} 
-			{link caption="Ciego de &Aacute;vila" href="PERFIL PROVINCIA CIEGO_DE_AVILA"}
-			{separator}
-			{link caption="Camag&uuml;ey" href="PERFIL PROVINCIA CAMAGUEY"}
-			{separator}
-			{link caption="Las Tunas" href="PERFIL PROVINCIA LAS_TUNAS"}
-			{separator}
-			{link caption="Holgu&iacute;n" href="PERFIL PROVINCIA HOLGUIN"}
-			{separator} 
-			{link caption="Granma" href="PERFIL PROVINCIA GRANMA"}
-			{separator}
-			{link caption="Santiago de Cuba" href="PERFIL SANTIAGO_DE_CUBA"}
-			{separator}
-			{link caption="Guant&aacute;namo" href="PERFIL GUANTANAMO"}
-			{separator}
-			{link caption="Isla de la Juventud" href="PERFIL ISLA_DE_LA_JUVENTUD"}
-		</td>
-		<td valign="top" width="100" align="right">{button size="small" color="red" caption="Quitar" href="PERFIL PROVINCIA"}</td>
+		<td valign="middle">Provincia</td>
+		<td valign="middle"><b>{$province}</b></td>
+		<td valign="middle">{link caption="Pinar" href="PERFIL
+			PINAR_DEL_RIO"}{separator} {link caption="Habana" href="PERFIL
+			PROVINCIA LA_HABANA"}{separator} {link caption="Artemisa"
+			href="PERFIL PROVINCIA ARTEMISA"}{separator} {link
+			caption="Mayabeque" href="PERFIL PROVINCIA MAYABEQUE"}{separator}
+			{link caption="Matanzas" href="PERFIL PROVINCIA MATANZAS"}{separator}
+			{link caption="Las Villas" href="PERFIL PROVINCIA VILLA
+			CLARA"}{separator} {link caption="Cienfuegos" href="PERFIL PROVINCIA
+			CIENFUEGOS"}{separator} {link caption="Sancti Sp&iacute;ritus"
+			href="PERFIL PROVINCIA SANCTI_SPIRITUS"}{separator} {link
+			caption="Ciego" href="PERFIL PROVINCIA CIEGO_DE_AVILA"}{separator}
+			{link caption="Camag&uuml;ey" href="PERFIL PROVINCIA
+			CAMAGUEY"}{separator} {link caption="Las Tunas" href="PERFIL
+			PROVINCIA LAS_TUNAS"}{separator} {link caption="Holgu&iacute;n"
+			href="PERFIL PROVINCIA HOLGUIN"}{separator} {link caption="Granma"
+			href="PERFIL PROVINCIA GRANMA"}{separator} {link caption="Santiago"
+			href="PERFIL SANTIAGO_DE_CUBA"}{separator} {link
+			caption="Guant&aacute;namo" href="PERFIL GUANTANAMO"}{separator}
+			{link caption="Isla" href="PERFIL ISLA_DE_LA_JUVENTUD"}</td>
 	</tr>
-	<tr><td valign="top" colspan="4"><hr/></td></tr>
-	
+	<tr>
+		<td valign="middle" colspan="4"><hr /></td>
+	</tr>
+
 	<!-- CITY -->
 	<tr>
-		<td valign="top">Ciudad</td>
-		<td valign="top"><b>{$city}</b></td>
-		<td valign="top">{button size="small" color="green" caption="Cambiar" href="PERFIL CIUDAD {$city}"}</td>
-		<td valign="top" width="100" align="right">{button size="small" color="red" caption="Quitar" href="PERFIL CIUDAD"}</td>
+		<td valign="middle">Ciudad</td>
+		<td valign="middle"><b>{$city}</b></td>
+		<td valign="middle">{button size="small" color="green"
+			caption="Cambiar" href="PERFIL CIUDAD {$city}"}</td>
 	</tr>
-	<tr><td valign="top" colspan="4"><hr/></td></tr>
-	
+	<tr>
+		<td valign="middle" colspan="4"><hr /></td>
+	</tr>
+
 	<!-- INTERESTS -->
 	<tr>
-		<td valign="top">Intereses</td>
-		<td valign="top"><b>{$interests}</b></td>
-		<td valign="top">{button size="small" color="green" caption="Cambiar" href="PERFIL INTERESES {$interests}"}</td>
-		<td valign="top" width="100" align="right">{button size="small" color="red" caption="Quitar" href="PERFIL INTERESES"}</td>
+		<td valign="middle">Intereses</td>
+		<td valign="middle"><b>{$interests}</b></td>
+		<td valign="middle">{button size="small" color="green"
+			caption="Cambiar" href="PERFIL INTERESES {$interests}"}</td>
 	</tr>
-	<tr><td valign="top" colspan="4"><hr/></td></tr>
-	
+	<tr>
+		<td valign="middle" colspan="4"><hr /></td>
+	</tr>
+
 	<!-- RELIGION -->
 	<tr>
-		<td valign="top">Religi&oacute;n</td>
-		<td valign="top"><b>{$religion}</b></td>
-		<td valign="top">
-			{link caption="Ate&iacute;smo" href="PERFIL RELIGION ATEISMO"}
-			{link caption="Secularismo" href="PERFIL RELIGION SECULARISMO"}
-     		{link caption="Agnosticismo" href="PERFIL RELIGION AGNOSTICISMO"}
-         	{link caption="Catolicismo" href="PERFIL RELIGION CATOLICISMO"}
-         	{link caption="Cristianismo" href="PERFIL RELIGION CRISTIANISMO"}
-         	{link caption="Islam" href="PERFIL RELIGION ISLAM"}
-         	{link caption="Raftafarismo" href="PERFIL RELIGION RAFTAFARISMO"}
-         	{link caption="Universalismo" href="PERFIL RELIGION UNIVERSALISMO"}
-         	{link caption="Unitarismo" href="PERFIL RELIGION UNITARISMO"}
-            {link caption="Neopaganismo" href="PERFIL RELIGION NEOPAGANISMO"}
-            {link caption="Tenrikyo" href="PERFIL RELIGION TENRIKYO"}
-            {link caption="Zoroastrismo" href="PERFIL RELIGION ZOROASTRISMO"}
-            {link caption="Caodaismo" href="PERFIL RELIGION CAODAISMO"}
-            {link caption="Sintoismo" href="PERFIL RELIGION SINTOISMO"}
-            {link caption="Jainismo" href="PERFIL RELIGION JAINISMO"}
-            {link caption="Bahai" href="PERFIL RELIGION BAHAI"}
-            {link caption="Judaismo" href="PERFIL RELIGION JUDAISMO"}
-            {link caption="Espiritismo" href="PERFIL RELIGION ESPIRITISMO"}
-            {link caption="Sijismo" href="PERFIL RELIGION SIJISMO"}
-            {link caption="Chamanismo" href="PERFIL RELIGION CHAMANISMO"}
-            {link caption="Tradicional China" href="PERFIL RELIGION TRADICIONAL CHINA"}
-            {link caption="Hinduismo" href="PERFIL RELIGION HINDUISMO"}
-            {link caption="Budismo" href="PERFIL RELIGION BUDISMO"}
-            {link caption="Taoismo" href="PERFIL RELIGION TAOISMO"}
-            {link caption="Otra" href="PERFIL RELIGION OTRA"}</td>
-		<td valign="top" width="100" align="right">{button size="small" color="red" caption="Quitar" href="PERFIL RELIGION"}</td>
+		<td valign="middle">Religi&oacute;n</td>
+		<td valign="middle"><b>{$religion}</b></td>
+		<td valign="middle">{link caption="Ate&iacute;smo" href="PERFIL
+			RELIGION ATEISMO"}{separator} {link caption="Secularismo"
+			href="PERFIL RELIGION SECULARISMO"}{separator} {link
+			caption="Agnosticismo" href="PERFIL RELIGION
+			AGNOSTICISMO"}{separator} {link caption="Catolicismo" href="PERFIL
+			RELIGION CATOLICISMO"}{separator} {link caption="Cristianismo"
+			href="PERFIL RELIGION CRISTIANISMO"}{separator} {link caption="Islam"
+			href="PERFIL RELIGION ISLAM"}{separator} {link caption="Raftafarismo"
+			href="PERFIL RELIGION PROTESTANTE"}{separator} {link
+			caption="Judaismo" href="PERFIL RELIGION JUDAISMO"}{separator} {link
+			caption="Espiritismo" href="PERFIL RELIGION SANTERO"}{separator}
+			{link caption="Sijismo" href="PERFIL RELIGION YORUBA"}{separator}
+			{link caption="Sijismo" href="PERFIL RELIGION ABAKUA"}{separator}
+			{link caption="Budismo" href="PERFIL RELIGION BUDISMO"}{separator}
+			{link caption="Otra" href="PERFIL RELIGION OTRA"}</td>
 	</tr>
-	<tr><td valign="top" colspan="4"><hr/></td></tr>
+	<tr>
+		<td valign="middle" colspan="4"><hr /></td>
+	</tr>
 </table>
