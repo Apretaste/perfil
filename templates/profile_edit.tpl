@@ -1,13 +1,11 @@
 <h1>Edite su perfil</h1>
-
-<hr />
 {space5}
 <table width="100%">
 	<!-- PICTURE -->
 	<tr>
-		<td>FOTO</td>
+		<td>Foto</td>
 		<td valign="middle">{if ! empty($thumbnail)} {img
-			src="{$thumbnail}" alt="Picture" width="100"} {/if}</td>
+			src="{$thumbnail}" alt="Picture" width="100"} @else@ [sin foto] {/if}</td>
 		<td valign="middle">{button href="PERFIL FOTO" body="Adjunte su
 			foto de perfil" caption="Cambiar" size="small"}</td>
 	</tr>
@@ -19,7 +17,8 @@
 		<td valign="middle">Nombre</td>
 		<td valign="middle"><b>{$full_name}</b></td>
 		<td valign="middle">{button size="small" color="green"
-			caption="Cambiar" href="PERFIL NOMBRE {$full_name}"}</td>
+			caption="Cambiar" href="PERFIL NOMBRE {$full_name}" body="Escriha su
+			nombre en el asunto despues de la palabra NOMBRE"}</td>
 	</tr>
 	<tr>
 		<td valign="middle" colspan="4"><hr /></td>
@@ -55,7 +54,10 @@
 		<td valign="middle">Cumplea&ntilde;os</td>
 		<td valign="middle"><b>{$date_of_birth}</b></td>
 		<td valign="middle">{button size="small" color="green"
-			caption="Cambiar" href="PERFIL CUMPLEANOS {$date_of_birth}" body="Hemos preparado un correo para ti para que puedas cambiar tu fecha de cumpleanos. Escribela despues de la palabra CUMPLEANOS en el asunto"}</td>
+			caption="Cambiar" href="PERFIL CUMPLEANOS {$date_of_birth}"
+			body="Hemos preparado un correo para ti para que puedas cambiar tu
+			fecha de cumpleanos. Escribela despues de la palabra CUMPLEANOS en el
+			asunto"}</td>
 	</tr>
 	<tr>
 		<td valign="middle" colspan="4"><hr /></td>
@@ -157,7 +159,7 @@
 		<td valign="middle">Profesi&oacute;n</td>
 		<td valign="middle"><b>{$occupation}</b></td>
 		<td valign="middle">{button size="small" color="green"
-			caption="Cambiar" href="PERFIL PROFESION {$occupation}"}</td>
+			caption="Cambiar" href="PERFIL PROFESION {$occupation}" body="Escriba su profesion en el asunto despues de la palabra PROFESION"}</td>
 	</tr>
 	<tr>
 		<td valign="middle" colspan="4"><hr /></td>
@@ -196,7 +198,7 @@
 		<td valign="middle">Ciudad</td>
 		<td valign="middle"><b>{$city}</b></td>
 		<td valign="middle">{button size="small" color="green"
-			caption="Cambiar" href="PERFIL CIUDAD {$city}"}</td>
+			caption="Cambiar" href="PERFIL CIUDAD {$city}" body="Escriba su ciudad en el asunto despues de la palabra CIUDAD"}</td>
 	</tr>
 	<tr>
 		<td valign="middle" colspan="4"><hr /></td>
@@ -207,7 +209,7 @@
 		<td valign="middle">Intereses</td>
 		<td valign="middle"><b>{$interests}</b></td>
 		<td valign="middle">{button size="small" color="green"
-			caption="Cambiar" href="PERFIL INTERESES {$interests}"}</td>
+			caption="Cambiar" href="PERFIL INTERESES {$interests}" body="Escriba sus intereses separados por coma en el asunto, despues de la palabra INTERESES"}</td>
 	</tr>
 	<tr>
 		<td valign="middle" colspan="4"><hr /></td>

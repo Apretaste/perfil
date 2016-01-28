@@ -240,14 +240,17 @@ class Perfil extends Service
     {
         $n = $this->utils->fullNameToNamePieces(trim($request->query));
         
-        if (! is_array($n))
-            $n = array(
-                    'null',
-                    'null',
-                    'null',
-                    'null'
-            );
-        
+        if (! is_array($n)) {
+            /*
+             * $n = array(
+             * 'null',
+             * 'null',
+             * 'null',
+             * 'null'
+             * );
+             */
+            return new Response();
+        }
         for ($i = 0; $i <= 3; $i ++)
             $n[$i] = "'{$n[$i]}'";
         
@@ -257,6 +260,7 @@ class Perfil extends Service
 				   mother_name = {$n[3]} ";
         
         $this->update($query, $request->email);
+        return new Response();
     }
 
     /**
@@ -360,8 +364,10 @@ class Perfil extends Service
         
         if (! empty($query))
             $this->update("city = '{$query}'", $request->email);
-        else
-            $this->update("city = null", $request->email);
+            /*
+         * else
+         * $this->update("city = null", $request->email);
+         */
         
         return new Response();
     }
@@ -672,7 +678,7 @@ class Perfil extends Service
         
         // if the query is empty, set to null the field
         if (empty($query)) {
-            $this->update("$field = null", $request->email);
+            // $this->update("$field = null", $request->email);
             return new Response();
         } else {
             
@@ -721,15 +727,18 @@ class Perfil extends Service
                 $request->query = trim(substr($query, strlen($prefix)));
         
         $value = trim($request->query);
-        $value = str_replace(array(
-                "'",
-                "`"
-        ), "", $value);
+        $value = str_replace(
+                array(
+                        "'",
+                        "`"
+                ), "", $value);
         
         if (! empty($value))
             $this->update("$field = '$value'", $request->email);
-        else
-            $this->update("$field = null", $request->email);
+            /*
+         * else
+         * $this->update("$field = null", $request->email);
+         */
         
         return new Response();
     }
@@ -757,9 +766,10 @@ class Perfil extends Service
         $date = DateTime::createFromFormat("d/m/Y", $query);
         
         // if date could not be calculated, return null
-        if (empty($date))
-            $query = "'null'";
-        else
+        if (empty($date)) {
+            // $query = "'null'";
+            return new Response();
+        } else
             $query = "'" . strftime("%Y-%m-%d", $date->getTimestamp()) . "'";
         
         $this->update("$field = $query", $request->email);
