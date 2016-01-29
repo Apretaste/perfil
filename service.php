@@ -14,48 +14,47 @@ class Perfil extends Service
 		// get the email or the username for the profile
 		$request->query = trim($request->query, "@ ");
 		$emailToLookup = empty($request->query) ? $request->email : $request->query;
-		
+
 		// get the email for the profile
 		$isEmail = true;
-		if (! filter_var($emailToLookup, FILTER_VALIDATE_EMAIL)) {
+		if ( ! filter_var($emailToLookup, FILTER_VALIDATE_EMAIL))
+		{
 			$connection = new Connection();
 			$person = $connection->deepQuery(
 					"SELECT email FROM person WHERE username='$emailToLookup'");
 			$emailToLookup = empty($person) ? "@$emailToLookup" : $person[0]->email;
 			$isEmail = false;
 		}
-		
+
 		// check if the person exist. If not, message the requestor
-		if (! $this->utils->personExist($emailToLookup)) {
+		if ( ! $this->utils->personExist($emailToLookup))
+		{
 			$responseContent = array(
-					"email" => $emailToLookup,
-					"isEmail" => $isEmail
+				"email" => $emailToLookup,
+				"isEmail" => $isEmail
 			);
+
 			$response = new Response();
-			$response->setResponseSubject(
-					"No encontramos un perfil para ese usuario");
+			$response->setResponseSubject("No encontramos un perfil para ese usuario");
 			$response->createFromTemplate("inexistent.tpl", $responseContent);
 			return $response;
 		}
-		
+
 		// get the full profile for the person
 		$profile = $this->utils->getPerson($emailToLookup);
-		
+
 		// get the full name, or the email
 		$fullName = empty($profile->full_name) ? $profile->username : $profile->full_name;
-		
+
 		// get the age
-		$age = empty($profile->date_of_birth) ? "" : date_diff(
-				date_create($profile->date_of_birth), date_create('today'))->y;
+		$age = empty($profile->date_of_birth) ? "" : date_diff(date_create($profile->date_of_birth), date_create('today'))->y;
 
 		// get the gender
 		$gender = "";
-		if ($profile->gender == "M")
-			$gender = "hombre";
-		if ($profile->gender == "F")
-			$gender = "mujer";
-			
-			// get the final vowel based on the gender
+		if ($profile->gender == "M") $gender = "hombre";
+		if ($profile->gender == "F") $gender = "mujer";
+
+		// get the final vowel based on the gender
 		$genderFinalVowel = "o";
 		if ($profile->gender == "F")
 			$genderFinalVowel = "a";
@@ -156,8 +155,7 @@ class Perfil extends Service
 		
 		// full location
 		$location = ". Aunque prefiero no decir de donde soy";
-		if (! empty($province))
-			$location = ". Vivo en " . $province . $city;
+		if ( ! empty($province)) $location = ". Vivo en " . $province . $city;
 			
 			// get highest educational level
 		$education = "";
@@ -187,24 +185,24 @@ class Perfil extends Service
 			
 			// create the message
 		$message = "Hola y bienvenido a mi perfil. Yo soy $fullName";
-		if (! empty($age))
+		if ( ! empty($age))
 			$message .= ", tengo $age a&ntilde;os";
-		if (! empty($gender))
+		if ( ! empty($gender))
 			$message .= ", soy $gender";
-		if (! empty($skin))
+		if ( ! empty($skin))
 			$message .= ", soy $skin";
-		if (! empty($eyes))
+		if ( ! empty($eyes))
 			$message .= ", de ojos $eyesTone (color $eyes)";
-		if (! empty($eyes))
+		if ( ! empty($eyes))
 			$message .= ", soy de pelo $hair";
-		if (! empty($bodyType))
+		if ( ! empty($bodyType))
 			$message .= " y $bodyType";
 		$message .= $location;
-		if (! empty($education))
+		if ( ! empty($education))
 			$message .= ", $education";
-		if (! empty($profile->occupation))
+		if ( ! empty($profile->occupation))
 			$message .= ", trabajo como {$profile->occupation}";
-		if (! empty($maritalStatus))
+		if ( ! empty($maritalStatus))
 			$message .= " y $maritalStatus";
 		$message .= ".";
 		
@@ -239,26 +237,15 @@ class Perfil extends Service
 	public function _nombre (Request $request)
 	{
 		$n = $this->utils->fullNameToNamePieces(trim($request->query));
-		
-		if (! is_array($n)) {
-			/*
-			 * $n = array(
-			 * 'null',
-			 * 'null',
-			 * 'null',
-			 * 'null'
-			 * );
-			 */
-			return new Response();
-		}
-		for ($i = 0; $i <= 3; $i ++)
-			$n[$i] = "'{$n[$i]}'";
-		
+
+		if ( ! is_array($n)) return new Response();
+		for ($i = 0; $i <= 3; $i ++) $n[$i] = "'{$n[$i]}'";
+
 		$query = " first_name = {$n[0]}, 
-				   middle_name = {$n[1]}, 
-				   last_name = {$n[2]}, 
-				   mother_name = {$n[3]} ";
-		
+			middle_name = {$n[1]}, 
+			last_name = {$n[2]}, 
+			mother_name = {$n[3]}";
+
 		$this->update($query, $request->email);
 		return new Response();
 	}
@@ -361,14 +348,12 @@ class Perfil extends Service
 	public function _ciudad (Request $request)
 	{
 		$query = trim($request->query);
-		
-		if (! empty($query))
+
+		if ( ! empty($query))
+		{
 			$this->update("city = '{$query}'", $request->email);
-			/*
-		 * else
-		 * $this->update("city = null", $request->email);
-		 */
-		
+		}
+
 		return new Response();
 	}
 
@@ -380,15 +365,12 @@ class Perfil extends Service
 	public function _sexo (Request $request)
 	{
 		return $this->subserviceEnum($request, 'gender', 
+				array('F','M'), 'Diga su sexo', null, 
 				array(
-						'F',
-						'M'
-				), 'Diga su sexo', null, 
-				array(
-						'FEMENINO' => 'F',
-						'MUJER' => 'F',
-						'MASCULINO' => 'M',
-						'HOMBRE' => 'M'
+					'FEMENINO' => 'F',
+					'MUJER' => 'F',
+					'MASCULINO' => 'M',
+					'HOMBRE' => 'M'
 				));
 	}
 
@@ -400,15 +382,15 @@ class Perfil extends Service
 	public function _nivel (Request $request)
 	{
 		return $this->subserviceEnum($request, 'highest_school_level', 
-				array(
-						'PRIMARIO',
-						'SECUNDARIO',
-						'TECNICO',
-						'UNIVERSITARIO',
-						'POSTGRADUADO',
-						'DOCTORADO',
-						'OTRO'
-				), 'Diga su nivel escolar', 'ESCOLAR');
+			array(
+				'PRIMARIO',
+				'SECUNDARIO',
+				'TECNICO',
+				'UNIVERSITARIO',
+				'POSTGRADUADO',
+				'DOCTORADO',
+				'OTRO'
+			), 'Diga su nivel escolar', 'ESCOLAR');
 	}
 
 	/**
@@ -431,12 +413,12 @@ class Perfil extends Service
 	public function _estado (Request $request)
 	{
 		return $this->subserviceEnum($request, 'marital_status', 
-				array(
-						'SOLTERO',
-						'SALIENDO',
-						'COMPROMETIDO',
-						'CASADO'
-				), 'Diga su estado civil', 'CIVIL');
+			array(
+				'SOLTERO',
+				'SALIENDO',
+				'COMPROMETIDO',
+				'CASADO'
+		), 'Diga su estado civil', 'CIVIL');
 	}
 
 	/**
@@ -457,15 +439,15 @@ class Perfil extends Service
 	public function _pelo (Request $request)
 	{
 		return $this->subserviceEnum($request, 'hair', 
-				array(
-						'TRIGUENO',
-						'CASTANO',
-						'RUBIO',
-						'NEGRO',
-						'ROJO',
-						'BLANCO',
-						'OTRO'
-				), 'Diga su color de pelo');
+			array(
+				'TRIGUENO',
+				'CASTANO',
+				'RUBIO',
+				'NEGRO',
+				'ROJO',
+				'BLANCO',
+				'OTRO'
+		), 'Diga su color de pelo');
 	}
 
 	/**
@@ -476,20 +458,20 @@ class Perfil extends Service
 	public function _ojos (Request $request)
 	{
 		return $this->subserviceEnum($request, 'eyes', 
-				array(
-						'NEGRO',
-						'CARMELITA',
-						'VERDE',
-						'AZUL',
-						'AVELLANA',
-						'OTRO'
-				), 'Diga el color de sus ojos', null, 
-				array(
-						'NEGROS' => 'NEGRO',
-						'CARMELITAS' => 'CARMELITA',
-						'VERDES' => 'VERDE',
-						'AZULES' => 'AZUL'
-				));
+			array(
+				'NEGRO',
+				'CARMELITA',
+				'VERDE',
+				'AZUL',
+				'AVELLANA',
+				'OTRO'
+			), 'Diga el color de sus ojos', null, 
+			array(
+				'NEGROS' => 'NEGRO',
+				'CARMELITAS' => 'CARMELITA',
+				'VERDES' => 'VERDE',
+				'AZULES' => 'AZUL'
+			));
 	}
 
 	/**
@@ -500,12 +482,12 @@ class Perfil extends Service
 	public function _cuerpo (Request $request)
 	{
 		return $this->subserviceEnum($request, 'body_type', 
-				array(
-						'DELGADO',
-						'MEDIO',
-						'EXTRA',
-						'ATLETICO'
-				), 'Diga como es su cuerpo');
+			array(
+				'DELGADO',
+				'MEDIO',
+				'EXTRA',
+				'ATLETICO'
+		), 'Diga como es su cuerpo');
 	}
 
 	/**
@@ -527,14 +509,16 @@ class Perfil extends Service
 	public function _foto ($request)
 	{
 		$attachments = $request->attachments;
-		
+
 		// move the first image attached to the profiles directory
 		$isImageAttached = 0;
-		if (count($attachments) > 0) {
+		if (count($attachments) > 0)
+		{
 			$di = \Phalcon\DI\FactoryDefault::getDefault();
 			$wwwroot = $di->get('path')['root'];
 			
-			foreach ($attachments as $attach) {
+			foreach ($attachments as $attach)
+			{
 				if ($attach->type == "image/jpeg")
 				{
 					// save the original copy
@@ -567,17 +551,17 @@ class Perfil extends Service
 	public function _orientacion (Request $request)
 	{
 		return $this->subserviceEnum($request, 'sexual_orientation', 
-				array(
-						'HETERO',
-						'HOMO',
-						'BI'
-				), 'Diga su orientacion sexual', 'SEXUAL', 
-				array(
-						'HOMOSEXUAL' => 'HOMO',
-						'HETEROSEXUAL' => 'HETERO',
-						'BISEXUAL' => 'BI',
-						'GAY' => 'HOMO'
-				));
+			array(
+				'HETERO',
+				'HOMO',
+				'BI'
+			), 'Diga su orientacion sexual', 'SEXUAL', 
+			array(
+				'HOMOSEXUAL' => 'HOMO',
+				'HETEROSEXUAL' => 'HETERO',
+				'BISEXUAL' => 'BI',
+				'GAY' => 'HOMO'
+			));
 	}
 
 	/**
@@ -659,55 +643,58 @@ class Perfil extends Service
 	 * Subservice utility for ENUM profile fields
 	 *
 	 * @param Request $request			
-	 * @param string $field			
+	 * @param String $field			
 	 * @param array $enum			
-	 * @param string $wrong_template			
-	 * @param string $wrong_subject			
-	 * @param string $field			
+	 * @param String $wrong_template			
+	 * @param String $wrong_subject			
+	 * @param String $field			
 	 *
 	 * @return Response/void
 	 */
-	private function subserviceEnum (Request $request, $field, array $enum, 
-			$wrong_subject, $prefix = null, $synonymous = array())
+	private function subserviceEnum (Request $request, $field, $enum, $wrong_subject, $prefix=null, $synonymous=array())
 	{
-		if (! is_null($prefix))
+		if ( ! is_null($prefix))
+		{
 			if (stripos($request->query, $prefix) === 0)
+			{
 				$request->query = trim(substr($query, strlen($prefix)));
-		
+			}
+		}
+
 		$query = strtoupper(trim($request->query));
-		
+
 		// if the query is empty, set to null the field
-		if (empty($query)) {
-			// $this->update("$field = null", $request->email);
+		if (empty($query))
+		{
 			return new Response();
-		} else {
-			
+		}
+		else
+		{
 			// search for $synonymous
-			if (isset($synonymous[$query]))
-				$query = $synonymous[$query];
-				
-				// search query in the list
-			if (array_search($query, $enum) !== false) {
-				
+			if (isset($synonymous[$query])) $query = $synonymous[$query];
+
+			// search query in the list
+			if (array_search($query, $enum) !== false)
+			{
 				// update the field
 				$this->update("$field = '$query'", $request->email);
 				return new Response();
-			} else {
-				
+			}
+			else
+			{
 				// wrong query, return a response with selectable list
 				$response = new Response();
 				$response->setResponseSubject($wrong_subject);
-				
+
 				// NOTE: The template name include the field name
-				
+
 				// clear underscores
 				foreach ($enum as $k => $v)
+				{
 					$enum[$k] = str_replace('_', ' ', $v);
-				
-				$response->createFromTemplate('wrong_' . $field . '.tpl', 
-						array(
-								'list' => $enum
-						));
+				}
+
+				$response->createFromTemplate('wrong_' . $field . '.tpl', array('list' => $enum));
 				return $response;
 			}
 		}
@@ -717,29 +704,27 @@ class Perfil extends Service
 	 * Subservice utitlity for simple profile fields
 	 *
 	 * @param Request $request			
-	 * @param string $field			
-	 * @param string $prefix			
+	 * @param String $field			
+	 * @param String $prefix			
 	 */
-	private function subserviceSimple (Request $request, $field, $prefix = null)
+	private function subserviceSimple (Request $request, $field, $prefix=null)
 	{
-		if (! is_null($prefix))
+		if ( ! is_null($prefix))
+		{
 			if (stripos($request->query, $prefix) === 0)
+			{
 				$request->query = trim(substr($query, strlen($prefix)));
-		
+			}
+		}
+
 		$value = trim($request->query);
-		$value = str_replace(
-				array(
-						"'",
-						"`"
-				), "", $value);
-		
-		if (! empty($value))
+		$value = str_replace(array("'","`"), "", $value);
+
+		if ( ! empty($value))
+		{
 			$this->update("$field = '$value'", $request->email);
-			/*
-		 * else
-		 * $this->update("$field = null", $request->email);
-		 */
-		
+		}
+
 		return new Response();
 	}
 
@@ -747,32 +732,33 @@ class Perfil extends Service
 	 * Subservice utility for date profile fields
 	 *
 	 * @param Request $request			
-	 * @param string $field			
-	 * @param string $prefix			
+	 * @param String $field			
+	 * @param String $prefix			
 	 */
-	private function subserviceDate (Request $request, string $field, string $prefix = null)
+	private function subserviceDate(Request $request, $field, $prefix=null)
 	{
-		if (! is_null($prefix))
+		if ( ! is_null($prefix))
+		{
 			if (stripos($request->query, $prefix) === 0)
+			{
 				$request->query = trim(substr($query, strlen($prefix)));
-		
+			}
+		}
+
 		$query = trim($request->query);
-		
+
 		// read date in Spanish
 		setlocale(LC_ALL, "es_ES");
-		
+
 		// try getting the date
 		$date = DateTime::createFromFormat("d/m/Y", $query);
-		
+
 		// if date could not be calculated, return null
-		if (empty($date)) {
-			// $query = "'null'";
-			return new Response();
-		} else
-			$query = "'" . strftime("%Y-%m-%d", $date->getTimestamp()) . "'";
-		
+		if (empty($date)) return new Response();
+		else $query = "'" . strftime("%Y-%m-%d", $date->getTimestamp()) . "'";
+
 		$this->update("$field = $query", $request->email);
-		
+
 		return new Response();
 	}
 }
