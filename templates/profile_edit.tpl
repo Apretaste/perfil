@@ -4,10 +4,13 @@
 	<!-- PICTURE -->
 	<tr>
 		<td>Foto</td>
-		<td valign="middle">{if ! empty($thumbnail)} {img
-			src="{$thumbnail}" alt="Picture" width="100"} @else@ [sin foto] {/if}</td>
-		<td valign="middle">{button href="PERFIL FOTO" body="Adjunte su
-			foto de perfil" caption="Cambiar" size="small"}</td>
+		<td valign="middle">
+			{if not empty($thumbnail)}
+				{img src="{$thumbnail}" alt="Picture" width="100"}
+			{else}
+				{noimage width="100" height="100" text="Sin foto de perfil :'-("}
+			{/if}</td>
+		<td valign="middle">{button href="PERFIL FOTO" body="Adjunte su foto de perfil" caption="Cambiar" size="small"}</td>
 	</tr>
 	<tr>
 		<td valign="middle" colspan="4"><hr /></td>
@@ -16,9 +19,7 @@
 	<tr>
 		<td valign="middle">Nombre</td>
 		<td valign="middle"><b>{$full_name}</b></td>
-		<td valign="middle">{button size="small" color="green"
-			caption="Cambiar" href="PERFIL NOMBRE {$full_name}" body="Escriha su
-			nombre en el asunto despues de la palabra NOMBRE"}</td>
+		<td valign="middle">{button size="small" color="green" caption="Cambiar" href="PERFIL NOMBRE {$full_name}" body="Escriha su nombre en el asunto despues de la palabra NOMBRE"}</td>
 	</tr>
 	<tr>
 		<td valign="middle" colspan="4"><hr /></td>
@@ -112,7 +113,7 @@
 
 	<!-- SKIN -->
 	<tr>
-		<td valign="middle">Color de piel</td>
+		<td valign="middle">Piel</td>
 		<td valign="middle"><b>{$skin}</b></td>
 		<td valign="middle">{link caption="Blanca" href="PERFIL PIEL
 			BLANCO"}{separator} {link caption="Negra" href="PERFIL PIEL
