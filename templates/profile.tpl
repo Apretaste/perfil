@@ -39,14 +39,8 @@
 {space10}
 
 {if $ownProfile}
-	<h1>Edite su perfil</h1>
-	<p>Su perfil es una combinacion <b>PROPIEDAD = Valor</b>. Asigne un valor para cada PROPIEDAD despues del signo de igual (=) y envie el email. Adjunte una foto suya que aparecer&aacute; en su perfil.</p>
-
-	{space10}
-
 	<center>
-		{button href="PERFIL EDITAR" caption="Editar mi Perfil" body="{$editProfileText}"}
-		{button href="AYUDA PERFIL" caption="Ayuda" color="grey"}
+		{button href="PERFIL EDITAR" caption="Editar mi Perfil" body="Envie este email tal y como esta. Recibira como respuesta su perfil en modo de edicion."}
 	</center>
 
 	{space15}

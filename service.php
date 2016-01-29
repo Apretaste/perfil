@@ -625,9 +625,8 @@ class Perfil extends Service
 		$person = $this->utils->getPerson($email);
 		$person->interests = implode(", ", $person->interests);
 		$person->province = str_replace("_", " ", $person->province);
-		$person->gender = "";
-		if($person->gender == 'M') $person->gender == "Masculino";
-		if($person->gender == 'F') $person->gender == "Femenino";
+		if($person->gender == 'M') $person->gender = "Masculino";
+		if($person->gender == 'F') $person->gender = "Femenino";
 		$content = get_object_vars($person);
 
 		// create the images to send to the response
