@@ -252,3 +252,9 @@
 		<td valign="middle" colspan="4"><hr /></td>
 	</tr>
 </table>
+
+{space15}
+<center>
+	{button href="PERFIL" caption="Ver Perfil"}
+</center>
+{space10}

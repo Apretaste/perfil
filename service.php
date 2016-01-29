@@ -522,39 +522,40 @@ class Perfil extends Service
 	 * Subservice FOTO
 	 *
 	 * @param Request $request			
-	 * @return mixed
+	 * @return Response
 	 */
 	public function _foto ($request)
 	{
 		$attachments = $request->attachments;
 		
 		// move the first image attached to the profiles directory
-		$isImageAttached = false;
+		$isImageAttached = 0;
 		if (count($attachments) > 0) {
 			$di = \Phalcon\DI\FactoryDefault::getDefault();
 			$wwwroot = $di->get('path')['root'];
 			
 			foreach ($attachments as $attach) {
-				if ($attach->type == "image/jpeg") {
+				if ($attach->type == "image/jpeg")
+				{
 					// save the original copy
-					$large = "$wwwroot/public/profile/$email.jpg";
+					$large = "$wwwroot/public/profile/{$request->email}.jpg";
 					copy($attach->path, $large);
 					$this->utils->optimizeImage($large);
-					
+
 					// create the thumbnail
-					$thumbnail = "$wwwroot/public/profile/thumbnail/$email.jpg";
+					$thumbnail = "$wwwroot/public/profile/thumbnail/{$request->email}.jpg";
 					copy($attach->path, $thumbnail);
 					$this->utils->optimizeImage($thumbnail, 300);
-					
-					$isImageAttached = true;
+
+					$isImageAttached = 1;
 					break;
 				}
 			}
 		}
-		
-		$this->update('picture = ' . ($isImageAttached ? '1' : '0'), 
-				$request->email);
-		
+
+		// make the changes in the database
+		$this->update("picture='$isImageAttached'", $request->email);
+
 		return new Response();
 	}
 
@@ -643,8 +644,8 @@ class Perfil extends Service
 	/**
 	 * Update a profile
 	 *
-	 * @param unknown $sqlset			
-	 * @param unknown $email			
+	 * @param String $sqlset			
+	 * @param String $email			
 	 */
 	private function update ($sqlset, $email)
 	{
