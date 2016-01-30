@@ -63,7 +63,7 @@
 		<td valign="middle"><b>{$date_of_birth|date_format:"%e/%m/%Y"}</b></td>
 		<td align="right" valign="middle">
 			{if $date_of_birth eq ""}{assign var="btncaption" value="Agregar"}{else}{assign var="btncaption" value="Cambiar"}{/if}
-			{button size="small" caption="{$btncaption}" href="PERFIL CUMPLEANOS {$date_of_birth}" body="Escriba su fecha de cumpleannos en el asunto de este email despues de la palabra CUMPLEANOS. Es recomendado usar la notacion DD/MM/AAAA, por ejemplo: 5/2/1980 seria 5 de Febrero del anno 1980."}
+			{button size="small" caption="{$btncaption}" href="PERFIL CUMPLEANOS {$date_of_birth|date_format:"%e/%m/%Y"}" body="Escriba su fecha de cumpleannos en el asunto de este email despues de la palabra CUMPLEANOS. Es recomendado usar la notacion DD/MM/AAAA, por ejemplo: 5/2/1980 seria 5 de Febrero del anno 1980."}
 		</td>
 	</tr>
 	<tr>
