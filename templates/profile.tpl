@@ -40,7 +40,12 @@
 
 {if $ownProfile}
 	<center>
-		{button href="PERFIL EDITAR" caption="Editar mi Perfil" body="Envie este email tal y como esta. Recibira como respuesta su perfil en modo de edicion."}
+		{assign var="btncaption" value="Editar mi Perfil"}
+		{if $completion lt 85}
+			<p><small>Solo ha llenado el <font color="red">{$completion|number_format}%</font> de su perfil</small></p>
+			{assign var="btncaption" value="Completar mi Perfil"}
+		{/if}
+		{button href="PERFIL EDITAR" caption="{$btncaption}" body="Envie este email tal y como esta. Recibira como respuesta su perfil en modo de edicion."}
 	</center>
 
 	{space15}

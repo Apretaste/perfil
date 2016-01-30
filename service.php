@@ -2,7 +2,6 @@
 
 class Perfil extends Service
 {
-
 	/**
 	 * Display your profile
 	 *
@@ -205,23 +204,26 @@ class Perfil extends Service
 		if ( ! empty($maritalStatus))
 			$message .= " y $maritalStatus";
 		$message .= ".";
-		
+
+		// check if the user is requesting its own profile
+		$ownProfile = $emailToLookup == $request->email;
+
+		// get the profile percentage of completion
+		$completion = $ownProfile ? $this->utils->getProfileCompletion($emailToLookup) : "";
+
 		// create a json object to send to the template
 		$responseContent = array(
-				"profile" => $profile,
-				"message" => $message,
-				"editProfileText" => $this->utils->createProfileEditableText(
-						$profile->email),
-				"ownProfile" => $emailToLookup == $request->email
+			"profile" => $profile,
+			"message" => $message,
+			"completion" => $completion,
+			"ownProfile" => $ownProfile
 		);
-		
+
 		// create the images to send to the response
 		$di = \Phalcon\DI\FactoryDefault::getDefault();
 		$wwwroot = $di->get('path')['root'];
-		$image = empty($profile->thumbnail) ? array() : array(
-				$profile->thumbnail
-		);
-		
+		$image = empty($profile->thumbnail) ? array() : array($profile->thumbnail);
+
 		// create a new Response object and input the template and the content
 		$response = new Response();
 		$response->setResponseSubject("Perfil de Apretaste");
@@ -336,8 +338,7 @@ class Perfil extends Service
 		foreach ($provs as $v) {
 			$synon[str_replace('_', ' ', $v)] = $v;
 		}
-		return $this->subserviceEnum($request, 'province', $provs, 
-				'Diga la provincia donde vive', null, $synon);
+		return $this->subserviceEnum($request, 'province', $provs, 'Diga la provincia donde vive', null, $synon);
 	}
 
 	/**
@@ -582,17 +583,17 @@ class Perfil extends Service
 	public function _piel (Request $request)
 	{
 		return $this->subserviceEnum($request, 'skin', 
-				array(
-						'NEGRO',
-						'BLANCO',
-						'MESTIZO',
-						'OTRO'
-				), 'Diga su color de piel', null, 
-				array(
-						'BLANCA' => 'BLANCO',
-						'NEGRA' => 'NEGRO',
-						'MESTIZA' => 'MESTIZO'
-				));
+			array(
+				'NEGRO',
+				'BLANCO',
+				'MESTIZO',
+				'OTRO'
+			), 'Diga su color de piel', null, 
+			array(
+				'BLANCA' => 'BLANCO',
+				'NEGRA' => 'NEGRO',
+				'MESTIZA' => 'MESTIZO'
+			));
 	}
 
 	/**
@@ -606,7 +607,7 @@ class Perfil extends Service
 	{
 		// get the text to parse
 		$email = $request->email;
-		
+
 		$person = $this->utils->getPerson($email);
 		$person->interests = implode(", ", $person->interests);
 		$person->province = str_replace("_", " ", $person->province);
