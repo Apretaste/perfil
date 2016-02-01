@@ -658,7 +658,7 @@ class Perfil extends Service
 		{
 			if (stripos($request->query, $prefix) === 0)
 			{
-				$request->query = trim(substr($query, strlen($prefix)));
+				$request->query = trim(substr($request->query, strlen($prefix)));
 			}
 		}
 
@@ -714,7 +714,7 @@ class Perfil extends Service
 		{
 			if (stripos($request->query, $prefix) === 0)
 			{
-				$request->query = trim(substr($query, strlen($prefix)));
+				$request->query = trim(substr($request->query, strlen($prefix)));
 			}
 		}
 
@@ -742,7 +742,7 @@ class Perfil extends Service
 		{
 			if (stripos($request->query, $prefix) === 0)
 			{
-				$request->query = trim(substr($query, strlen($prefix)));
+				$request->query = trim(substr($request->query, strlen($prefix)));
 			}
 		}
 
