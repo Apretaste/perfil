@@ -1,21 +1,27 @@
 <h1>Edite su perfil</h1>
 {space5}
+{if empty($thumbnail)}
+<table width="100%">
+	<tr>
+		<td align="center" bgcolor="#F6CED8">
+			<p><small>Usted no tiene foto de perfil. {link href="PERFIL FOTO" body="Adjunte su foto de perfil" caption="Agregue su foto"} para aumentar en un 70% la posibilidad de que otros usuarios le escriban.</small></p>
+		</td>
+	</tr>
+</table>
+{/if}
 <table width="100%">
 	<!-- PICTURE -->
+	{if not empty($thumbnail)}
 	<tr>
 		<td>Foto</td>
 		<td valign="middle">
-			{if not empty($thumbnail)}
 				{img src="{$thumbnail}" alt="Picture" width="100"}
-				{assign var="btncaption" value="Cambiar"}
-			{else}
-				{noimage width="100" height="100" text="Sin foto de perfil :'-("}
-				{assign var="btncaption" value="Agregar"}
-			{/if}</td>
+			</td>
 		<td align="right" valign="middle">
-			{button href="PERFIL FOTO" body="Por favor adjunte su foto de perfil y envie este email tal y como esta." caption="{$btncaption}" size="small"}
+			{button href="PERFIL FOTO" body="Por favor adjunte su foto de perfil y envie este email tal y como esta." caption="Cambiar" size="small"}
 		</td>
 	</tr>
+	{/if}
 	<tr>
 		<td valign="middle" colspan="4"><hr /></td>
 	</tr>
