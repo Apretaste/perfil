@@ -347,16 +347,15 @@ class Perfil extends Service
      */
     public function _nivel (Request $request)
     {
-        return $this->subserviceEnum($request, 'highest_school_level', 
-                array(
-                        'PRIMARIO',
-                        'SECUNDARIO',
-                        'TECNICO',
-                        'UNIVERSITARIO',
-                        'POSTGRADUADO',
-                        'DOCTORADO',
-                        'OTRO'
-                ), 'Diga su nivel escolar', 'ESCOLAR');
+        return $this->subserviceEnum($request, 'highest_school_level', array(
+                'PRIMARIO',
+                'SECUNDARIO',
+                'TECNICO',
+                'UNIVERSITARIO',
+                'POSTGRADUADO',
+                'DOCTORADO',
+                'OTRO'
+        ), 'Diga su nivel escolar', 'ESCOLAR');
     }
 
     /**
@@ -403,16 +402,15 @@ class Perfil extends Service
      */
     public function _pelo (Request $request)
     {
-        return $this->subserviceEnum($request, 'hair', 
-                array(
-                        'TRIGUENO',
-                        'CASTANO',
-                        'RUBIO',
-                        'NEGRO',
-                        'ROJO',
-                        'BLANCO',
-                        'OTRO'
-                ), 'Diga su color de pelo');
+        return $this->subserviceEnum($request, 'hair', array(
+                'TRIGUENO',
+                'CASTANO',
+                'RUBIO',
+                'NEGRO',
+                'ROJO',
+                'BLANCO',
+                'OTRO'
+        ), 'Diga su color de pelo');
     }
 
     /**
@@ -612,7 +610,7 @@ class Perfil extends Service
     {
         if (! is_null($prefix)) {
             if (stripos($request->query, $prefix) === 0) {
-                $request->query = trim(substr($query, strlen($prefix)));
+                $request->query = trim(substr($request->query, strlen($prefix)));
             }
         }
         
@@ -661,7 +659,7 @@ class Perfil extends Service
     {
         if (! is_null($prefix)) {
             if (stripos($request->query, $prefix) === 0) {
-                $request->query = trim(substr($query, strlen($prefix)));
+                $request->query = trim(substr($request->query, strlen($prefix)));
             }
         }
         
@@ -689,7 +687,7 @@ class Perfil extends Service
     {
         if (! is_null($prefix)) {
             if (stripos($request->query, $prefix) === 0) {
-                $request->query = trim(substr($query, strlen($prefix)));
+                $request->query = trim(substr($request->query, strlen($prefix)));
             }
         }
         
