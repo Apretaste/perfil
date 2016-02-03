@@ -184,25 +184,24 @@
 	<tr>
 		<td valign="middle">Provincia</td>
 		<td valign="middle"><b>{$province}</b></td>
-		<td align="right" valign="middle">{link caption="Pinar" href="PERFIL
-			PINAR_DEL_RIO"}{separator} {link caption="Habana" href="PERFIL
-			PROVINCIA LA_HABANA"}{separator} {link caption="Artemisa"
-			href="PERFIL PROVINCIA ARTEMISA"}{separator} {link
-			caption="Mayabeque" href="PERFIL PROVINCIA MAYABEQUE"}{separator}
+		<td align="right" valign="middle">
+			{link caption="Pinar" href="PERFIL PROVINCIA PINAR_DEL_RIO"}{separator}
+			{link caption="Habana" href="PERFIL PROVINCIA LA_HABANA"}{separator}
+			{link caption="Artemisa" href="PERFIL PROVINCIA ARTEMISA"}{separator}
+			{link caption="Mayabeque" href="PERFIL PROVINCIA MAYABEQUE"}{separator}
 			{link caption="Matanzas" href="PERFIL PROVINCIA MATANZAS"}{separator}
-			{link caption="Las Villas" href="PERFIL PROVINCIA VILLA
-			CLARA"}{separator} {link caption="Cienfuegos" href="PERFIL PROVINCIA
-			CIENFUEGOS"}{separator} {link caption="Sancti Sp&iacute;ritus"
-			href="PERFIL PROVINCIA SANCTI_SPIRITUS"}{separator} {link
-			caption="Ciego" href="PERFIL PROVINCIA CIEGO_DE_AVILA"}{separator}
-			{link caption="Camag&uuml;ey" href="PERFIL PROVINCIA
-			CAMAGUEY"}{separator} {link caption="Las Tunas" href="PERFIL
-			PROVINCIA LAS_TUNAS"}{separator} {link caption="Holgu&iacute;n"
-			href="PERFIL PROVINCIA HOLGUIN"}{separator} {link caption="Granma"
-			href="PERFIL PROVINCIA GRANMA"}{separator} {link caption="Santiago"
-			href="PERFIL SANTIAGO_DE_CUBA"}{separator} {link
-			caption="Guant&aacute;namo" href="PERFIL GUANTANAMO"}{separator}
-			{link caption="Isla" href="PERFIL ISLA_DE_LA_JUVENTUD"}</td>
+			{link caption="Las Villas" href="PERFIL PROVINCIA VILLA CLARA"}{separator}
+			{link caption="Cienfuegos" href="PERFIL PROVINCIA CIENFUEGOS"}{separator}
+			{link caption="Sancti Sp&iacute;ritus" href="PERFIL PROVINCIA SANCTI_SPIRITUS"}{separator}
+			{link caption="Ciego" href="PERFIL PROVINCIA CIEGO_DE_AVILA"}{separator}
+			{link caption="Camag&uuml;ey" href="PERFIL PROVINCIA CAMAGUEY"}{separator}
+			{link caption="Las Tunas" href="PERFIL PROVINCIA LAS_TUNAS"}{separator}
+			{link caption="Holgu&iacute;n" href="PERFIL PROVINCIA HOLGUIN"}{separator}
+			{link caption="Granma" href="PERFIL PROVINCIA GRANMA"}{separator}
+			{link caption="Santiago" href="PERFIL PROVINCIA SANTIAGO_DE_CUBA"}{separator}
+			{link caption="Guant&aacute;namo" href="PERFIL PROVINCIA GUANTANAMO"}{separator}
+			{link caption="Isla" href="PERFIL PROVINCIA ISLA_DE_LA_JUVENTUD"}
+		</td>
 	</tr>
 	<tr>
 		<td valign="middle" colspan="4"><hr /></td>
