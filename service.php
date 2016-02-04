@@ -347,15 +347,16 @@ class Perfil extends Service
      */
     public function _nivel (Request $request)
     {
-        return $this->subserviceEnum($request, 'highest_school_level', array(
-                'PRIMARIO',
-                'SECUNDARIO',
-                'TECNICO',
-                'UNIVERSITARIO',
-                'POSTGRADUADO',
-                'DOCTORADO',
-                'OTRO'
-        ), 'Diga su nivel escolar', 'ESCOLAR');
+        return $this->subserviceEnum($request, 'highest_school_level', 
+                array(
+                        'PRIMARIO',
+                        'SECUNDARIO',
+                        'TECNICO',
+                        'UNIVERSITARIO',
+                        'POSTGRADUADO',
+                        'DOCTORADO',
+                        'OTRO'
+                ), 'Diga su nivel escolar', 'ESCOLAR');
     }
 
     /**
@@ -402,15 +403,16 @@ class Perfil extends Service
      */
     public function _pelo (Request $request)
     {
-        return $this->subserviceEnum($request, 'hair', array(
-                'TRIGUENO',
-                'CASTANO',
-                'RUBIO',
-                'NEGRO',
-                'ROJO',
-                'BLANCO',
-                'OTRO'
-        ), 'Diga su color de pelo');
+        return $this->subserviceEnum($request, 'hair', 
+                array(
+                        'TRIGUENO',
+                        'CASTANO',
+                        'RUBIO',
+                        'NEGRO',
+                        'ROJO',
+                        'BLANCO',
+                        'OTRO'
+                ), 'Diga su color de pelo');
     }
 
     /**
@@ -561,6 +563,28 @@ class Perfil extends Service
         $email = $request->email;
         
         $person = $this->utils->getPerson($email);
+        
+        if ($person === false) {
+            $person = new stdClass();
+            $person->thumbnail = null;
+            $person->picture = '';
+            $person->full_name = '';
+            $person->gender = '';
+            $person->sexual_orientation = '';
+            $person->date_of_birth = '';
+            $person->body_type = '';
+            $person->eyes = '';
+            $person->hair = '';
+            $person->piel = '';
+            $person->marital_status = '';
+            $person->highest_school_level = '';
+            $person->occupation = '';
+            $person->province = '';
+            $person->city = '';
+            $person->interests = '';
+            $person->religion = '';
+        }
+        
         $person->interests = implode(", ", $person->interests);
         $person->province = str_replace("_", " ", $person->province);
         if ($person->gender == 'M') $person->gender = "Masculino";
