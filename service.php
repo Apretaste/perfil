@@ -108,7 +108,7 @@ class Perfil extends Service
 		if ($profile->province == "GRANMA") $province = "Granma";
 		if ($profile->province == "SANTIAGO_DE_CUBA") $province = "Santiago de Cuba";
 		if ($profile->province == "GUANTANAMO") $province = "Guant&aacute;namo";
-		if ($profile->province == "ISLA_DA_LA_JUVENTUD") $province = "Isla de la Juventud";
+		if ($profile->province == "ISLA_DE_LA_JUVENTUD") $province = "Isla de la Juventud";
 		
 		// get the city
 		$city = empty($profile->city) ? "" : ", {$profile->city}";
@@ -281,22 +281,22 @@ class Perfil extends Service
 	public function _provincia (Request $request)
 	{
 		$provs = array(
-				'PINAR_DEL_RIO',
-				'LA_HABANA',
-				'ARTEMISA',
-				'MAYABEQUE',
-				'MATANZAS',
-				'VILLA_CLARA',
-				'CIENFUEGOS',
-				'SANCTI_SPIRITUS',
-				'CIEGO_DE_AVILA',
-				'CAMAGUEY',
-				'LAS_TUNAS',
-				'HOLGUIN',
-				'GRANMA',
-				'SANTIAGO_DE_CUBA',
-				'GUANTANAMO',
-				'ISLA_DE_LA_JUVENTUD'
+			'PINAR_DEL_RIO',
+			'LA_HABANA',
+			'ARTEMISA',
+			'MAYABEQUE',
+			'MATANZAS',
+			'VILLA_CLARA',
+			'CIENFUEGOS',
+			'SANCTI_SPIRITUS',
+			'CIEGO_DE_AVILA',
+			'CAMAGUEY',
+			'LAS_TUNAS',
+			'HOLGUIN',
+			'GRANMA',
+			'SANTIAGO_DE_CUBA',
+			'GUANTANAMO',
+			'ISLA_DE_LA_JUVENTUD'
 		);
 		
 		$synon = array();
