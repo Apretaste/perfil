@@ -55,11 +55,11 @@
 	
 	<h1>Mis tickets para la rifa</h1>
 	<p>Usted tiene {$profile->raffle_tickets} ticket(s) para la {link href="RIFA" caption="rifa"}</p>
-	
+
 	{space10}
 {else}
 	 <center>
-		{button href="CUPIDO LIKE @{$profile->username}" caption="&#10084; Me gusta" color="green"} 
+		{button href="CUPIDO LIKE @{$profile->username}" caption="&hearts; Me gusta" color="green"} 
 		{button href="NOTA @{$profile->username} Hola @{$profile->username}. Me gusto tu perfil. Pareces una persona interesante y me gustaria saber mas de ti. Por favor respondeme." caption="Enviar nota" color="grey" body="Cambie la nota en el asunto por la que usted desea"}
 	</center>
 {/if}
