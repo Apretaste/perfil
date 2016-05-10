@@ -28,7 +28,7 @@
 		<p>Cosas que me motivan:</p>
 		<p>
 		{foreach $profile->interests as $interest}
-		   	<nobr><span style="white-space:nowrap; padding:1px 8px; margin-top:5px; background-color:#202020; color:white; border-radius:5px; font-size:12px;">{$interest|upper}</span></nobr>
+			{tag caption="{$interest}"}
 		{/foreach}
 		</p>
 		</center>
