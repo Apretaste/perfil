@@ -748,4 +748,69 @@ class Perfil extends Service
 		
 		return new Response();
 	}
+	
+	/**
+	 * Display your relations
+	 *
+	 * @author kuma
+	 * @version 1.0
+	 * @param Request $request        	
+	 * @return Response
+	 */
+	public function _relaciones(Request $request)
+	{
+		// connect to db
+		$connection = new Connection();
+		
+		// prepare response
+		$response = new Response();
+		
+		// requestor email
+		$e = $request->email;
+		
+		// getting relations
+		$sql = "      SELECT 'amigo' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'friend' AND confirmed = 1
+				UNION SELECT 'amigo' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'friend' AND confirmed = 1
+				UNION SELECT 'bloqueado' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'blocked'
+				UNION SELECT 'te ha bloqueado' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'blocked'
+				UNION SELECT 'siguiendo' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'follow'
+				UNION SELECT 'seguidor' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'follow'
+				UNION SELECT 'te gusta' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'like'
+				UNION SELECT 'admirador' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'like'
+				UNION SELECT 'lo tocaste' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'touch'
+				UNION SELECT 'te dio un toque' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'touch'
+				UNION SELECT 'contacto' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'contact'
+				UNION SELECT 'contacto' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'contact'
+				";
+		
+		$relations = $connection->deepQuery(" SELECT * FROM ($sql) subq ORDER BY who;");
+		
+		foreach ($relations as $k => $v)
+		{
+			$relations[$k]->who = $this->utils->getPerson($v->who);
+		}
+		
+		// send relations
+		if (isset($relations[0]))
+		{
+			$response->setResponseSubject("Tus relaciones");
+			$response->createFromTemplate('relations.tpl', array(
+				'relations' => $relations
+			));
+			
+			return $response;
+		}
+		
+		// get social services
+		$services = $connection->deepQuery("SELECT * FROM service WHERE category = 'social';");
+		
+		// send suggestions
+		$response->setResponseSubject("Te invitamos a socializar");
+		$response->createFromTemplate('norelations.tpl', array(
+			'services' => $services
+		));
+		
+		return $response;
+		
+	}
 }
