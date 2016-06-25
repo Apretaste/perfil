@@ -10,6 +10,8 @@ class Perfil extends Service
 	 */
 	public function _main (Request $request)
 	{
+		$connection = new Connection();
+		
 		// get the email or the username for the profile
 		$request->query = trim($request->query, "@ ");
 		$emailToLookup = empty($request->query) ? $request->email : $request->query;
@@ -18,7 +20,6 @@ class Perfil extends Service
 		$isEmail = true;
 		if ( ! filter_var($emailToLookup, FILTER_VALIDATE_EMAIL))
 		{
-			$connection = new Connection();
 			$person = $connection->deepQuery("SELECT email FROM person WHERE username='$emailToLookup'");
 			$emailToLookup = empty($person) ? "@$emailToLookup" : $person[0]->email;
 			$isEmail = false;
@@ -41,6 +42,12 @@ class Perfil extends Service
 		// get the full profile for the person
 		$profile = $this->utils->getPerson($emailToLookup);
 		
+		// is friend?
+		$friend = false;
+		$q = $connection->deepQuery("SELECT count(*) as total FROM relations WHERE type='follow' AND user1 = '{$request->email}' AND user2='{$profile->email}'");
+		if (isset($q[0])) if (isset($q->total)) if ($q->total > 0) $friend = true;
+		if ($request->email == $profile->email) $friend = true;
+
 		// get the full name, or the email
 		$fullName = empty($profile->full_name) ? $profile->username : trim($profile->full_name, " .,;");
 		
@@ -152,6 +159,7 @@ class Perfil extends Service
 			'OTRA' => '',
 			'CRISTIANISMO' => "soy cristian$genderFinalVowel"
 		);
+		
 		$religion = empty($profile->religion) ? "" : $religions[$profile->religion];
 
 		// create the message
@@ -180,7 +188,8 @@ class Perfil extends Service
 			"profile" => $profile,
 			"message" => $message,
 			"completion" => $completion,
-			"ownProfile" => $ownProfile
+			"ownProfile" => $ownProfile,
+			"friend" => $friend
 		);
 
 		// create the images to send to the response
@@ -190,6 +199,44 @@ class Perfil extends Service
 				$profile->thumbnail
 		);
 
+		$emails = array();
+		$notes = array();
+		
+		// get last notes
+		$xnotes = $connection->deepQuery("SELECT * FROM _pizarra_notes WHERE email = '{$profile->email}' ORDER BY inserted DESC LIMIT 10 OFFSET 0;");
+		
+		if (!isset($xnotes[0]) || !is_array($xnotes)) $notes = false;
+		else 
+		{
+			// format the array of notes
+			foreach ($xnotes as $note)
+			{
+				// get the location
+				if (empty($note->province)) $location = "Cuba";
+				else $location = ucwords(strtolower(str_replace("_", " ", $note->province)));
+			
+				// add the text to the array
+				$notes[] = array(
+					"id" => $note->id,
+					"text" => $note->text,
+					"inserted" => date("Y-m-d H:i:s", strtotime($note->inserted)), // mysql timezone must be America/New_York
+					"likes" => $note->likes,
+					'source' => $note->source,
+					'email' => $note->email
+				);
+			
+			}
+		}
+		
+		$responseContent['notes'] = $notes;
+		
+		// highlight hash tags
+		for ($i = 0; $i < count($notes); $i ++)
+		{
+			$notes[$i]['text'] = ucfirst(strtolower($notes[$i]['text'])); // fix case
+			$notes[$i]['text'] = $this->highlightHashTags($notes[$i]['text']);
+		}
+		
 		// create a new Response object and input the template and the content
 		$response = new Response();
 		$response->setResponseSubject("Perfil de Apretaste");
@@ -812,5 +859,19 @@ class Perfil extends Service
 		
 		return $response;
 		
+	}
+	
+	/**
+	 * Highlight words with a #hashtag
+	 *
+	 * @author salvipascual
+	 * @param String $text
+	 * @return String
+	 */
+	private function highlightHashTags ($text)
+	{
+		return preg_replace_callback('/#\w*/', function($matches){
+			return "<b>{$matches[0]}</b>";
+		}, $text);
 	}
 }

@@ -63,3 +63,30 @@
 		{button href="NOTA @{$profile->username} Hola @{$profile->username}. Me gusto tu perfil. Pareces una persona interesante y me gustaria saber mas de ti. Por favor respondeme." caption="Enviar nota" color="grey" body="Cambie la nota en el asunto por la que usted desea"}
 	</center>
 {/if}
+{if $notes}
+	{space10}
+	
+	<h1>&Uacute;ltimas notas en Pizarra</h1>
+	<table width="100%">
+	{foreach from=$notes item=note}
+		<tr {if $note@iteration is even}bgcolor="#F2F2F2"{/if}>
+			<td>
+				<big>{$note['text']|replace_url}</big>
+				<br/>
+				<small>
+					{link href="PIZARRA LIKE {$note['id']}" caption="&hearts; Like" body="Envie este email tal como esta para expresar gusto por este post de este usuario"}
+					[<font color="red">{$note['likes']}&hearts;</font>]
+				</small>
+				{space5}
+			</td>
+		</tr>
+	{/foreach}
+	</table>
+	{if !$friend} 
+	<center>{button color="blue" href="PIZARRA SEGUIR @{$profile->username}" caption="Seguir" body="Siga a @{$profile->username} y vea sus notas arriba en la pizarra"}</center>
+	{/if}
+	{space30}
+{/if}
+<center>
+	<p><small>&iquest;Extra&ntilde;as a tus amigos? {link href="INVITAR su@amigo.cu" caption="Inv&iacute;talos" body="Cambie en el asunto su@amigo.cu por el email de la persona a invitar. Puede agregar varios emails, separados por espacios o comas"} y gana tickets para {link href="RIFA" caption="nuestra rifa"}.</small></p>
+</center>
