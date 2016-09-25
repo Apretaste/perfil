@@ -150,7 +150,7 @@ class Perfil extends Service
 			'SECULARISMO' => 'no tengo creencia religiosa',
 			'AGNOSTICISMO' => "soy agn&oacute;stic$genderFinalVowel",
 			'ISLAM' => 'soy musulm&aacute;n',
-			'JUDAISTA' => "soy jud&iacute;o$genderFinalVowel",
+			'JUDAISTA' => "soy jud&iacute;$genderFinalVowel",
 			'ABAKUA' => 'soy abaku&aacute;',
 			'SANTERO' => "soy santer$genderFinalVowel",
 			'YORUBA' => 'profeso la religi&oacute;n yoruba',
