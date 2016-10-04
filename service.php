@@ -182,7 +182,7 @@ class Perfil extends Service
 
 		// get the profile percentage of completion
 		$completion = $ownProfile ? $this->utils->getProfileCompletion($emailToLookup) : "";
-
+		
 		// create a json object to send to the template
 		$responseContent = array(
 			"profile" => $profile,
@@ -352,6 +352,70 @@ class Perfil extends Service
 			$synon[str_replace('_', ' ', $v)] = $v;
 		}
 		return $this->subserviceEnum($request, 'province', $provs, 'Diga la provincia donde vive', null, $synon);
+	}
+	
+	/**
+	 * Subservice PAIS
+	 *
+	 * @param Request $request
+	 * @return Response
+	 */
+	public function _pais (Request $request)
+	{
+		$connection = new Connection();
+		$countries = $connection->deepQuery("SELECT * FROM countries WHERE active = '1' ORDER BY name;");
+		$country = trim($request->query);
+		
+		if (empty($country))
+		{
+			$response = new Response();
+			$response->setResponseSubject("Selecciona el pais donde vive");
+			$response->createFromTemplate("profile_edit_country.tpl", array(
+				'countries' => $countries
+			));
+			return $response;
+		}
+		
+		$selected_country = null;
+		$max = 0;
+		
+		$aprox = true;
+		
+		foreach ($countries as $c)
+		{
+			$percent = 0;
+			
+			$sim = similar_text(strtolower($country), strtolower($c->name), $percent);
+
+			if ($max < $percent && $percent > 90) 
+			{
+				$max = $percent;
+				$selected_country = $c;
+				
+			}
+			
+			if (strtolower($c->code) == strtolower($country))
+			{
+				$aprox = false;
+				$selected_country = $c;
+				break;
+			}
+			
+		}
+		
+		if (is_null($selected_country))
+		{
+			$response = new Response();
+			$response->setResponseSubject("No reconocimos el pais seleccionado, selecciona ahora de esta lista");
+			$response->createFromTemplate("profile_edit_country.tpl", array(
+				'countries' => $countries
+			));
+			return $response;
+		}
+		
+		$connection->deepQuery("UPDATE person SET country = '{$selected_country->code}' WHERE email = '{$request->email}';");
+				
+		return new Response();
 	}
 
 	/**
@@ -634,14 +698,27 @@ class Perfil extends Service
 			$person->occupation = '';
 			$person->province = '';
 			$person->city = '';
+			$person->country = '';
+			$person->country_name = '';
 			$person->interests = '';
 			$person->religion = '';
 		}
 		
 		$person->interests = implode(", ", $person->interests);
 		$person->province = str_replace("_", " ", $person->province);
+		
 		if ($person->gender == 'M') $person->gender = "Masculino";
 		if ($person->gender == 'F') $person->gender = "Femenino";
+		
+		$connection = new Connection();
+		$r = $connection->deepQuery("SELECT * FROM countries WHERE code = '{$person->country}';");
+		
+		$person->country_name = $person->country;
+		
+		if (isset($r[0]))
+			if (isset($r[0]->name))
+				$person->country_name = $r[0]->name;
+			
 		$content = get_object_vars($person);
 		
 		// create the images to send to the response

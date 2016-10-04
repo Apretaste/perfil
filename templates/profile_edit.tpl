@@ -219,7 +219,20 @@
 	<tr>
 		<td valign="middle" colspan="4"><hr /></td>
 	</tr>
-
+	
+	<!-- COUNTRY -->
+	<tr>
+		<td valign="middle">Pa&iacute;s</td>
+		<td valign="middle"><b>{$country_name}</b></td>
+		<td align="right" valign="middle">
+			{link href="PERFIL PAIS CU" caption="Cuba"}{separator}
+			{link href="PERFIL PAIS US" caption="EEUU"}{separator}
+			{button size="small" caption="Otro" href="PERFIL PAIS" body="Escriba el nombre del pais donde vive en el asunto, despues de la palabra PAIS"}
+		</td>
+	</tr>
+	<tr>
+		<td valign="middle" colspan="4"><hr /></td>
+	</tr>
 	<!-- INTERESTS -->
 	<tr>
 		<td valign="middle">Intereses</td>
