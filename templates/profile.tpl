@@ -87,6 +87,15 @@
 	{/if}
 	{space30}
 {/if}
+{if $sites}
+	{space10}
+	<h1>Sitios webs publicados</h1>
+		<ul>
+		{foreach from=$sites item=site}
+			<li>{link href="WEB http://{$site}.apretaste.com" caption ="{$site}.apretaste.com"}</li>
+		{/foreach}
+		</ul>
+{/if}
 <center>
 	<p><small>&iquest;Extra&ntilde;as a tus amigos? {link href="INVITAR su@amigo.cu" caption="Inv&iacute;talos" body="Cambie en el asunto su@amigo.cu por el email de la persona a invitar. Puede agregar varios emails, separados por espacios o comas"} y gana tickets para {link href="RIFA" caption="nuestra rifa"}.</small></p>
 </center>

@@ -224,11 +224,23 @@ class Perfil extends Service
 					'source' => $note->source,
 					'email' => $note->email
 				);
-			
 			}
 		}
 		
 		$responseContent['notes'] = $notes;
+		
+		// web sites
+		$responseContent['sites'] = false;
+		$websites = $connection->deepQuery("SELECT domain FROM _web_sites WHERE owner = '{$profile->email}';");
+		if (is_array($websites))
+		{
+			$sites = array();
+			
+			foreach ($websites as $site)
+				$sites[] = $site['domain'];
+			
+			$responseContent['sites'] = $sites;
+		}
 		
 		// highlight hash tags
 		for ($i = 0; $i < count($notes); $i ++)
