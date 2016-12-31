@@ -66,7 +66,7 @@
 {if $notes}
 	{space10}
 	
-	<h1>&Uacute;ltimas notas en Pizarra</h1>
+	<h1>Mis &uacute;ltimas notas en Pizarra</h1>
 	<table width="100%">
 	{foreach from=$notes item=note}
 		<tr {if $note@iteration is even}bgcolor="#F2F2F2"{/if}>
@@ -89,10 +89,10 @@
 {/if}
 {if $sites}
 	{space10}
-	<h1>Sitios webs publicados</h1>
+	<h1>Mis sitios webs publicados en Apretaste!</h1>
 		<ul>
 		{foreach from=$sites item=site}
-			<li>{link href="WEB http://{$site}.apretaste.com" caption ="{$site}.apretaste.com"}</li>
+			<li>{link href="WEB http://{$site}.apretaste.com/index.html" caption ="{$site}.apretaste.com"}</li>
 		{/foreach}
 		</ul>
 {/if}

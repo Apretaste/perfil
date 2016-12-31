@@ -237,7 +237,7 @@ class Perfil extends Service
 			$sites = array();
 			
 			foreach ($websites as $site)
-				$sites[] = $site['domain'];
+				$sites[] = strtolower($site->domain);
 			
 			$responseContent['sites'] = $sites;
 		}
