@@ -48,134 +48,8 @@ class Perfil extends Service
 		if (isset($q[0])) if (isset($q->total)) if ($q->total > 0) $friend = true;
 		if ($request->email == $profile->email) $friend = true;
 
-		// get the full name, or the email
-		$fullName = empty($profile->full_name) ? $profile->username : trim($profile->full_name, " .,;");
-
-		// get the age
-		$age = empty($profile->date_of_birth) ? "" : date_diff(date_create($profile->date_of_birth), date_create('today'))->y;
-
-		// get the gender
-		$gender = "";
-		if ($profile->gender == "M") $gender = "hombre";
-		if ($profile->gender == "F") $gender = "mujer";
-
-		// get the final vowel based on the gender
-		$genderFinalVowel = "o";
-		if ($profile->gender == "F") $genderFinalVowel = "a";
-
-		// get the eye color
-		$eyes = "";
-		if ($profile->eyes == "NEGRO") $eyes = "negro";
-		if ($profile->eyes == "CARMELITA") $eyes = "carmelita";
-		if ($profile->eyes == "AZUL") $eyes = "azul";
-		if ($profile->eyes == "VERDE") $eyes = "verde";
-		if ($profile->eyes == "AVELLANA") $eyes = "avellana";
-
-		// get the eye tone
-		$eyesTone = "";
-		if ($profile->eyes == "NEGRO" || $profile->eyes == "CARMELITA" || $profile->eyes == "AVELLANA") $eyesTone = "oscuros";
-		if ($profile->eyes == "AZUL" || $profile->eyes == "VERDE") $eyesTone = "claros";
-
-		// get the skin color
-		$skin = "";
-		if ($profile->skin == "NEGRO") $skin = "negr$genderFinalVowel";
-		if ($profile->skin == "BLANCO") $skin = "blanc$genderFinalVowel";
-		if ($profile->skin == "MESTIZO") $skin = "mestiz$genderFinalVowel";
-
-		// get the type of body
-		$bodyType = "";
-		if ($profile->body_type == "DELGADO") $bodyType = "soy flac$genderFinalVowel";
-		if ($profile->body_type == "MEDIO") $bodyType = "no soy de flac$genderFinalVowel ni grues$genderFinalVowel";
-		if ($profile->body_type == "EXTRA") $bodyType = "tengo unas libritas de m&aacute;s";
-		if ($profile->body_type == "ATLETICO") $bodyType = "tengo un cuerpazo atl&eacute;tico";
-
-		// get the hair color
-		$hair = "";
-		if ($profile->hair == "TRIGUENO") $hair = "trigue&ntilde;o";
-		if ($profile->hair == "CASTANO") $hair = "casta&ntilde;o";
-		if ($profile->hair == "RUBIO") $hair = "rubio";
-		if ($profile->hair == "NEGRO") $hair = "negro";
-		if ($profile->hair == "ROJO") $hair = "rojizo";
-		if ($profile->hair == "BLANCO") $hair = "canoso";
-
-		// get the place where the person live
-		$province = "";
-		if ($profile->province == "PINAR_DEL_RIO") $province = "Pinar del R&iacute;o";
-		if ($profile->province == "LA_HABANA") $province = "La Habana";
-		if ($profile->province == "ARTEMISA") $province = "Artemisa";
-		if ($profile->province == "MAYABEQUE") $province = "Mayabeque";
-		if ($profile->province == "MATANZAS") $province = "Matanzas";
-		if ($profile->province == "VILLA_CLARA") $province = "Villa Clara";
-		if ($profile->province == "CIENFUEGOS") $province = "Cienfuegos";
-		if ($profile->province == "SANCTI_SPIRITUS") $province = "Sancti Sp&iacute;ritus";
-		if ($profile->province == "CIEGO_DE_AVILA") $province = "Ciego de &Aacute;vila";
-		if ($profile->province == "CAMAGUEY") $province = "Camaguey";
-		if ($profile->province == "LAS_TUNAS") $province = "Las Tunas";
-		if ($profile->province == "HOLGUIN") $province = "Holgu&iacute;n";
-		if ($profile->province == "GRANMA") $province = "Granma";
-		if ($profile->province == "SANTIAGO_DE_CUBA") $province = "Santiago de Cuba";
-		if ($profile->province == "GUANTANAMO") $province = "Guant&aacute;namo";
-		if ($profile->province == "ISLA_DE_LA_JUVENTUD") $province = "Isla de la Juventud";
-
-		// get the city
-		$city = empty($profile->city) ? "" : ", {$profile->city}";
-
-		// full location
-		$location = ". Aunque prefiero no decir de donde soy";
-		if ( ! empty($province)) $location = ". Vivo en " . $province . $city;
-
-		// get highest educational level
-		$education = "";
-		if ($profile->highest_school_level == "PRIMARIO") $education = "tengo sexto grado";
-		if ($profile->highest_school_level == "SECUNDARIO") $education = "soy graduad$genderFinalVowel de la secundaria";
-		if ($profile->highest_school_level == "TECNICO") $education = "soy t&acute;cnico medio";
-		if ($profile->highest_school_level == "UNIVERSITARIO") $education = "soy universitari$genderFinalVowel";
-		if ($profile->highest_school_level == "POSTGRADUADO") $education = "tengo estudios de postgrado";
-		if ($profile->highest_school_level == "DOCTORADO") $education = "tengo un doctorado";
-
-		// get marital status
-		$maritalStatus = "";
-		if ($profile->marital_status == "SOLTERO") $maritalStatus = "estoy solter$genderFinalVowel";
-		if ($profile->marital_status == "SALIENDO") $maritalStatus = "estoy saliendo con alguien";
-		if ($profile->marital_status == "COMPROMETIDO") $maritalStatus = "estoy comprometid$genderFinalVowel";
-		if ($profile->marital_status == "CASADO") $maritalStatus = "soy casad$genderFinalVowel";
-
-		// get occupation
-		$occupation = (empty($profile->occupation) || strlen($profile->occupation) < 5) ? false : strtolower($profile->occupation);
-		if(stripos($occupation, "studiant") !== false) $occupation = "";
-
-		// get religion
-		$religions = array(
-			'ATEISMO' => "soy ate$genderFinalVowel",
-			'SECULARISMO' => 'no tengo creencia religiosa',
-			'AGNOSTICISMO' => "soy agn&oacute;stic$genderFinalVowel",
-			'ISLAM' => 'soy musulm&aacute;n',
-			'JUDAISTA' => "soy jud&iacute;$genderFinalVowel",
-			'ABAKUA' => 'soy abaku&aacute;',
-			'SANTERO' => "soy santer$genderFinalVowel",
-			'YORUBA' => 'profeso la religi&oacute;n yoruba',
-			'BUDISMO' => 'soy budista',
-			'CATOLICISMO' => "soy cat&oacute;lic$genderFinalVowel",
-			'OTRA' => '',
-			'CRISTIANISMO' => "soy cristian$genderFinalVowel"
-		);
-
-		$religion = empty($profile->religion) ? "" : $religions[$profile->religion];
-
-		// create the message
-		$message = "Hola y bienvenido a mi perfil. Yo soy $fullName";
-		if ( ! empty($religion)) $message .= " y $religion";
-		if ( ! empty($age)) $message .= ", tengo $age a&ntilde;os";
-		if ( ! empty($gender)) $message .= ", soy $gender";
-		if ( ! empty($skin)) $message .= ", soy $skin";
-		if ( ! empty($eyes)) $message .= ", de ojos $eyesTone (color $eyes)";
-		if ( ! empty($hair)) $message .= ", soy de pelo $hair";
-		if ( ! empty($bodyType)) $message .= " y $bodyType";
-		$message .= $location;
-		if ( ! empty($education)) $message .= ", $education";
-		if ( ! empty($occupation)) $message .= ", trabajo como $occupation";
-		if ( ! empty($maritalStatus)) $message .= " y $maritalStatus";
-		$message .= ".";
+		$social = new Social();
+		$message = $social->profileToText($profile, $profile->lang);
 
 		// check if the user is requesting its own profile
 		$ownProfile = $emailToLookup == $request->email;
@@ -195,14 +69,12 @@ class Perfil extends Service
 		// create the images to send to the response
 		$di = \Phalcon\DI\FactoryDefault::getDefault();
 		$wwwroot = $di->get('path')['root'];
-		$image = empty($profile->thumbnail) ? array() : array(
-			$profile->thumbnail
-		);
+		$image = empty($profile->thumbnail) ? array() : array($profile->thumbnail);
 
 		$emails = array();
 		$notes = array();
 
-		// get last notes
+		// get lastest notes
 		$xnotes = $connection->deepQuery("SELECT * FROM _pizarra_notes WHERE email = '{$profile->email}' ORDER BY inserted DESC LIMIT 10 OFFSET 0;");
 
 		if (!isset($xnotes[0]) || !is_array($xnotes)) $notes = false;
