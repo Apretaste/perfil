@@ -247,16 +247,17 @@ class Perfil extends Service
 	public function _pais (Request $request)
 	{
 		$connection = new Connection();
-		$countries = $connection->deepQuery("SELECT * FROM countries WHERE active = '1' ORDER BY name;");
+		$countries = $connection->deepQuery("SELECT code, es AS name FROM countries ORDER BY code");
 		$country = trim($request->query);
+		if($country == "US") $country = "Estados Unidos de America";
+		if($country == "USA") $country = "Estados Unidos de America";
+		if($country == "estados unidos") $country = "Estados Unidos de America";
 
 		if (empty($country))
 		{
 			$response = new Response();
 			$response->setResponseSubject("Selecciona el pais donde vive");
-			$response->createFromTemplate("profile_edit_country.tpl", array(
-				'countries' => $countries
-			));
+			$response->createFromTemplate("profile_edit_country.tpl", array('countries' => $countries));
 			return $response;
 		}
 
@@ -268,14 +269,12 @@ class Perfil extends Service
 		foreach ($countries as $c)
 		{
 			$percent = 0;
-
 			$sim = similar_text(strtolower($country), strtolower($c->name), $percent);
 
 			if ($max < $percent && $percent > 90)
 			{
 				$max = $percent;
 				$selected_country = $c;
-
 			}
 
 			if (strtolower($c->code) == strtolower($country))
@@ -284,7 +283,6 @@ class Perfil extends Service
 				$selected_country = $c;
 				break;
 			}
-
 		}
 
 		if (is_null($selected_country))
