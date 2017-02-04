@@ -437,12 +437,7 @@ class Perfil extends Service
 	 */
 	public function _cuerpo (Request $request)
 	{
-		return $this->subserviceEnum($request, 'body_type', array(
-				'DELGADO',
-				'MEDIO',
-				'EXTRA',
-				'ATLETICO'
-		), 'Diga como es su cuerpo');
+		return $this->subserviceEnum($request, 'body_type', array('DELGADO','MEDIO','EXTRA','ATLETICO'), 'Diga como es su cuerpo');
 	}
 
 	/**
