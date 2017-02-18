@@ -10,116 +10,41 @@ class Perfil extends Service
 	 */
 	public function _main (Request $request)
 	{
-		$connection = new Connection();
-
 		// get the email or the username for the profile
 		$request->query = trim($request->query, "@ ");
 		$emailToLookup = empty($request->query) ? $request->email : $request->query;
 
-		// get the email for the profile
-		$isEmail = true;
+		// get the email for the profile in case it is a username
 		if ( ! filter_var($emailToLookup, FILTER_VALIDATE_EMAIL))
 		{
-			$person = $connection->deepQuery("SELECT email FROM person WHERE username='$emailToLookup'");
-			$emailToLookup = empty($person) ? "@$emailToLookup" : $person[0]->email;
-			$isEmail = false;
+			$emailToLookup = $this->utils->getEmailFromUsername($emailToLookup);
 		}
 
 		// check if the person exist. If not, message the requestor
 		if ( ! $this->utils->personExist($emailToLookup))
 		{
-			$responseContent = array(
-				"email" => $emailToLookup,
-				"isEmail" => $isEmail
-			);
-
 			$response = new Response();
 			$response->setResponseSubject("No encontramos un perfil para ese usuario");
-			$response->createFromTemplate("inexistent.tpl", $responseContent);
+			$response->createFromTemplate("inexistent.tpl", array("code"=>"error", "user"=>$emailToLookup));
 			return $response;
 		}
 
 		// get the full profile for the person
 		$profile = $this->utils->getPerson($emailToLookup);
 
-		// is friend?
-		$friend = false;
-		$q = $connection->deepQuery("SELECT count(*) as total FROM relations WHERE type='follow' AND user1 = '{$request->email}' AND user2='{$profile->email}'");
-		if (isset($q[0])) if (isset($q->total)) if ($q->total > 0) $friend = true;
-		if ($request->email == $profile->email) $friend = true;
+		// get the number of tickts for the raffle
+		$connection = new Connection();
+		$tickets = $connection->deepQuery("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '$emailToLookup'");
 
-		$social = new Social();
-		$message = $social->profileToText($profile, $profile->lang);
-
-		// check if the user is requesting its own profile
-		$ownProfile = $emailToLookup == $request->email;
-
-		// get the profile percentage of completion
-		$completion = $ownProfile ? $this->utils->getProfileCompletion($emailToLookup) : "";
-
-		// create a json object to send to the template
+		// pass variables to the template
 		$responseContent = array(
 			"profile" => $profile,
-			"message" => $message,
-			"completion" => $completion,
-			"ownProfile" => $ownProfile,
-			"friend" => $friend
+			"tickets" => $tickets[0]->tickets,
+			"ownProfile" => $emailToLookup == $request->email
 		);
 
-		// create the images to send to the response
-		$di = \Phalcon\DI\FactoryDefault::getDefault();
-		$wwwroot = $di->get('path')['root'];
-		$image = empty($profile->thumbnail) ? array() : array($profile->thumbnail);
-
-		$emails = array();
-		$notes = array();
-
-		// get lastest notes
-		$xnotes = $connection->deepQuery("SELECT * FROM _pizarra_notes WHERE email = '{$profile->email}' ORDER BY inserted DESC LIMIT 10 OFFSET 0;");
-
-		if (!isset($xnotes[0]) || !is_array($xnotes)) $notes = false;
-		else
-		{
-			// format the array of notes
-			foreach ($xnotes as $note)
-			{
-				// get the location
-				if (empty($note->province)) $location = "Cuba";
-				else $location = ucwords(strtolower(str_replace("_", " ", $note->province)));
-
-				// add the text to the array
-				$notes[] = array(
-					"id" => $note->id,
-					"text" => $note->text,
-					"inserted" => date("Y-m-d H:i:s", strtotime($note->inserted)), // mysql timezone must be America/New_York
-					"likes" => $note->likes,
-					'source' => $note->source,
-					'email' => $note->email
-				);
-			}
-		}
-
-		$responseContent['notes'] = $notes;
-
-		// web sites
-		$responseContent['sites'] = false;
-		$websites = $connection->deepQuery("SELECT domain FROM _web_sites WHERE owner = '{$profile->email}';");
-		if (is_array($websites))
-		{
-			$sites = array();
-
-			foreach ($websites as $site)
-				$sites[] = strtolower($site->domain);
-
-			$responseContent['sites'] = $sites;
-		}
-
-		// highlight hash tags
-		for ($i = 0; $i < count($notes); $i ++)
-		{
-			$notes[$i]['text'] = ucfirst(strtolower($notes[$i]['text'])); // fix case
-			$notes[$i]['text'] = $this->highlightHashTags($notes[$i]['text']);
-		}
+		// pass profile image to the response
+		$image = $profile->picture ? array($profile->picture_internal) : array();
 
 		// create a new Response object and input the template and the content
 		$response = new Response();
@@ -458,37 +383,32 @@ class Perfil extends Service
 	 */
 	public function _foto ($request)
 	{
-		$attachments = $request->attachments;
-
-		// move the first image attached to the profiles directory
-		$isImageAttached = 0;
-		if (count($attachments) > 0)
+		// was the image attached?
+		if (count($request->attachments) > 0)
 		{
-			$di = \Phalcon\DI\FactoryDefault::getDefault();
-			$wwwroot = $di->get('path')['root'];
-
-			foreach ($attachments as $attach)
+			// get the first image attached
+			foreach ($request->attachments as $attach)
 			{
 				if ($attach->type == "image/jpeg")
 				{
+					// get the path to the image
+					$di = \Phalcon\DI\FactoryDefault::getDefault();
+					$wwwroot = $di->get('path')['root'];
+
+					// create a new random image name and path
+					$fileName = md5($request->email . rand());
+					$filePath = "$wwwroot/public/profile/$fileName.jpg";
+
 					// save the original copy
-					$large = "$wwwroot/public/profile/{$request->email}.jpg";
-					copy($attach->path, $large);
-					$this->utils->optimizeImage($large);
+					copy($attach->path, $filePath);
+					$this->utils->optimizeImage($filePath);
 
-					// create the thumbnail
-					$thumbnail = "$wwwroot/public/profile/thumbnail/{$request->email}.jpg";
-					copy($attach->path, $thumbnail);
-					$this->utils->optimizeImage($thumbnail, 300);
-
-					$isImageAttached = 1;
+					// make the changes in the database
+					$this->update("picture='$fileName'", $request->email);
 					break;
 				}
 			}
 		}
-
-		// make the changes in the database
-		$this->update("picture='$isImageAttached'", $request->email);
 
 		return new Response();
 	}
@@ -878,27 +798,11 @@ class Perfil extends Service
 		$date = DateTime::createFromFormat("d/m/Y", $query);
 
 		// if date could not be calculated, return null
-		if (empty($date))
-			return new Response();
-		else
-			$query = "'" . strftime("%Y-%m-%d", $date->getTimestamp()) . "'";
+		if (empty($date)) return new Response();
+		else $query = "'" . strftime("%Y-%m-%d", $date->getTimestamp()) . "'";
 
 		$this->update("$field = $query", $request->email);
 
 		return new Response();
-	}
-
-	/**
-	 * Highlight words with a #hashtag
-	 *
-	 * @author salvipascual
-	 * @param String $text
-	 * @return String
-	 */
-	private function highlightHashTags($text)
-	{
-		return preg_replace_callback('/#\w*/', function($matches){
-			return "<b>{$matches[0]}</b>";
-		}, $text);
 	}
 }
