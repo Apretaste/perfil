@@ -470,62 +470,32 @@ class Perfil extends Service
 	 */
 	public function _editar (Request $request)
 	{
-		// get the text to parse
-		$email = $request->email;
+		// get the person to edit profile
+		$person = $this->utils->getPerson($request->email);
 
-		$person = $this->utils->getPerson($email);
+		// do not continue for non-existent users
+		if (empty($person)) return new Response();
 
-		if ($person === false)
-		{
-			$person = new stdClass();
-			$person->thumbnail = null;
-			$person->picture = '';
-			$person->full_name = '';
-			$person->gender = '';
-			$person->sexual_orientation = '';
-			$person->date_of_birth = '';
-			$person->body_type = '';
-			$person->eyes = '';
-			$person->hair = '';
-			$person->piel = '';
-			$person->marital_status = '';
-			$person->highest_school_level = '';
-			$person->occupation = '';
-			$person->province = '';
-			$person->city = '';
-			$person->country = '';
-			$person->country_name = '';
-			$person->interests = '';
-			$person->religion = '';
-		}
-
-		$person->interests = implode(", ", $person->interests);
+		// get readable text for province
 		$person->province = str_replace("_", " ", $person->province);
 
+		// get readable text for gender
 		if ($person->gender == 'M') $person->gender = "Masculino";
 		if ($person->gender == 'F') $person->gender = "Femenino";
 
-		$connection = new Connection();
-		$r = $connection->deepQuery("SELECT * FROM countries WHERE code = '{$person->country}';");
+		// get readable country
+		$person->country_name = $this->utils->getCountryNameByCode($person->country);
 
-		$person->country_name = $person->country;
+		// save interests as string
+		$person->interests = implode(", ", $person->interests);
 
-		if (isset($r[0]))
-			if (isset($r[0]->name))
-				$person->country_name = $r[0]->name;
+		// get image
+		$image = $person->picture ? array($person->picture_internal) : array();
 
-		$content = get_object_vars($person);
-
-		// create the images to send to the response
-		$di = \Phalcon\DI\FactoryDefault::getDefault();
-		$wwwroot = $di->get('path')['root'];
-		$image = empty($person->thumbnail) ? array() : array(
-				$person->thumbnail
-		);
-
+		// prepare response for the view
 		$response = new Response();
 		$response->setResponseSubject('Edite su perfil');
-		$response->createFromTemplate('profile_edit.tpl', $content, $image);
+		$response->createFromTemplate('profile_edit.tpl', array("person"=>$person), $image);
 		return $response;
 	}
 
