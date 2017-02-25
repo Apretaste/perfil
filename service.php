@@ -44,7 +44,7 @@ class Perfil extends Service
 		
 		// is friend?
 		$friend = false;
-		$q = $connection->deepQuery("SELECT count(*) as total FROM relations WHERE type='follow' AND user1 = '{$request->email}' AND user2='{$profile->email}'");
+		$q = $connection->deepQuery("SELECT count(id) as total FROM relations WHERE type='follow' AND user1 = '{$request->email}' AND user2='{$profile->email}'");
 		if (isset($q[0])) if (isset($q->total)) if ($q->total > 0) $friend = true;
 		if ($request->email == $profile->email) $friend = true;
 
