@@ -171,13 +171,12 @@ class Perfil extends Service
 	 */
 	public function _pais (Request $request)
 	{
+		// get the list of countries
 		$connection = new Connection();
 		$countries = $connection->deepQuery("SELECT code, es AS name FROM countries ORDER BY code");
-		$country = trim($request->query);
-		if($country == "US") $country = "Estados Unidos de America";
-		if($country == "USA") $country = "Estados Unidos de America";
-		if($country == "estados unidos") $country = "Estados Unidos de America";
 
+		// do not let empty countries
+		$country = strtolower($request->query);
 		if (empty($country))
 		{
 			$response = new Response();
@@ -186,31 +185,37 @@ class Perfil extends Service
 			return $response;
 		}
 
-		$selected_country = null;
+		// setup country aliases and typos
+		if($country == "kuba") $country = "cu";
+		if($country == "usa") $country = "us";
+		if($country == "estados unidos de america") $country = "us";
+
+		// get the country to update
 		$max = 0;
-
-		$aprox = true;
-
+		$selectedCountry = null;
 		foreach ($countries as $c)
 		{
-			$percent = 0;
-			$sim = similar_text(strtolower($country), strtolower($c->name), $percent);
+			// select by code
+			if (strtolower($c->code) == $country)
+			{
+				$selectedCountry = $c;
+				break;
+			}
 
+			// check percentage similarity
+			$percent = 0;
+			similar_text($country, strtolower($c->name), $percent);
+
+			// select the country with greater similarity
 			if ($max < $percent && $percent > 90)
 			{
 				$max = $percent;
-				$selected_country = $c;
-			}
-
-			if (strtolower($c->code) == strtolower($country))
-			{
-				$aprox = false;
-				$selected_country = $c;
-				break;
+				$selectedCountry = $c;
 			}
 		}
 
-		if (is_null($selected_country))
+		// if not country was selected, display an error message
+		if (is_null($selectedCountry))
 		{
 			$response = new Response();
 			$response->setResponseSubject("No reconocimos el pais seleccionado, selecciona ahora de esta lista");
@@ -218,8 +223,8 @@ class Perfil extends Service
 			return $response;
 		}
 
-		$connection->deepQuery("UPDATE person SET country = '{$selected_country->code}' WHERE email = '{$request->email}';");
-
+		// update country and return empty response
+		$connection->deepQuery("UPDATE person SET country = '{$selectedCountry->code}' WHERE email = '{$request->email}'");
 		return new Response();
 	}
 
