@@ -29,11 +29,15 @@ class Perfil extends Service
 			return $response;
 		}
 
-		// get the full profile for the person
-		$profile = $this->utils->getPerson($emailToLookup);
+		// get the person
+		$connection = new Connection();
+		$person = $connection->deepQuery("SELECT * FROM person WHERE email = '$emailToLookup'");
+
+		// prepare the full profile
+		$social = new Social();
+		$profile = $social->prepareUserProfile($person[0], $request->lang);
 
 		// get the number of tickts for the raffle
-		$connection = new Connection();
 		$tickets = $connection->deepQuery("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '$emailToLookup'");
 
 		// pass variables to the template
