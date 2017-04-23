@@ -174,6 +174,8 @@ class Perfil extends Service
 		$connection = new Connection();
 		$countries = $connection->deepQuery("SELECT code, es AS name FROM countries ORDER BY code");
 		$country = trim($request->query);
+		$country_original = $country;
+		
 		if($country == "US") $country = "Estados Unidos de America";
 		if($country == "USA") $country = "Estados Unidos de America";
 		if($country == "estados unidos") $country = "Estados Unidos de America";
@@ -191,6 +193,9 @@ class Perfil extends Service
 
 		$aprox = true;
 
+		$l_country = strtolower($country);
+		$l_country_original = strtolower($country_original);
+		
 		foreach ($countries as $c)
 		{
 			$percent = 0;
@@ -202,7 +207,8 @@ class Perfil extends Service
 				$selected_country = $c;
 			}
 
-			if (strtolower($c->code) == strtolower($country))
+			$code = strtolower($c->code);
+			if ($code == $l_country || $code == $l_country_original)
 			{
 				$aprox = false;
 				$selected_country = $c;
