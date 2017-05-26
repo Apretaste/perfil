@@ -188,12 +188,7 @@ class Perfil extends Service
 		$country = trim($request->query);
 		$country_original = $country;
 
-		if($country == "US") $country = "Estados Unidos de America";
-		if($country == "USA") $country = "Estados Unidos de America";
-		if($country == "estados unidos") $country = "Estados Unidos de America";
-
 		// do not let empty countries
-		$country = strtolower($request->query);
 		if (empty($country))
 		{
 			$response = new Response();
@@ -203,7 +198,10 @@ class Perfil extends Service
 		}
 
 		// setup country aliases and typos
-		if($country == "kuba") $country = "cu";
+        if($country == "US") $country = "Estados Unidos de America";
+        if($country == "USA") $country = "Estados Unidos de America";
+        if($country == "estados unidos") $country = "Estados Unidos de America";
+        if($country == "kuba") $country = "cu";
 		if($country == "usa") $country = "us";
 		if($country == "estados unidos de america") $country = "us";
 
