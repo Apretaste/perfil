@@ -29,20 +29,24 @@ class Perfil extends Service
 			return $response;
 		}
 
-		// get the full profile for the person
-		$profile = $this->utils->getPerson($emailToLookup);
-
-		// get the number of tickts for the raffle
+		// get the person
 		$connection = new Connection();
+		$person = $connection->deepQuery("SELECT * FROM person WHERE email = '$emailToLookup'");
+
+		// prepare the full profile
+		$social = new Social();
+		$profile = $social->prepareUserProfile($person[0], $request->lang);
+
+        // check if current user follow the user to lookup
+        $profile->follow = false;
+        $sql = "SELECT COUNT(user1) as total FROM relations WHERE user1 = '{$request->email}' AND user2 = '$emailToLookup' AND type = 'follow';";
+        $r = $connection->deepQuery($sql);
+        if ($r[0]->total * 1 > 0)
+            $profile->follow = true;
+
+        // get the number of tickts for the raffle
 		$tickets = $connection->deepQuery("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '$emailToLookup'");
 
-		// check if current user follow the user to lookup
-		$profile->follow = false;
-		$sql = "SELECT COUNT(user1) as total FROM relations WHERE user1 = '{$request->email}' AND user2 = '$emailToLookup' AND type = 'follow';";
-		$r = $connection->deepQuery($sql);
-		if ($r[0]->total * 1 > 0)
-			$profile->follow = true;
-		
 		// pass variables to the template
 		$responseContent = array(
 			"profile" => $profile,
@@ -178,15 +182,18 @@ class Perfil extends Service
 	 */
 	public function _pais (Request $request)
 	{
+		// get the list of countries
 		$connection = new Connection();
 		$countries = $connection->deepQuery("SELECT code, es AS name FROM countries ORDER BY code");
 		$country = trim($request->query);
 		$country_original = $country;
-		
+
 		if($country == "US") $country = "Estados Unidos de America";
 		if($country == "USA") $country = "Estados Unidos de America";
 		if($country == "estados unidos") $country = "Estados Unidos de America";
 
+		// do not let empty countries
+		$country = strtolower($request->query);
 		if (empty($country))
 		{
 			$response = new Response();
@@ -195,35 +202,43 @@ class Perfil extends Service
 			return $response;
 		}
 
-		$selected_country = null;
-		$max = 0;
+		// setup country aliases and typos
+		if($country == "kuba") $country = "cu";
+		if($country == "usa") $country = "us";
+		if($country == "estados unidos de america") $country = "us";
 
-		$aprox = true;
+		// get the country to update
+		$max = 0;
 
 		$l_country = strtolower($country);
 		$l_country_original = strtolower($country_original);
-		
+
+		$selectedCountry = null;
+
 		foreach ($countries as $c)
 		{
+			// check percentage similarity
 			$percent = 0;
-			$sim = similar_text(strtolower($country), strtolower($c->name), $percent);
+			similar_text($country, strtolower($c->name), $percent);
 
+			// select the country with greater similarity
 			if ($max < $percent && $percent > 90)
 			{
 				$max = $percent;
-				$selected_country = $c;
+				$selectedCountry = $c;
 			}
 
-			$code = strtolower($c->code);
-			if ($code == $l_country || $code == $l_country_original)
-			{
-				$aprox = false;
-				$selected_country = $c;
-				break;
-			}
+            // select by code
+            $code = strtolower($c->code);
+            if ($code == $l_country || $code == $l_country_original)
+            {
+                $selectedCountry = $c;
+                break;
+            }
 		}
 
-		if (is_null($selected_country))
+		// if not country was selected, display an error message
+		if (is_null($selectedCountry))
 		{
 			$response = new Response();
 			$response->setResponseSubject("No reconocimos el pais seleccionado, selecciona ahora de esta lista");
@@ -231,8 +246,8 @@ class Perfil extends Service
 			return $response;
 		}
 
-		$connection->deepQuery("UPDATE person SET country = '{$selected_country->code}' WHERE email = '{$request->email}';");
-
+		// update country and return empty response
+		$connection->deepQuery("UPDATE person SET country = '{$selectedCountry->code}' WHERE email = '{$request->email}'");
 		return new Response();
 	}
 
