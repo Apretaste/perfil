@@ -36,6 +36,13 @@ class Perfil extends Service
 		$connection = new Connection();
 		$tickets = $connection->deepQuery("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '$emailToLookup'");
 
+		// check if current user follow the user to lookup
+		$profile->follow = false;
+		$sql = "SELECT COUNT(user1) as total FROM relations WHERE user1 = '{$request->email}' AND user2 = '$emailToLookup' AND type = 'follow';";
+		$r = $connection->deepQuery($sql);
+		if ($r[0]->total * 1 > 0)
+			$profile->follow = true;
+		
 		// pass variables to the template
 		$responseContent = array(
 			"profile" => $profile,
@@ -406,7 +413,7 @@ class Perfil extends Service
 					$filePath = "$wwwroot/public/profile/$fileName.jpg";
 
 					// save the original copy
-					copy($attach->path, $filePath);
+					@copy($attach->path, $filePath);
 					$this->utils->optimizeImage($filePath);
 
 					// make the changes in the database
