@@ -5,238 +5,58 @@ class Perfil extends Service
 	/**
 	 * Display your profile
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 * @return Response
 	 */
 	public function _main (Request $request)
 	{
-		$connection = new Connection();
-		
 		// get the email or the username for the profile
 		$request->query = trim($request->query, "@ ");
 		$emailToLookup = empty($request->query) ? $request->email : $request->query;
-		
-		// get the email for the profile
-		$isEmail = true;
+
+		// get the email for the profile in case it is a username
 		if ( ! filter_var($emailToLookup, FILTER_VALIDATE_EMAIL))
 		{
-			$person = $connection->deepQuery("SELECT email FROM person WHERE username='$emailToLookup'");
-			$emailToLookup = empty($person) ? "@$emailToLookup" : $person[0]->email;
-			$isEmail = false;
+			$emailToLookup = $this->utils->getEmailFromUsername($emailToLookup);
 		}
-		
+
 		// check if the person exist. If not, message the requestor
 		if ( ! $this->utils->personExist($emailToLookup))
 		{
-			$responseContent = array(
-					"email" => $emailToLookup,
-					"isEmail" => $isEmail
-			);
-			
 			$response = new Response();
 			$response->setResponseSubject("No encontramos un perfil para ese usuario");
-			$response->createFromTemplate("inexistent.tpl", $responseContent);
+			$response->createFromTemplate("inexistent.tpl", array("code"=>"error", "user"=>$emailToLookup));
 			return $response;
 		}
-		
-		// get the full profile for the person
-		$profile = $this->utils->getPerson($emailToLookup);
-		
-		// is friend?
-		$friend = false;
-		$q = $connection->deepQuery("SELECT count(*) as total FROM relations WHERE type='follow' AND user1 = '{$request->email}' AND user2='{$profile->email}'");
-		if (isset($q[0])) if (isset($q->total)) if ($q->total > 0) $friend = true;
-		if ($request->email == $profile->email) $friend = true;
 
-		// get the full name, or the email
-		$fullName = empty($profile->full_name) ? $profile->username : trim($profile->full_name, " .,;");
-		
-		// get the age
-		$age = empty($profile->date_of_birth) ? "" : date_diff(date_create($profile->date_of_birth), date_create('today'))->y;
-		
-		// get the gender
-		$gender = "";
-		if ($profile->gender == "M") $gender = "hombre";
-		if ($profile->gender == "F") $gender = "mujer";
-		
-		// get the final vowel based on the gender
-		$genderFinalVowel = "o";
-		if ($profile->gender == "F") $genderFinalVowel = "a";
-		
-		// get the eye color
-		$eyes = "";
-		if ($profile->eyes == "NEGRO") $eyes = "negro";
-		if ($profile->eyes == "CARMELITA") $eyes = "carmelita";
-		if ($profile->eyes == "AZUL") $eyes = "azul";
-		if ($profile->eyes == "VERDE") $eyes = "verde";
-		if ($profile->eyes == "AVELLANA") $eyes = "avellana";
-		
-		// get the eye tone
-		$eyesTone = "";
-		if ($profile->eyes == "NEGRO" || $profile->eyes == "CARMELITA" || $profile->eyes == "AVELLANA") $eyesTone = "oscuros";
-		if ($profile->eyes == "AZUL" || $profile->eyes == "VERDE") $eyesTone = "claros";
-		
-		// get the skin color
-		$skin = "";
-		if ($profile->skin == "NEGRO") $skin = "negr$genderFinalVowel";
-		if ($profile->skin == "BLANCO") $skin = "blanc$genderFinalVowel";
-		if ($profile->skin == "MESTIZO") $skin = "mestiz$genderFinalVowel";
-		
-		// get the type of body
-		$bodyType = "";
-		if ($profile->body_type == "DELGADO") $bodyType = "soy flac$genderFinalVowel";
-		if ($profile->body_type == "MEDIO") $bodyType = "no soy de flac$genderFinalVowel ni grues$genderFinalVowel";
-		if ($profile->body_type == "EXTRA") $bodyType = "tengo unas libritas de m&aacute;s";
-		if ($profile->body_type == "ATLETICO") $bodyType = "tengo un cuerpazo atl&eacute;tico";
-		
-		// get the hair color
-		$hair = "";
-		if ($profile->hair == "TRIGUENO") $hair = "trigue&ntilde;o";
-		if ($profile->hair == "CASTANO") $hair = "casta&ntilde;o";
-		if ($profile->hair == "RUBIO") $hair = "rubio";
-		if ($profile->hair == "NEGRO") $hair = "negro";
-		if ($profile->hair == "ROJO") $hair = "rojizo";
-		if ($profile->hair == "BLANCO") $hair = "canoso";
-		
-		// get the place where the person live
-		$province = "";
-		if ($profile->province == "PINAR_DEL_RIO") $province = "Pinar del R&iacute;o";
-		if ($profile->province == "LA_HABANA") $province = "La Habana";
-		if ($profile->province == "ARTEMISA") $province = "Artemisa";
-		if ($profile->province == "MAYABEQUE") $province = "Mayabeque";
-		if ($profile->province == "MATANZAS") $province = "Matanzas";
-		if ($profile->province == "VILLA_CLARA") $province = "Villa Clara";
-		if ($profile->province == "CIENFUEGOS") $province = "Cienfuegos";
-		if ($profile->province == "SANCTI_SPIRITUS") $province = "Sancti Sp&iacute;ritus";
-		if ($profile->province == "CIEGO_DE_AVILA") $province = "Ciego de &Aacute;vila";
-		if ($profile->province == "CAMAGUEY") $province = "Camaguey";
-		if ($profile->province == "LAS_TUNAS") $province = "Las Tunas";
-		if ($profile->province == "HOLGUIN") $province = "Holgu&iacute;n";
-		if ($profile->province == "GRANMA") $province = "Granma";
-		if ($profile->province == "SANTIAGO_DE_CUBA") $province = "Santiago de Cuba";
-		if ($profile->province == "GUANTANAMO") $province = "Guant&aacute;namo";
-		if ($profile->province == "ISLA_DE_LA_JUVENTUD") $province = "Isla de la Juventud";
-		
-		// get the city
-		$city = empty($profile->city) ? "" : ", {$profile->city}";
-		
-		// full location
-		$location = ". Aunque prefiero no decir de donde soy";
-		if ( ! empty($province)) $location = ". Vivo en " . $province . $city;
-		
-		// get highest educational level
-		$education = "";
-		if ($profile->highest_school_level == "PRIMARIO") $education = "tengo sexto grado";
-		if ($profile->highest_school_level == "SECUNDARIO") $education = "soy graduad$genderFinalVowel de la secundaria";
-		if ($profile->highest_school_level == "TECNICO") $education = "soy t&acute;cnico medio";
-		if ($profile->highest_school_level == "UNIVERSITARIO") $education = "soy universitari$genderFinalVowel";
-		if ($profile->highest_school_level == "POSTGRADUADO") $education = "tengo estudios de postgrado";
-		if ($profile->highest_school_level == "DOCTORADO") $education = "tengo un doctorado";
-		
-		// get marital status
-		$maritalStatus = "";
-		if ($profile->marital_status == "SOLTERO") $maritalStatus = "estoy solter$genderFinalVowel";
-		if ($profile->marital_status == "SALIENDO") $maritalStatus = "estoy saliendo con alguien";
-		if ($profile->marital_status == "COMPROMETIDO") $maritalStatus = "estoy comprometid$genderFinalVowel";
-		if ($profile->marital_status == "CASADO") $maritalStatus = "soy casad$genderFinalVowel";
-		
-		// get occupation
-		$occupation = (empty($profile->occupation) || strlen($profile->occupation) < 5) ? false : strtolower($profile->occupation);
-		if(stripos($occupation, "studiant") !== false) $occupation = "";
-		
-		// get religion
-		$religions = array(
-			'ATEISMO' => "soy ate$genderFinalVowel",
-			'SECULARISMO' => 'no tengo creencia religiosa',
-			'AGNOSTICISMO' => "soy agn&oacute;stic$genderFinalVowel",
-			'ISLAM' => 'soy musulm&aacute;n',
-			'JUDAISTA' => "soy jud&iacute;$genderFinalVowel",
-			'ABAKUA' => 'soy abaku&aacute;',
-			'SANTERO' => "soy santer$genderFinalVowel",
-			'YORUBA' => 'profeso la religi&oacute;n yoruba',
-			'BUDISMO' => 'soy budista',
-			'CATOLICISMO' => "soy cat&oacute;lic$genderFinalVowel",
-			'OTRA' => '',
-			'CRISTIANISMO' => "soy cristian$genderFinalVowel"
-		);
-		
-		$religion = empty($profile->religion) ? "" : $religions[$profile->religion];
+		// get the person
+		$connection = new Connection();
+		$person = $connection->deepQuery("SELECT * FROM person WHERE email = '$emailToLookup'");
 
-		// create the message
-		$message = "Hola y bienvenido a mi perfil. Yo soy $fullName";
-		if ( ! empty($religion)) $message .= " y $religion";
-		if ( ! empty($age)) $message .= ", tengo $age a&ntilde;os";
-		if ( ! empty($gender)) $message .= ", soy $gender";
-		if ( ! empty($skin)) $message .= ", soy $skin";
-		if ( ! empty($eyes)) $message .= ", de ojos $eyesTone (color $eyes)";
-		if ( ! empty($hair)) $message .= ", soy de pelo $hair";
-		if ( ! empty($bodyType)) $message .= " y $bodyType";
-		$message .= $location;
-		if ( ! empty($education)) $message .= ", $education";
-		if ( ! empty($occupation)) $message .= ", trabajo como $occupation";
-		if ( ! empty($maritalStatus)) $message .= " y $maritalStatus";
-		$message .= ".";
+		// prepare the full profile
+		$social = new Social();
+		$profile = $social->prepareUserProfile($person[0], $request->lang);
 
-		// check if the user is requesting its own profile
-		$ownProfile = $emailToLookup == $request->email;
+        // check if current user follow the user to lookup
+        $profile->follow = false;
+        $sql = "SELECT COUNT(user1) as total FROM relations WHERE user1 = '{$request->email}' AND user2 = '$emailToLookup' AND type = 'follow';";
+        $r = $connection->deepQuery($sql);
+        if ($r[0]->total * 1 > 0)
+            $profile->follow = true;
 
-		// get the profile percentage of completion
-		$completion = $ownProfile ? $this->utils->getProfileCompletion($emailToLookup) : "";
-		
-		// create a json object to send to the template
+        // get the number of tickts for the raffle
+		$tickets = $connection->deepQuery("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '$emailToLookup'");
+
+		// pass variables to the template
 		$responseContent = array(
 			"profile" => $profile,
-			"message" => $message,
-			"completion" => $completion,
-			"ownProfile" => $ownProfile,
-			"friend" => $friend
+			"tickets" => $tickets[0]->tickets,
+			"ownProfile" => $emailToLookup == $request->email
 		);
 
-		// create the images to send to the response
-		$di = \Phalcon\DI\FactoryDefault::getDefault();
-		$wwwroot = $di->get('path')['root'];
-		$image = empty($profile->thumbnail) ? array() : array(
-				$profile->thumbnail
-		);
+		// pass profile image to the response
+		$image = $profile->picture ? array($profile->picture_internal) : array();
 
-		$emails = array();
-		$notes = array();
-		
-		// get last notes
-		$xnotes = $connection->deepQuery("SELECT * FROM _pizarra_notes WHERE email = '{$profile->email}' ORDER BY inserted DESC LIMIT 10 OFFSET 0;");
-		
-		if (!isset($xnotes[0]) || !is_array($xnotes)) $notes = false;
-		else 
-		{
-			// format the array of notes
-			foreach ($xnotes as $note)
-			{
-				// get the location
-				if (empty($note->province)) $location = "Cuba";
-				else $location = ucwords(strtolower(str_replace("_", " ", $note->province)));
-			
-				// add the text to the array
-				$notes[] = array(
-					"id" => $note->id,
-					"text" => $note->text,
-					"inserted" => date("Y-m-d H:i:s", strtotime($note->inserted)), // mysql timezone must be America/New_York
-					"likes" => $note->likes,
-					'source' => $note->source,
-					'email' => $note->email
-				);
-			
-			}
-		}
-		
-		$responseContent['notes'] = $notes;
-		
-		// highlight hash tags
-		for ($i = 0; $i < count($notes); $i ++)
-		{
-			$notes[$i]['text'] = ucfirst(strtolower($notes[$i]['text'])); // fix case
-			$notes[$i]['text'] = $this->highlightHashTags($notes[$i]['text']);
-		}
-		
 		// create a new Response object and input the template and the content
 		$response = new Response();
 		$response->setResponseSubject("Perfil de Apretaste");
@@ -247,7 +67,7 @@ class Perfil extends Service
 	/**
 	 * Subservice Request
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 */
 	public function _nombre (Request $request)
 	{
@@ -256,11 +76,11 @@ class Perfil extends Service
 		if ( ! is_array($n)) return new Response();
 		for ($i = 0; $i <= 3; $i ++) $n[$i] = "'{$n[$i]}'";
 
-		$query = " first_name = {$n[0]}, 
-			middle_name = {$n[1]}, 
-			last_name = {$n[2]}, 
+		$query = " first_name = {$n[0]},
+			middle_name = {$n[1]},
+			last_name = {$n[2]},
 			mother_name = {$n[3]}";
-		
+
 		$this->update($query, $request->email);
 		return new Response();
 	}
@@ -268,7 +88,7 @@ class Perfil extends Service
 	/**
 	 * Subservice CUMPLEANOS
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 */
 	public function _cumpleanos (Request $request)
 	{
@@ -278,7 +98,7 @@ class Perfil extends Service
 	/**
 	 * Subservice PROFESION
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 */
 	public function _profesion (Request $request)
 	{
@@ -288,7 +108,7 @@ class Perfil extends Service
 	/**
 	 * Subservice RELIGION
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 */
 	public function _religion (Request $request)
 	{
@@ -306,7 +126,7 @@ class Perfil extends Service
 			'OTRA',
 			'CRISTIANISMO'
 		);
-		
+
 		$synon = array(
 			'ATEO' => 'ATEISMO',
 			'SECULAR' => 'SECULARISMO',
@@ -315,14 +135,14 @@ class Perfil extends Service
 			'CRISTIANO' => 'CRISTIANISMO',
 			'BUDISTA' => 'BUDISMO'
 		);
-		
+
 		return $this->subserviceEnum($request, 'religion', $religions, 'Dinos tu religion o si careces de ella', null, $synon);
 	}
 
 	/**
 	 * Subservice PROVINCIA
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 * @return Response
 	 */
 	public function _provincia (Request $request)
@@ -345,7 +165,7 @@ class Perfil extends Service
 			'GUANTANAMO',
 			'ISLA_DE_LA_JUVENTUD'
 		);
-		
+
 		$synon = array();
 		foreach ($provs as $v)
 		{
@@ -353,7 +173,7 @@ class Perfil extends Service
 		}
 		return $this->subserviceEnum($request, 'province', $provs, 'Diga la provincia donde vive', null, $synon);
 	}
-	
+
 	/**
 	 * Subservice PAIS
 	 *
@@ -362,83 +182,94 @@ class Perfil extends Service
 	 */
 	public function _pais (Request $request)
 	{
+		// get the list of countries
 		$connection = new Connection();
-		$countries = $connection->deepQuery("SELECT * FROM countries WHERE active = '1' ORDER BY name;");
+		$countries = $connection->deepQuery("SELECT code, es AS name FROM countries ORDER BY code");
 		$country = trim($request->query);
-		
+		$country_original = $country;
+
+		// do not let empty countries
 		if (empty($country))
 		{
 			$response = new Response();
 			$response->setResponseSubject("Selecciona el pais donde vive");
-			$response->createFromTemplate("profile_edit_country.tpl", array(
-				'countries' => $countries
-			));
+			$response->createFromTemplate("profile_edit_country.tpl", array('countries' => $countries));
 			return $response;
 		}
-		
-		$selected_country = null;
+
+		// setup country aliases and typos
+        if($country == "US") $country = "Estados Unidos de America";
+        if($country == "USA") $country = "Estados Unidos de America";
+        if($country == "estados unidos") $country = "Estados Unidos de America";
+        if($country == "kuba") $country = "cu";
+		if($country == "usa") $country = "us";
+		if($country == "estados unidos de america") $country = "us";
+
+		// get the country to update
 		$max = 0;
-		
-		$aprox = true;
-		
+
+		$l_country = strtolower($country);
+		$l_country_original = strtolower($country_original);
+
+		$selectedCountry = null;
+
 		foreach ($countries as $c)
 		{
+			// check percentage similarity
 			$percent = 0;
-			
-			$sim = similar_text(strtolower($country), strtolower($c->name), $percent);
+			similar_text($country, strtolower($c->name), $percent);
 
-			if ($max < $percent && $percent > 90) 
+			// select the country with greater similarity
+			if ($max < $percent && $percent > 90)
 			{
 				$max = $percent;
-				$selected_country = $c;
-				
+				$selectedCountry = $c;
 			}
-			
-			if (strtolower($c->code) == strtolower($country))
-			{
-				$aprox = false;
-				$selected_country = $c;
-				break;
-			}
-			
+
+            // select by code
+            $code = strtolower($c->code);
+            if ($code == $l_country || $code == $l_country_original)
+            {
+                $selectedCountry = $c;
+                break;
+            }
 		}
-		
-		if (is_null($selected_country))
+
+		// if not country was selected, display an error message
+		if (is_null($selectedCountry))
 		{
 			$response = new Response();
 			$response->setResponseSubject("No reconocimos el pais seleccionado, selecciona ahora de esta lista");
-			$response->createFromTemplate("profile_edit_country.tpl", array(
-				'countries' => $countries
-			));
+			$response->createFromTemplate("profile_edit_country.tpl", array('countries' => $countries));
 			return $response;
 		}
-		
-		$connection->deepQuery("UPDATE person SET country = '{$selected_country->code}' WHERE email = '{$request->email}';");
-				
+
+		// update country and return empty response
+		$connection->deepQuery("UPDATE person SET country = '{$selectedCountry->code}' WHERE email = '{$request->email}'");
 		return new Response();
 	}
 
 	/**
 	 * Subservice CIUDAD
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 */
 	public function _ciudad (Request $request)
 	{
 		$query = trim($request->query);
-		
+
 		if ( ! empty($query))
 		{
 			$this->update("city = '{$query}'", $request->email);
 		}
-		
+
 		return new Response();
 	}
 
 	/**
 	 * Subservice SEXO
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 */
 	public function _sexo (Request $request)
 	{
@@ -456,11 +287,11 @@ class Perfil extends Service
 	/**
 	 * Subservice NIVEL
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 */
 	public function _nivel (Request $request)
 	{
-		return $this->subserviceEnum($request, 'highest_school_level', 
+		return $this->subserviceEnum($request, 'highest_school_level',
 				array(
 						'PRIMARIO',
 						'SECUNDARIO',
@@ -475,7 +306,7 @@ class Perfil extends Service
 	/**
 	 * Subservice alias for NIVEL
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 */
 	public function _nivelescolar (Request $request)
 	{
@@ -485,7 +316,7 @@ class Perfil extends Service
 	/**
 	 * Subservice ESTADO
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 *
 	 * @return Response/void
 	 */
@@ -502,7 +333,7 @@ class Perfil extends Service
 	/**
 	 * Subservice ESTADO alias
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 */
 	public function _estadocivil (Request $request)
 	{
@@ -512,26 +343,26 @@ class Perfil extends Service
 	/**
 	 * Subservice PELO
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 */
 	public function _pelo (Request $request)
 	{
-		return $this->subserviceEnum($request, 'hair', 
-				array(
-						'TRIGUENO',
-						'CASTANO',
-						'RUBIO',
-						'NEGRO',
-						'ROJO',
-						'BLANCO',
-						'OTRO'
-				), 'Diga su color de pelo');
+		return $this->subserviceEnum($request, 'hair',
+			array(
+				'TRIGUENO',
+				'CASTANO',
+				'RUBIO',
+				'NEGRO',
+				'ROJO',
+				'BLANCO',
+				'OTRO'),
+			'Diga su color de pelo');
 	}
 
 	/**
 	 * Subservice OJOS
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 */
 	public function _ojos (Request $request)
 	{
@@ -553,22 +384,17 @@ class Perfil extends Service
 	/**
 	 * Subservice CUERPO
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 */
 	public function _cuerpo (Request $request)
 	{
-		return $this->subserviceEnum($request, 'body_type', array(
-				'DELGADO',
-				'MEDIO',
-				'EXTRA',
-				'ATLETICO'
-		), 'Diga como es su cuerpo');
+		return $this->subserviceEnum($request, 'body_type', array('DELGADO','MEDIO','EXTRA','ATLETICO'), 'Diga como es su cuerpo');
 	}
 
 	/**
 	 * Subservice INTERESES
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 */
 	public function _intereses (Request $request)
 	{
@@ -578,50 +404,45 @@ class Perfil extends Service
 	/**
 	 * Subservice FOTO
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 * @return Response
 	 */
 	public function _foto ($request)
 	{
-		$attachments = $request->attachments;
-		
-		// move the first image attached to the profiles directory
-		$isImageAttached = 0;
-		if (count($attachments) > 0)
+		// was the image attached?
+		if (count($request->attachments) > 0)
 		{
-			$di = \Phalcon\DI\FactoryDefault::getDefault();
-			$wwwroot = $di->get('path')['root'];
-			
-			foreach ($attachments as $attach)
+			// get the first image attached
+			foreach ($request->attachments as $attach)
 			{
 				if ($attach->type == "image/jpeg")
 				{
+					// get the path to the image
+					$di = \Phalcon\DI\FactoryDefault::getDefault();
+					$wwwroot = $di->get('path')['root'];
+
+					// create a new random image name and path
+					$fileName = md5($request->email . rand());
+					$filePath = "$wwwroot/public/profile/$fileName.jpg";
+
 					// save the original copy
-					$large = "$wwwroot/public/profile/{$request->email}.jpg";
-					copy($attach->path, $large);
-					$this->utils->optimizeImage($large);
-					
-					// create the thumbnail
-					$thumbnail = "$wwwroot/public/profile/thumbnail/{$request->email}.jpg";
-					copy($attach->path, $thumbnail);
-					$this->utils->optimizeImage($thumbnail, 300);
-					
-					$isImageAttached = 1;
+					@copy($attach->path, $filePath);
+					$this->utils->optimizeImage($filePath);
+
+					// make the changes in the database
+					$this->update("picture='$fileName'", $request->email);
 					break;
 				}
 			}
 		}
-		
-		// make the changes in the database
-		$this->update("picture='$isImageAttached'", $request->email);
-		
+
 		return new Response();
 	}
 
 	/**
 	 * Subservice ORIENTACION SEXUAL
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 */
 	public function _orientacion (Request $request)
 	{
@@ -640,7 +461,7 @@ class Perfil extends Service
 	/**
 	 * Alias for subservice ORIENTACION SEXUAL
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 */
 	public function _orientacionsexual (Request $request)
 	{
@@ -650,7 +471,7 @@ class Perfil extends Service
 	/**
 	 * Subservice piel
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 */
 	public function _piel (Request $request)
 	{
@@ -669,76 +490,186 @@ class Perfil extends Service
 	/**
 	 * Show the edit mode template
 	 *
-	 * @param Request $request			
+	 * @param Request $request
 	 * @return Response
 	 *
 	 */
 	public function _editar (Request $request)
 	{
-		// get the text to parse
-		$email = $request->email;
-		
-		$person = $this->utils->getPerson($email);
-		
-		if ($person === false)
-		{
-			$person = new stdClass();
-			$person->thumbnail = null;
-			$person->picture = '';
-			$person->full_name = '';
-			$person->gender = '';
-			$person->sexual_orientation = '';
-			$person->date_of_birth = '';
-			$person->body_type = '';
-			$person->eyes = '';
-			$person->hair = '';
-			$person->piel = '';
-			$person->marital_status = '';
-			$person->highest_school_level = '';
-			$person->occupation = '';
-			$person->province = '';
-			$person->city = '';
-			$person->country = '';
-			$person->country_name = '';
-			$person->interests = '';
-			$person->religion = '';
-		}
-		
-		$person->interests = implode(", ", $person->interests);
+		// get the person to edit profile
+		$person = $this->utils->getPerson($request->email);
+
+		// do not continue for non-existent users
+		if (empty($person)) return new Response();
+
+		// get readable text for province
 		$person->province = str_replace("_", " ", $person->province);
-		
+
+		// get readable text for gender
 		if ($person->gender == 'M') $person->gender = "Masculino";
 		if ($person->gender == 'F') $person->gender = "Femenino";
-		
-		$connection = new Connection();
-		$r = $connection->deepQuery("SELECT * FROM countries WHERE code = '{$person->country}';");
-		
-		$person->country_name = $person->country;
-		
-		if (isset($r[0]))
-			if (isset($r[0]->name))
-				$person->country_name = $r[0]->name;
-			
-		$content = get_object_vars($person);
-		
-		// create the images to send to the response
-		$di = \Phalcon\DI\FactoryDefault::getDefault();
-		$wwwroot = $di->get('path')['root'];
-		$image = empty($person->thumbnail) ? array() : array(
-				$person->thumbnail
-		);
-		
+
+		// get readable country
+		$person->country_name = $this->utils->getCountryNameByCode($person->country);
+
+		// save interests as string
+		$person->interests = implode(", ", $person->interests);
+
+		// get image
+		$image = $person->picture ? array($person->picture_internal) : array();
+
+		// prepare response for the view
 		$response = new Response();
 		$response->setResponseSubject('Edite su perfil');
-		$response->createFromTemplate('profile_edit.tpl', $content, $image);
+		$response->createFromTemplate('profile_edit.tpl', array("person"=>$person), $image);
 		return $response;
+	}
+
+	/**
+	 * Display your relations
+	 *
+	 * @author kuma
+	 * @version 1.0
+	 * @param Request $request
+	 * @return Response
+	 */
+	public function _relaciones(Request $request)
+	{
+		// connect to db
+		$connection = new Connection();
+
+		// prepare response
+		$response = new Response();
+
+		// requestor email
+		$e = $request->email;
+
+		// getting relations
+		$sql = "SELECT 'amigo' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'friend' AND confirmed = 1
+				UNION SELECT 'amigo' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'friend' AND confirmed = 1
+				UNION SELECT 'bloqueado' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'blocked'
+				UNION SELECT 'te bloque&oacute;' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'blocked'
+				UNION SELECT 'siguiendo' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'follow'
+				UNION SELECT 'seguidor' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'follow'
+				UNION SELECT 'te gusta' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'like'
+				UNION SELECT 'admirador' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'like'
+				UNION SELECT 'lo tocaste' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'touch'
+				UNION SELECT 'te dio un toque' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'touch'
+				UNION SELECT 'contacto' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'contact'
+				UNION SELECT 'contacto' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'contact'
+				UNION SELECT 'ignorado' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'ignore'
+				UNION SELECT 'te ignora' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'ignore'";
+
+		$relations = $connection->deepQuery(" SELECT * FROM ($sql) subq ORDER BY who;");
+
+		foreach ($relations as $k => $v)
+		{
+			$relations[$k]->who = $this->utils->getPerson($v->who);
+		}
+
+		// send relations
+		if (isset($relations[0]))
+		{
+			$response->setResponseSubject("Tus relaciones");
+			$response->createFromTemplate('relations.tpl', array(
+				'relations' => $relations
+			));
+
+			return $response;
+		}
+
+		// get social services
+		$services = $connection->deepQuery("SELECT * FROM service WHERE category = 'social';");
+
+		// send suggestions
+		$response->setResponseSubject("Te invitamos a socializar");
+		$response->createFromTemplate('norelations.tpl', array('services' => $services));
+
+		return $response;
+	}
+
+	/**
+	 * Change all params at the same time
+	 *
+	 * @author salvipascual
+	 * @version 1.0
+	 * @param Request $request
+	 * @return Response
+	 */
+	public function _bulk(Request $request)
+	{
+		// get the JSON with the bulk
+		$json = json_decode($request->query);
+
+		// if the method exist, call it
+		foreach ($json as $key=>$value)
+		{
+			if(method_exists($this, "_$key"))
+			{
+				$req = new Request();
+				$req->email = $request->email;
+				$req->subject = "PERFIL $key $value";
+				$req->service = "PERFIL";
+				$req->subservice = $key;
+				$req->query = $value;
+				$function = "_$key";
+				$this->$function($req);
+			}
+		}
+
+		return new Response();
+	}
+
+	/**
+	 * Change state if within the US
+	 * AL,AK,AS,AZ,AR,CA,CO,CT,DE,DC,FL,GA,GU,HI,ID,IL,IN,IA,KS,KY,LA,ME,MD,MH,MA,MI,FM,MN,MS,MO,MT,NE,NV,NH,NJ,NM,NY,NC,ND,MP,OH,OK,OR,PW,PA,PR,RI,SC,SD,TN,TX,UT,VT,VA,VI,WA,WV,WI,WY
+	 *
+	 * @author salvipascual
+	 * @version 1.0
+	 * @param Request $request
+	 * @return Response
+	 */
+	public function _usstate(Request $request)
+	{
+		// get the values from the post
+		$email = $request->email;
+		$state = $request->query;
+
+		// set the new language for the user
+		$connection = new Connection();
+		$connection->deepQuery("UPDATE person SET usstate='$state' WHERE email='$email'");
+		return new Response();
+	}
+
+	/**
+	 * Change language
+	 *
+	 * @author salvipascual
+	 * @version 1.0
+	 * @param Request $request
+	 * @return Response
+	 */
+	public function _lang(Request $request)
+	{
+		// get the values from the post
+		$email = $request->email;
+		$lang = $request->query;
+
+		// check if the language exist
+		$connection = new Connection();
+		$test = $connection->deepQuery("SELECT * FROM languages WHERE code = '$lang'");
+		if(empty($test)) return new Response();
+
+		// set the new language for the user
+		$connection->deepQuery("UPDATE person SET lang='$lang' WHERE email='$email'");
+		return new Response();
 	}
 
 	/**
 	 * Update a profile
 	 *
-	 * @param String $sqlset			
-	 * @param String $email			
+	 * @param String $sqlset
+	 * @param String $email
 	 */
 	private function update ($sqlset, $email)
 	{
@@ -751,12 +682,12 @@ class Perfil extends Service
 	/**
 	 * Subservice utility for ENUM profile fields
 	 *
-	 * @param Request $request			
-	 * @param String $field			
-	 * @param array $enum			
-	 * @param String $wrong_template			
-	 * @param String $wrong_subject			
-	 * @param String $field			
+	 * @param Request $request
+	 * @param String $field
+	 * @param array $enum
+	 * @param String $wrong_template
+	 * @param String $wrong_subject
+	 * @param String $field
 	 *
 	 * @return Response/void
 	 */
@@ -765,13 +696,13 @@ class Perfil extends Service
 		if ( ! is_null($prefix))
 		{
 			if (stripos($request->query, $prefix) === 0)
-		{
+			{
 				$request->query = trim(substr($request->query, strlen($prefix)));
 			}
 		}
-		
+
 		$query = strtoupper(trim($request->query));
-		
+
 		// if the query is empty, set to null the field
 		if (empty($query))
 		{
@@ -781,29 +712,29 @@ class Perfil extends Service
 		{
 			// search for $synonymous
 			if (isset($synonymous[$query])) $query = $synonymous[$query];
-			
+
 			// search query in the list
 			if (array_search($query, $enum) !== false)
 			{
 				// update the field
 				$this->update("$field = '$query'", $request->email);
 				return new Response();
-			} else {
+			}
+			else
+			{
 				// wrong query, return a response with selectable list
 				$response = new Response();
 				$response->setResponseSubject($wrong_subject);
-				
+
 				// NOTE: The template name include the field name
-				
+
 				// clear underscores
 				foreach ($enum as $k => $v)
 				{
 					$enum[$k] = str_replace('_', ' ', $v);
 				}
-				
-				$response->createFromTemplate('wrong_' . $field . '.tpl', array(
-						'list' => $enum
-				));
+
+				$response->createFromTemplate('wrong_' . $field . '.tpl', array('list' => $enum));
 				return $response;
 			}
 		}
@@ -812,9 +743,9 @@ class Perfil extends Service
 	/**
 	 * Subservice utitlity for simple profile fields
 	 *
-	 * @param Request $request			
-	 * @param String $field			
-	 * @param String $prefix			
+	 * @param Request $request
+	 * @param String $field
+	 * @param String $prefix
 	 */
 	private function subserviceSimple (Request $request, $field, $prefix = null)
 	{
@@ -825,7 +756,7 @@ class Perfil extends Service
 				$request->query = trim(substr($request->query, strlen($prefix)));
 			}
 		}
-		
+
 		$value = trim($request->query);
 		$value = str_replace(array("'","`"), "", $value);
 
@@ -833,16 +764,16 @@ class Perfil extends Service
 		{
 			$this->update("$field = '$value'", $request->email);
 		}
-		
+
 		return new Response();
 	}
 
 	/**
 	 * Subservice utility for date profile fields
 	 *
-	 * @param Request $request			
-	 * @param String $field			
-	 * @param String $prefix			
+	 * @param Request $request
+	 * @param String $field
+	 * @param String $prefix
 	 */
 	private function subserviceDate (Request $request, $field, $prefix = null)
 	{
@@ -858,100 +789,16 @@ class Perfil extends Service
 
 		// read date in Spanish
 		setlocale(LC_ALL, "es_ES");
-		
+
 		// try getting the date
 		$date = DateTime::createFromFormat("d/m/Y", $query);
-		
+
 		// if date could not be calculated, return null
-		if (empty($date))
-			return new Response();
-		else
-			$query = "'" . strftime("%Y-%m-%d", $date->getTimestamp()) . "'";
-		
+		if (empty($date)) return new Response();
+		else $query = "'" . strftime("%Y-%m-%d", $date->getTimestamp()) . "'";
+
 		$this->update("$field = $query", $request->email);
-		
+
 		return new Response();
-	}
-	
-	/**
-	 * Display your relations
-	 *
-	 * @author kuma
-	 * @version 1.0
-	 * @param Request $request        	
-	 * @return Response
-	 */
-	public function _relaciones(Request $request)
-	{
-		// connect to db
-		$connection = new Connection();
-		
-		// prepare response
-		$response = new Response();
-		
-		// requestor email
-		$e = $request->email;
-		
-		// getting relations
-		$sql = "      SELECT 'amigo' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'friend' AND confirmed = 1
-				UNION SELECT 'amigo' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'friend' AND confirmed = 1
-				UNION SELECT 'bloqueado' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'blocked'
-				UNION SELECT 'te bloque&oacute;' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'blocked'
-				UNION SELECT 'siguiendo' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'follow'
-				UNION SELECT 'seguidor' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'follow'
-				UNION SELECT 'te gusta' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'like'
-				UNION SELECT 'admirador' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'like'
-				UNION SELECT 'lo tocaste' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'touch'
-				UNION SELECT 'te dio un toque' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'touch'
-				UNION SELECT 'contacto' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'contact'
-				UNION SELECT 'contacto' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'contact'
-				UNION SELECT 'ignorado' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'ignore'
-				UNION SELECT 'te ignora' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'ignore'
-				
-				";
-		
-		$relations = $connection->deepQuery(" SELECT * FROM ($sql) subq ORDER BY who;");
-		
-		foreach ($relations as $k => $v)
-		{
-			$relations[$k]->who = $this->utils->getPerson($v->who);
-		}
-		
-		// send relations
-		if (isset($relations[0]))
-		{
-			$response->setResponseSubject("Tus relaciones");
-			$response->createFromTemplate('relations.tpl', array(
-				'relations' => $relations
-			));
-			
-			return $response;
-		}
-		
-		// get social services
-		$services = $connection->deepQuery("SELECT * FROM service WHERE category = 'social';");
-		
-		// send suggestions
-		$response->setResponseSubject("Te invitamos a socializar");
-		$response->createFromTemplate('norelations.tpl', array(
-			'services' => $services
-		));
-		
-		return $response;
-		
-	}
-	
-	/**
-	 * Highlight words with a #hashtag
-	 *
-	 * @author salvipascual
-	 * @param String $text
-	 * @return String
-	 */
-	private function highlightHashTags ($text)
-	{
-		return preg_replace_callback('/#\w*/', function($matches){
-			return "<b>{$matches[0]}</b>";
-		}, $text);
 	}
 }
