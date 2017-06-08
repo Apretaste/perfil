@@ -415,6 +415,14 @@ class Perfil extends Service
 			// get the first image attached
 			foreach ($request->attachments as $attach)
 			{
+			    if (is_string($attach))
+                {
+                    $filePath = $attach;
+                    $attach = new stdClass();
+                    $attach->type = image_type_to_mime_type(IMAGETYPE_JPEG);;
+                    $attach->path = $filePath;
+                }
+
 				if ($attach->type == "image/jpeg")
 				{
 					// get the path to the image
