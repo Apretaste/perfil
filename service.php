@@ -612,6 +612,7 @@ class Perfil extends Service
 		// if the method exist, call it
 		foreach ($json as $key=>$value)
 		{
+		    $key = strtolower($key);
 			if(method_exists($this, "_$key"))
 			{
 				$req = new Request();
