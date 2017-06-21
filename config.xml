@@ -1,5 +1,9 @@
 <service>
 	<serviceName>perfil</serviceName>
+	<serviceAliases>
+		<alias>profile</alias>
+		<alias>cuenta</alias>
+	</serviceAliases>
 	<serviceDescription><![CDATA[Muestra el perfil suyo o de otro usuario de Apretaste, conteniendo su cr&eacute;dito, tickets de la Rifa y m&aacute;s informaci&oacute;n &uacute;til. Tambi&eacute;n le permite editar su perfil]]></serviceDescription>
 	<creatorEmail>salvi.pascual@gmail.com</creatorEmail>
 	<serviceCategory>social</serviceCategory>
