@@ -675,6 +675,94 @@ class Perfil extends Service
 	}
 
 	/**
+	 * Get the global info for the General app
+	 *
+	 * @author salvipascual
+	 * @api
+	 * @version 1.0
+	 * @param Request $request
+	 * @return Response
+	 */
+	public function _status(Request $request)
+	{
+		// get the last update date
+		// @TODO make it default date if it is not a date
+		$lastUpdate = empty($request->query) ? "1990-01-01 00:00:00" : $request->query;
+
+		// get the person and notifications
+		$person = $this->utils->getPerson($request->email);
+		$notifications = $this->utils->getUnreadNotifications($request->email, 1000);
+
+		// create the response
+		$res = new stdClass();
+		$res->username = $person->username;
+		$res->credit = $person->credit;
+
+		// add user profile to the response
+		$res->profile = new stdClass();
+		$res->profile->full_name = $person->full_name;
+		$res->profile->date_of_birth = $person->date_of_birth;
+		$res->profile->gender = $person->gender;
+		$res->profile->cellphone = $person->cellphone;
+		$res->profile->eyes = $person->eyes;
+		$res->profile->skin = $person->skin;
+		$res->profile->body_type = $person->body_type;
+		$res->profile->hair = $person->hair;
+		$res->profile->province = $person->province;
+		$res->profile->city = $person->city;
+		$res->profile->highest_school_level = $person->highest_school_level;
+		$res->profile->occupation = $person->occupation;
+		$res->profile->marital_status = $person->marital_status;
+		$res->profile->interests = $person->interests;
+		$res->profile->sexual_orientation = $person->sexual_orientation;
+		$res->profile->religion = $person->religion;
+		$res->profile->picture = basename($person->picture_public);
+
+		// get notifications since last update
+		$connection = new Connection();
+		$notifications = $connection->query("
+			SELECT `text`, origin, link, inserted_date
+			FROM notifications
+			WHERE email='{$request->email}' AND inserted_date > '$lastUpdate'
+			ORDER BY inserted_date DESC LIMIT 20");
+
+		// add notifications to the response
+		$res->notifications = array();
+		foreach ($notifications as $n) {
+			$notification = new stdClass();
+			$notification->text = $n->text;
+			$notification->service = $n->origin;
+			$notification->link = $n->link;
+			$notification->received = $n->inserted_date;
+			$res->notifications[] = $notification;
+		}
+
+		// get all services since last update
+		$services = $connection->query("
+			SELECT name, description, category, creator_email, insertion_date
+			FROM service
+			WHERE insertion_date > '$lastUpdate'");
+
+		// add services to the response
+		$res->services = array();
+		foreach ($services as $s) {
+			$service = new stdClass();
+			$service->name = $s->name;
+			$service->description = $s->description;
+			$service->category = $s->category;
+			$service->creator = $s->creator_email;
+			$service->updated = $s->insertion_date;
+			$service->icon = "{$s->name}.jpg";
+			$res->services[] = $service;
+		}
+
+		// respond back to the API
+		$response = new Response();
+		$response->attachments[] = $person->picture_internal;
+		return $response->createFromJSON(json_encode($res));
+	}
+
+	/**
 	 * Update a profile
 	 *
 	 * @param String $sqlset
