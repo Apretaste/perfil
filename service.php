@@ -31,7 +31,7 @@ class Perfil extends Service
 
 		// get the person
 		$connection = new Connection();
-		$person = $connection->deepQuery("SELECT * FROM person WHERE email = '$emailToLookup'");
+		$person = $connection->query("SELECT * FROM person WHERE email = '$emailToLookup'");
 
 		// prepare the full profile
 		$social = new Social();
@@ -40,12 +40,12 @@ class Perfil extends Service
         // check if current user follow the user to lookup
         $profile->follow = false;
         $sql = "SELECT COUNT(user1) as total FROM relations WHERE user1 = '{$request->email}' AND user2 = '$emailToLookup' AND type = 'follow';";
-        $r = $connection->deepQuery($sql);
+        $r = $connection->query($sql);
         if ($r[0]->total * 1 > 0)
             $profile->follow = true;
 
         // get the number of tickts for the raffle
-		$tickets = $connection->deepQuery("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '$emailToLookup'");
+		$tickets = $connection->query("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '$emailToLookup'");
 
 		// pass variables to the template
 		$responseContent = array(
@@ -65,7 +65,7 @@ class Perfil extends Service
 	}
 
 	/**
-	 * Subservice Request
+	 * Subservice NOMBRE
 	 *
 	 * @param Request $request
 	 */
@@ -82,6 +82,26 @@ class Perfil extends Service
 			mother_name = {$n[3]}";
 
 		$this->update($query, $request->email);
+		return new Response();
+	}
+
+	/**
+	 * Subservice TELEFONO
+	 *
+	 * @param Request $request
+	 */
+	public function _telefono (Request $request)
+	{
+		// get only numbers from string
+		$phone = preg_replace('/\D/', '', $request->query);
+
+		// save phone to the database
+		if($phone) {
+			$sql = "phone = '$phone'";
+			$this->update($sql, $request->email);
+		}
+
+		// do not send emails back
 		return new Response();
 	}
 
@@ -184,7 +204,7 @@ class Perfil extends Service
 	{
 		// get the list of countries
 		$connection = new Connection();
-		$countries = $connection->deepQuery("SELECT code, es AS name FROM countries ORDER BY code");
+		$countries = $connection->query("SELECT code, es AS name FROM countries ORDER BY code");
 		$country = trim($request->query);
 		$country_original = $country;
 
@@ -245,7 +265,7 @@ class Perfil extends Service
 		}
 
 		// update country and return empty response
-		$connection->deepQuery("UPDATE person SET country = '{$selectedCountry->code}' WHERE email = '{$request->email}'");
+		$connection->query("UPDATE person SET country = '{$selectedCountry->code}' WHERE email = '{$request->email}'");
 		return new Response();
 	}
 
@@ -568,7 +588,7 @@ class Perfil extends Service
 				UNION SELECT 'ignorado' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'ignore'
 				UNION SELECT 'te ignora' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'ignore'";
 
-		$relations = $connection->deepQuery(" SELECT * FROM ($sql) subq ORDER BY who;");
+		$relations = $connection->query(" SELECT * FROM ($sql) subq ORDER BY who;");
 
 		foreach ($relations as $k => $v)
 		{
@@ -587,7 +607,7 @@ class Perfil extends Service
 		}
 
 		// get social services
-		$services = $connection->deepQuery("SELECT * FROM service WHERE category = 'social';");
+		$services = $connection->query("SELECT * FROM service WHERE category = 'social';");
 
 		// send suggestions
 		$response->setResponseSubject("Te invitamos a socializar");
@@ -646,7 +666,7 @@ class Perfil extends Service
 
 		// set the new language for the user
 		$connection = new Connection();
-		$connection->deepQuery("UPDATE person SET usstate='$state' WHERE email='$email'");
+		$connection->query("UPDATE person SET usstate='$state' WHERE email='$email'");
 		return new Response();
 	}
 
@@ -666,11 +686,11 @@ class Perfil extends Service
 
 		// check if the language exist
 		$connection = new Connection();
-		$test = $connection->deepQuery("SELECT * FROM languages WHERE code = '$lang'");
+		$test = $connection->query("SELECT * FROM languages WHERE code = '$lang'");
 		if(empty($test)) return new Response();
 
 		// set the new language for the user
-		$connection->deepQuery("UPDATE person SET lang='$lang' WHERE email='$email'");
+		$connection->query("UPDATE person SET lang='$lang' WHERE email='$email'");
 		return new Response();
 	}
 
@@ -685,41 +705,52 @@ class Perfil extends Service
 	 */
 	public function _status(Request $request)
 	{
+		$response = new Response();
+
 		// get the last update date
-		// @TODO make it default date if it is not a date
 		$lastUpdate = empty($request->query) ? "1990-01-01 00:00:00" : $request->query;
 
-		// get the person and notifications
-		$person = $this->utils->getPerson($request->email);
-		$notifications = $this->utils->getUnreadNotifications($request->email, 1000);
+		// get the person
+		$connection = new Connection();
+		$person = $connection->query("SELECT * FROM person WHERE email='{$request->email}'");
 
 		// create the response
 		$res = new stdClass();
-		$res->username = $person->username;
-		$res->credit = $person->credit;
-
-		// add user profile to the response
+		$res->username = $person[0]->username;
+		$res->credit = $person[0]->credit;
 		$res->profile = new stdClass();
-		$res->profile->full_name = $person->full_name;
-		$res->profile->date_of_birth = $person->date_of_birth;
-		$res->profile->gender = $person->gender;
-		$res->profile->cellphone = $person->cellphone;
-		$res->profile->eyes = $person->eyes;
-		$res->profile->skin = $person->skin;
-		$res->profile->body_type = $person->body_type;
-		$res->profile->hair = $person->hair;
-		$res->profile->province = $person->province;
-		$res->profile->city = $person->city;
-		$res->profile->highest_school_level = $person->highest_school_level;
-		$res->profile->occupation = $person->occupation;
-		$res->profile->marital_status = $person->marital_status;
-		$res->profile->interests = $person->interests;
-		$res->profile->sexual_orientation = $person->sexual_orientation;
-		$res->profile->religion = $person->religion;
-		$res->profile->picture = basename($person->picture_public);
+
+		// check if there is any change in the profile
+		if(strtotime($lastUpdate) < strtotime($person[0]->last_update_date))
+		{
+			// get the full profile
+			$social = new Social();
+			$person = $social->prepareUserProfile($person[0]);
+
+			// add user profile to the response
+			$res->profile->full_name = $person->full_name;
+			$res->profile->date_of_birth = $person->date_of_birth;
+			$res->profile->gender = $person->gender;
+			$res->profile->cellphone = $person->cellphone;
+			$res->profile->eyes = $person->eyes;
+			$res->profile->skin = $person->skin;
+			$res->profile->body_type = $person->body_type;
+			$res->profile->hair = $person->hair;
+			$res->profile->province = $person->province;
+			$res->profile->city = $person->city;
+			$res->profile->highest_school_level = $person->highest_school_level;
+			$res->profile->occupation = $person->occupation;
+			$res->profile->marital_status = $person->marital_status;
+			$res->profile->interests = $person->interests;
+			$res->profile->sexual_orientation = $person->sexual_orientation;
+			$res->profile->religion = $person->religion;
+			$res->profile->picture = basename($person->picture_internal);
+
+			// attach user picture if exist
+			if($person->picture_internal) $response->attachments[] = $person->picture_internal;
+		}
 
 		// get notifications since last update
-		$connection = new Connection();
 		$notifications = $connection->query("
 			SELECT `text`, origin, link, inserted_date
 			FROM notifications
@@ -737,6 +768,10 @@ class Perfil extends Service
 			$res->notifications[] = $notification;
 		}
 
+		// get the path to the www folder
+		$di = \Phalcon\DI\FactoryDefault::getDefault();
+		$wwwroot = $di->get('path')['root'];
+
 		// get all services since last update
 		$services = $connection->query("
 			SELECT name, description, category, creator_email, insertion_date
@@ -746,19 +781,22 @@ class Perfil extends Service
 		// add services to the response
 		$res->services = array();
 		foreach ($services as $s) {
+			// attach user picture if exist
+			$icon = "$wwwroot/services/{$s->name}/{$s->name}.png";
+			if(file_exists($icon)) $response->attachments[] = $icon;
+			else $icon = "";
+
 			$service = new stdClass();
 			$service->name = $s->name;
 			$service->description = $s->description;
 			$service->category = $s->category;
 			$service->creator = $s->creator_email;
 			$service->updated = $s->insertion_date;
-			$service->icon = "{$s->name}.jpg";
+			$service->icon = basename($icon);
 			$res->services[] = $service;
 		}
 
 		// respond back to the API
-		$response = new Response();
-		$response->attachments[] = $person->picture_internal;
 		return $response->createFromJSON(json_encode($res));
 	}
 
@@ -773,7 +811,7 @@ class Perfil extends Service
 		$query = "UPDATE person SET $sqlset, last_update_date=CURRENT_TIMESTAMP, updated_by_user=1	WHERE email='$email'";
 		$query = preg_replace("/\s+/", " ", $query);
 		$connection = new Connection();
-		$connection->deepQuery($query);
+		$connection->query($query);
 	}
 
 	/**
