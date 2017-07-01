@@ -37,14 +37,14 @@ class Perfil extends Service
 		$social = new Social();
 		$profile = $social->prepareUserProfile($person[0], $request->lang);
 
-        // check if current user follow the user to lookup
-        $profile->follow = false;
-        $sql = "SELECT COUNT(user1) as total FROM relations WHERE user1 = '{$request->email}' AND user2 = '$emailToLookup' AND type = 'follow';";
-        $r = $connection->query($sql);
-        if ($r[0]->total * 1 > 0)
-            $profile->follow = true;
+		// check if current user follow the user to lookup
+		$profile->follow = false;
+		$sql = "SELECT COUNT(user1) as total FROM relations WHERE user1 = '{$request->email}' AND user2 = '$emailToLookup' AND type = 'follow';";
+		$r = $connection->query($sql);
+		if ($r[0]->total * 1 > 0)
+			$profile->follow = true;
 
-        // get the number of tickts for the raffle
+		// get the number of tickts for the raffle
 		$tickets = $connection->query("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '$emailToLookup'");
 
 		// pass variables to the template
@@ -167,30 +167,22 @@ class Perfil extends Service
 	 */
 	public function _provincia (Request $request)
 	{
+		// get the province codes
 		$provs = array(
-			'PINAR_DEL_RIO',
-			'LA_HABANA',
-			'ARTEMISA',
-			'MAYABEQUE',
-			'MATANZAS',
-			'VILLA_CLARA',
-			'CIENFUEGOS',
-			'SANCTI_SPIRITUS',
-			'CIEGO_DE_AVILA',
-			'CAMAGUEY',
-			'LAS_TUNAS',
-			'HOLGUIN',
-			'GRANMA',
-			'SANTIAGO_DE_CUBA',
-			'GUANTANAMO',
-			'ISLA_DE_LA_JUVENTUD'
+			'PINAR_DEL_RIO', 'LA_HABANA', 'ARTEMISA', 'MAYABEQUE',
+			'MATANZAS', 'VILLA_CLARA', 'CIENFUEGOS', 'SANCTI_SPIRITUS',
+			'CIEGO_DE_AVILA', 'CAMAGUEY', 'LAS_TUNAS', 'HOLGUIN',
+			'GRANMA', 'SANTIAGO_DE_CUBA', 'GUANTANAMO', 'ISLA_DE_LA_JUVENTUD'
 		);
 
+		// create the province names
 		$synon = array();
-		foreach ($provs as $v)
-		{
-			$synon[str_replace('_', ' ', $v)] = $v;
-		}
+		foreach ($provs as $v) $synon[str_replace('_', ' ', $v)] = $v;
+
+		// save country as Cuba
+		$this->update("country='CU', usstate=NULL", $request->email);
+
+		// update the province
 		return $this->subserviceEnum($request, 'province', $provs, 'Diga la provincia donde vive', null, $synon);
 	}
 
@@ -218,10 +210,10 @@ class Perfil extends Service
 		}
 
 		// setup country aliases and typos
-        if($country == "US") $country = "Estados Unidos de America";
-        if($country == "USA") $country = "Estados Unidos de America";
-        if($country == "estados unidos") $country = "Estados Unidos de America";
-        if($country == "kuba") $country = "cu";
+		if($country == "US") $country = "Estados Unidos de America";
+		if($country == "USA") $country = "Estados Unidos de America";
+		if($country == "estados unidos") $country = "Estados Unidos de America";
+		if($country == "kuba") $country = "cu";
 		if($country == "usa") $country = "us";
 		if($country == "estados unidos de america") $country = "us";
 
@@ -246,13 +238,13 @@ class Perfil extends Service
 				$selectedCountry = $c;
 			}
 
-            // select by code
-            $code = strtolower($c->code);
-            if ($code == $l_country || $code == $l_country_original)
-            {
-                $selectedCountry = $c;
-                break;
-            }
+			// select by code
+			$code = strtolower($c->code);
+			if ($code == $l_country || $code == $l_country_original)
+			{
+				$selectedCountry = $c;
+				break;
+			}
 		}
 
 		// if not country was selected, display an error message
@@ -265,7 +257,7 @@ class Perfil extends Service
 		}
 
 		// update country and return empty response
-		$connection->query("UPDATE person SET country = '{$selectedCountry->code}' WHERE email = '{$request->email}'");
+		$this->update("country='{$selectedCountry->code}'", $request->email);
 		return new Response();
 	}
 
@@ -435,13 +427,13 @@ class Perfil extends Service
 			// get the first image attached
 			foreach ($request->attachments as $attach)
 			{
-			    if (is_string($attach))
-                {
-                    $filePath = $attach;
-                    $attach = new stdClass();
-                    $attach->type = image_type_to_mime_type(IMAGETYPE_JPEG);;
-                    $attach->path = $filePath;
-                }
+				if (is_string($attach))
+				{
+					$filePath = $attach;
+					$attach = new stdClass();
+					$attach->type = image_type_to_mime_type(IMAGETYPE_JPEG);;
+					$attach->path = $filePath;
+				}
 
 				if ($attach->type == "image/jpeg")
 				{
@@ -632,7 +624,7 @@ class Perfil extends Service
 		// if the method exist, call it
 		foreach ($json as $key=>$value)
 		{
-		    $key = strtolower($key);
+			$key = strtolower($key);
 			if(method_exists($this, "_$key"))
 			{
 				$req = new Request();
@@ -660,13 +652,12 @@ class Perfil extends Service
 	 */
 	public function _usstate(Request $request)
 	{
-		// get the values from the post
-		$email = $request->email;
-		$state = $request->query;
+		// list of US states
+		$state = strtoupper($request->query);
+		$states = array("AL","AK","AS","AZ","AR","CA","CO","CT","DE","DC","FL","GA","GU","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MH","MA","MI","FM","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","MP","OH","OK","OR","PW","PA","PR","RI","SC","SD","TN","TX","UT","VT","VA","VI","WA","WV","WI","WY");
 
-		// set the new language for the user
-		$connection = new Connection();
-		$connection->query("UPDATE person SET usstate='$state' WHERE email='$email'");
+		// save US state
+		if(in_array($state, $states)) $this->update("usstate='$state', country='US', province=NULL", $request->email);
 		return new Response();
 	}
 
