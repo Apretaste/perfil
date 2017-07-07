@@ -71,16 +71,14 @@ class Perfil extends Service
 	 */
 	public function _nombre (Request $request)
 	{
+		// get the pieces of names
 		$n = $this->utils->fullNameToNamePieces(trim($request->query));
-
 		if ( ! is_array($n)) return new Response();
-		for ($i = 0; $i <= 3; $i ++) $n[$i] = "'{$n[$i]}'";
 
-		$query = " first_name = {$n[0]},
-			middle_name = {$n[1]},
-			last_name = {$n[2]},
-			mother_name = {$n[3]}";
+		// create the query
+		$query = " first_name='{$n[0]}', middle_name='{$n[1]}', last_name='{$n[2]}', mother_name='{$n[3]}'";
 
+		// update the name in the database
 		$this->update($query, $request->email);
 		return new Response();
 	}
