@@ -631,6 +631,7 @@ class Perfil extends Service
 				$req->service = "PERFIL";
 				$req->subservice = $key;
 				$req->query = $value;
+				$req->attachments = $request->attachments;
 				$function = "_$key";
 				$this->$function($req);
 			}
