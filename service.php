@@ -782,7 +782,7 @@ class Perfil extends Service
 		$services = $connection->query("
 			SELECT name, description, category, creator_email, insertion_date
 			FROM service
-			WHERE insertion_date > '$lastUpdate'");
+			WHERE listed=1 AND insertion_date > '$lastUpdate'");
 
 		// add services to the response
 		$res->services = array();
