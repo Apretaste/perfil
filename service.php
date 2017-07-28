@@ -714,7 +714,8 @@ class Perfil extends Service
 		$response = new Response();
 
 		// get the last update date
-		$lastUpdate = empty($request->query) ? "1990-01-01 00:00:00" : $request->query;
+		$lastUpdateTime = empty($request->query) ? 0 : $request->query;
+		$lastUpdateDate = date("Y-m-d H:i:s", $lastUpdateTime);
 
 		// get the person
 		$connection = new Connection();
@@ -722,12 +723,13 @@ class Perfil extends Service
 
 		// create the response
 		$res = new stdClass();
+		$res->timestamp = time();
 		$res->username = $person[0]->username;
 		$res->credit = $person[0]->credit;
 		$res->profile = new stdClass();
 
 		// check if there is any change in the profile
-		if(strtotime($lastUpdate) < strtotime($person[0]->last_update_date))
+		if($lastUpdateTime < strtotime($person[0]->last_update_date))
 		{
 			// get the full profile
 			$social = new Social();
@@ -760,7 +762,7 @@ class Perfil extends Service
 		$notifications = $connection->query("
 			SELECT `text`, origin, link, inserted_date
 			FROM notifications
-			WHERE email='{$request->email}' AND inserted_date > '$lastUpdate'
+			WHERE email='{$request->email}' AND inserted_date > '$lastUpdateDate'
 			ORDER BY inserted_date DESC LIMIT 20");
 
 		// add notifications to the response
@@ -782,7 +784,7 @@ class Perfil extends Service
 		$services = $connection->query("
 			SELECT name, description, category, creator_email, insertion_date
 			FROM service
-			WHERE listed=1 AND insertion_date > '$lastUpdate'");
+			WHERE listed=1 AND insertion_date > '$lastUpdateDate'");
 
 		// add services to the response
 		$res->services = array();
