@@ -84,6 +84,22 @@ class Perfil extends Service
 	}
 
 	/**
+	 * Subservice PHONE
+	 *
+	 * @param Request $request
+	 */
+	public function _phone (Request $request)
+	{
+		// remove all non-numeric characters from the phone
+		$phone = preg_replace("/[0-9]/", "", $request->query);
+
+		// update the phone in the database
+		$this->update(" phone='$phone'", $request->email);
+
+		return new Response();
+	}
+
+	/**
 	 * Subservice TELEFONO
 	 *
 	 * @param Request $request
