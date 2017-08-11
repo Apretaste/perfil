@@ -725,7 +725,7 @@ class Perfil extends Service
 		$res = new stdClass();
 		$res->timestamp = time();
 		$res->username = $person[0]->username;
-		$res->credit = $person[0]->credit;
+		$res->credit = number_format($person[0]->credit, 2);
 		$res->profile = new stdClass();
 
 		// check if there is any change in the profile
