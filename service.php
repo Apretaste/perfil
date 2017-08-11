@@ -94,7 +94,9 @@ class Perfil extends Service
 		$phone = preg_replace('/[^0-9.]+/', '', $request->query);
 
 		// update the phone in the database
-		$this->update(" phone='$phone'", $request->email);
+		$isCell = substr($phone, 0, 1) == 5;
+		if($isCell) $this->update(" cellphone='$phone'", $request->email);
+		else $this->update(" phone='$phone'", $request->email);
 
 		return new Response();
 	}
@@ -739,7 +741,7 @@ class Perfil extends Service
 			$res->profile->full_name = $person->full_name;
 			$res->profile->date_of_birth = $person->date_of_birth;
 			$res->profile->gender = $person->gender;
-			$res->profile->cellphone = $person->cellphone;
+			$res->profile->phone = empty($person->cellphone) ? $person->phone : $person->cellphone;
 			$res->profile->eyes = $person->eyes;
 			$res->profile->skin = $person->skin;
 			$res->profile->body_type = $person->body_type;
