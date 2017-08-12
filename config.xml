@@ -4,8 +4,8 @@
 		<alias>profile</alias>
 		<alias>cuenta</alias>
 	</serviceAliases>
-	<serviceDescription><![CDATA[Muestra el perfil suyo o de otro usuario de Apretaste, conteniendo su cr&eacute;dito, tickets de la Rifa y m&aacute;s informaci&oacute;n &uacute;til. Tambi&eacute;n le permite editar su perfil]]></serviceDescription>
-	<creatorEmail>salvi.pascual@gmail.com</creatorEmail>
+	<serviceDescription>Muestra el perfil suyo o de otro usuario de Apretaste, conteniendo su credito, tickets de la Rifa y mas informacion util. Tambien le permite editar su perfil</serviceDescription>
+	<creatorEmail>salvi@apretaste.com</creatorEmail>
 	<serviceCategory>social</serviceCategory>
 	<serviceUsage>
 		<![CDATA[
@@ -38,5 +38,6 @@
 			Recibir&aacute; un email de respuesta con los datos de su perfil y opciones para editarlos.
 		]]>
 	</serviceUsage>
+	<listed>0</listed>
 	<group>apretaste</group>
 </service>
