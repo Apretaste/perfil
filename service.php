@@ -65,6 +65,27 @@ class Perfil extends Service
 	}
 
 	/**
+	 * Subservice USERNAME
+	 *
+	 * @param Request $request
+	 */
+	public function _username (Request $request)
+	{
+		// clean and shorten the coming text
+		$username = preg_replace("/[^a-zA-Z0-9]+/", "", $request->query);
+		$username = strtolower(substr($username, 0, 10));
+
+		// check if the username exist, else recreate it
+		$connection = new Connection();
+		$exist = $connection->query("SELECT COUNT(email) AS exist FROM person WHERE username='$username'");
+		if($exist[0]->exist) $username = $username . rand(11111, 99999);
+
+		// update the username in the database
+		$this->update(" username='$username'", $request->email);
+		return new Response();
+	}
+
+	/**
 	 * Subservice NOMBRE
 	 *
 	 * @param Request $request
@@ -764,8 +785,16 @@ class Perfil extends Service
 		$notifications = $connection->query("
 			SELECT `text`, origin, link, inserted_date
 			FROM notifications
-			WHERE email='{$request->email}' AND inserted_date > '$lastUpdateDate'
+			WHERE email='{$request->email}'
+			AND inserted_date > '$lastUpdateDate'
+			AND viewed = 0
 			ORDER BY inserted_date DESC LIMIT 20");
+
+		// mark pulled notifications as read
+		if($notifications) $connection->query("
+			UPDATE notifications SET viewed=1
+			WHERE email='{$request->email}'
+			AND inserted_date > '$lastUpdateDate'");
 
 		// add notifications to the response
 		$res->notifications = array();
