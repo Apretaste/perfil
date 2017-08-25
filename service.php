@@ -71,14 +71,14 @@ class Perfil extends Service
 	 */
 	public function _username (Request $request)
 	{
-		// clean and shorten the coming text
+		// clean, shorten and lowercase the text
 		$username = preg_replace("/[^a-zA-Z0-9]+/", "", $request->query);
-		$username = strtolower(substr($username, 0, 10));
+		$username = strtolower(substr($username, 0, 15));
 
 		// check if the username exist, else recreate it
 		$connection = new Connection();
 		$exist = $connection->query("SELECT COUNT(email) AS exist FROM person WHERE username='$username'");
-		if($exist[0]->exist) $username = $username . rand(11111, 99999);
+		if($exist[0]->exist) $username = substr($username, 0, 10) . rand(11111, 99999);
 
 		// update the username in the database
 		$this->update(" username='$username'", $request->email);
