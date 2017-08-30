@@ -811,6 +811,11 @@ class Perfil extends Service
 		$di = \Phalcon\DI\FactoryDefault::getDefault();
 		$wwwroot = $di->get('path')['root'];
 
+		// get list of active services
+		$res->active = array();
+		$active = $connection->query("SELECT name FROM service WHERE listed=1");
+		foreach ($active as $a) $res->active[] = $a->name;
+
 		// get all services since last update
 		$services = $connection->query("
 			SELECT name, description, category, creator_email, insertion_date
