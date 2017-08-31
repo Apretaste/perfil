@@ -41,10 +41,9 @@ class Perfil extends Service
 		$profile->follow = false;
 		$sql = "SELECT COUNT(user1) as total FROM relations WHERE user1 = '{$request->email}' AND user2 = '$emailToLookup' AND type = 'follow';";
 		$r = $connection->query($sql);
-		if ($r[0]->total * 1 > 0)
-			$profile->follow = true;
+		if ($r[0]->total * 1 > 0) $profile->follow = true;
 
-		// get the number of tickts for the raffle
+		// get the number of tickets for the raffle
 		$tickets = $connection->query("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '$emailToLookup'");
 
 		// pass variables to the template
@@ -59,6 +58,7 @@ class Perfil extends Service
 
 		// create a new Response object and input the template and the content
 		$response = new Response();
+		if($request->query) $response->setCache("day");
 		$response->setResponseSubject("Perfil de Apretaste");
 		$response->createFromTemplate("profile.tpl", $responseContent, $image);
 		return $response;
