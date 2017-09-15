@@ -792,7 +792,7 @@ class Perfil extends Service
 
 		// mark pulled notifications as read
 		if($notifications) $connection->query("
-			UPDATE notifications SET viewed=1
+			UPDATE notifications SET viewed=1, viewed_date=CURRENT_TIMESTAMP
 			WHERE email='{$request->email}'
 			AND inserted_date > '$lastUpdateDate'");
 
