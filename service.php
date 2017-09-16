@@ -212,12 +212,13 @@ class Perfil extends Service
 		$l_country_original = strtolower($country_original);
 
 		$selectedCountry = null;
-
+		
 		foreach ($countries as $c)
 		{
 			// check percentage similarity
 			$percent = 0;
-			similar_text($country, strtolower($c->name), $percent);
+			
+			similar_text($l_country, strtolower($c->name), $percent);
 
 			// select the country with greater similarity
 			if ($max < $percent && $percent > 90)
