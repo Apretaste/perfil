@@ -51,7 +51,7 @@
 	<p>Usted tiene {$tickets} ticket(s) para la {link href="RIFA" caption="rifa"}</p>
 {else}
 	{button href="PIROPAZO SI @{$profile->username}" caption="&hearts; Me gusta" color="green"}
-	{button href="NOTA @{$profile->username} Hola @{$profile->username}. Me gusto tu perfil. Pareces una persona interesante y me gustaria saber mas de ti. Por favor respondeme." caption="Enviar nota" color="grey" body="Cambie la nota en el asunto por la que usted desea"}
+	{button href="CHAT @{$profile->username} Hola @{$profile->username}. Me gusto tu perfil. Pareces una persona interesante y me gustaria saber mas de ti. Por favor respondeme." caption="Enviar nota" color="grey" body="Cambie la nota en el asunto por la que usted desea"}
 {/if}
 </center>
 
