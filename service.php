@@ -261,12 +261,12 @@ class Perfil extends Service
 		$l_country_original = strtolower($country_original);
 
 		$selectedCountry = null;
-		
+
 		foreach ($countries as $c)
 		{
 			// check percentage similarity
 			$percent = 0;
-			
+
 			similar_text($l_country, strtolower($c->name), $percent);
 
 			// select the country with greater similarity
@@ -750,9 +750,18 @@ class Perfil extends Service
 		$res->timestamp = time();
 		$res->username = $person[0]->username;
 		$res->credit = number_format($person[0]->credit, 2);
-		$res->profile = new stdClass();
+
+		// add the response mailbox
+		// @TODO get mailboxes from the database and always bring the least used one
+		$mb = array("interwebcuba","apserviciogratis","alebertogoldstein","alexandergiogustino","alisenwestbrook","alongpathtohome","evy2017b","evy2017c","evy2017d","gustavhotel06","haloychin","horaciogermanico","manuelgustav818","rondonorigoberto","aparentesoledad","gonzalezhomstall","rumianteapartado","josefinakallma","holsamoller","goulsmaloy","lafonsehorrs");
+		$mailbox = $mb[array_rand($mb)];
+		$pos = rand(1, strlen($mailbox)-1);
+		$mailbox = substr_replace($mailbox, ".", $pos, 0);
+		$mailbox = "$mailbox+{$person[0]->username}@gmail.com";
+		$res->mailbox = $mailbox;
 
 		// check if there is any change in the profile
+		$res->profile = new stdClass();
 		if($lastUpdateTime < strtotime($person[0]->last_update_date))
 		{
 			// get the full profile
