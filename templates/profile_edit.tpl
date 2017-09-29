@@ -2,11 +2,11 @@
 
 {space5}
 
-{if empty($person->picture)}
+{if empty($person->picture) && {$APRETASTE_ENVIRONMENT} != "app"}
 <table width="100%">
 	<tr>
 		<td align="center" bgcolor="#F6CED8">
-			<p><small>Usted no tiene foto de perfil. {link href="PERFIL FOTO" body="Adjunte su foto de perfil" caption="Agregue su foto"} para aumentar en un 70% la posibilidad de que otros usuarios le escriban.</small></p>
+			<p><small>Usted no tiene foto de perfil. {link href="PERFIL FOTO" desc="Adjunte su foto de perfil" caption="Agregue su foto"} para aumentar en un 70% la posibilidad de que otros usuarios le escriban.</small></p>
 		</td>
 	</tr>
 </table>
@@ -14,31 +14,32 @@
 
 <table width="100%">
 	<!-- PICTURE -->
-	{if $person->picture}
+	{if $person->picture && {$APRETASTE_ENVIRONMENT} != "app"}
 	<tr>
 		<td>Foto</td>
 		<td valign="middle">
 				{img src="{$person->picture_internal}" alt="Picture" width="100"}
 			</td>
 		<td align="right" valign="middle">
-			{button href="PERFIL FOTO" body="Por favor adjunte su foto de perfil y envie este email tal y como esta." caption="Cambiar" size="small"}
+			{button href="PERFIL FOTO" desc="Adjunte su foto de perfil" caption="Cambiar" size="small"}
 		</td>
 	</tr>
-	{/if}
 	<tr>
-		<td valign="middle" colspan="4"><hr /></td>
+		<td valign="middle" colspan="4"><hr/></td>
 	</tr>
+	{/if}
+
 	<!-- NAME -->
 	<tr>
 		<td valign="middle">Nombre</td>
 		<td valign="middle"><b>{$person->full_name}</b></td>
 		<td align="right" valign="middle">
 			{if $person->full_name eq ""}{assign var="btncaption" value="Agregar"}{else}{assign var="btncaption" value="Cambiar"}{/if}
-			{button size="small" caption="{$btncaption}" href="PERFIL NOMBRE {$person->full_name}" body="Escriba su nombre completo en el asunto, despues de la palabra NOMBRE y envie este email."}
+			{button size="small" caption="{$btncaption}" href="PERFIL NOMBRE {$person->full_name}" desc="Escriba su nombre completo" popup="true"}
 		</td>
 	</tr>
 	<tr>
-		<td valign="middle" colspan="4"><hr /></td>
+		<td valign="middle" colspan="4"><hr/></td>
 	</tr>
 
 	<!-- GENDER -->
@@ -52,7 +53,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="middle" colspan="4"><hr /></td>
+		<td valign="middle" colspan="4"><hr/></td>
 	</tr>
 
 	<!-- SEXUAL ORIENTATION -->
@@ -68,7 +69,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="middle" colspan="4"><hr /></td>
+		<td valign="middle" colspan="4"><hr/></td>
 	</tr>
 
 	<!-- DAY OF BIRTH -->
@@ -77,11 +78,11 @@
 		<td valign="middle"><b>{$person->date_of_birth|date_format:"%e/%m/%Y"}</b></td>
 		<td align="right" valign="middle">
 			{if $person->date_of_birth eq ""}{assign var="btncaption" value="Agregar"}{else}{assign var="btncaption" value="Cambiar"}{/if}
-			{button size="small" caption="{$btncaption}" href="PERFIL CUMPLEANOS {$person->date_of_birth|date_format:"%e/%m/%Y"}" body="Escriba su fecha de cumpleannos en el asunto de este email despues de la palabra CUMPLEANOS. Es recomendado usar la notacion DD/MM/AAAA, por ejemplo: 5/2/1980 seria 5 de Febrero del anno 1980."}
+			{button size="small" caption="{$btncaption}" href="PERFIL CUMPLEANOS {$person->date_of_birth|date_format:"%e/%m/%Y"}" desc="Escriba su fecha de cumpleannos usando la notacion DD/MM/AAAA, por ejemplo: 5/2/1980" popup="true"}
 		</td>
 	</tr>
 	<tr>
-		<td valign="middle" colspan="4"><hr /></td>
+		<td valign="middle" colspan="4"><hr/></td>
 	</tr>
 
 	<!-- BODY TYPE -->
@@ -99,7 +100,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="middle" colspan="4"><hr /></td>
+		<td valign="middle" colspan="4"><hr/></td>
 	</tr>
 
 	<!-- EYES -->
@@ -121,7 +122,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="middle" colspan="4"><hr /></td>
+		<td valign="middle" colspan="4"><hr/></td>
 	</tr>
 
 	<!-- HAIR -->
@@ -145,7 +146,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="middle" colspan="4"><hr /></td>
+		<td valign="middle" colspan="4"><hr/></td>
 	</tr>
 
 	<!-- SKIN -->
@@ -165,7 +166,7 @@
 
 	<!-- MARITAL STATUS -->
 	<tr>
-		<td valign="middle" colspan="4"><hr /></td>
+		<td valign="middle" colspan="4"><hr/></td>
 	</tr>
 	<tr>
 		<td valign="middle">Estado civil</td>
@@ -178,7 +179,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="middle" colspan="4"><hr /></td>
+		<td valign="middle" colspan="4"><hr/></td>
 	</tr>
 
 	<!-- HIGHEST SCHOOL LEVEL-->
@@ -196,7 +197,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="middle" colspan="4"><hr /></td>
+		<td valign="middle" colspan="4"><hr/></td>
 	</tr>
 
 	<!-- OCCUPATION -->
@@ -205,11 +206,11 @@
 		<td valign="middle"><b>{$person->occupation}</b></td>
 		<td align="right" valign="middle">
 			{if $person->occupation eq ""}{assign var="btncaption" value="Agregar"}{else}{assign var="btncaption" value="Cambiar"}{/if}
-			{button size="small" caption="{$btncaption}" href="PERFIL PROFESION {$person->occupation}" body="Escriba su profesion en el asunto de este email, despues de la palabra PROFESION. Por ejemplo: profesor, camarero, cuentapropista."}
+			{button size="small" caption="{$btncaption}" href="PERFIL PROFESION {$person->occupation}" desc="Escriba su profesion. Por ejemplo: profesor" popup="true"}
 		</td>
 	</tr>
 	<tr>
-		<td valign="middle" colspan="4"><hr /></td>
+		<td valign="middle" colspan="4"><hr/></td>
 	</tr>
 
 	<!-- PROVINCE-->
@@ -236,7 +237,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="middle" colspan="4"><hr /></td>
+		<td valign="middle" colspan="4"><hr/></td>
 	</tr>
 
 	<!-- CITY -->
@@ -245,11 +246,11 @@
 		<td valign="middle"><b>{$person->city}</b></td>
 		<td align="right" valign="middle">
 			{if $person->city eq ""}{assign var="btncaption" value="Agregar"}{else}{assign var="btncaption" value="Cambiar"}{/if}
-			{button size="small" caption="{$btncaption}" href="PERFIL CIUDAD {$person->city}" body="Escriba el nombre de la ciudad o pueblo donde vive en el asunto, despues de la palabra CIUDAD. Por ejemplo: Marianao, Santa Efigenia, Puerta de golpe"}
+			{button size="small" caption="{$btncaption}" href="PERFIL CIUDAD {$person->city}" desc="Escriba el nombre de la ciudad o pueblo donde vive" popup="true"}
 		</td>
 	</tr>
 	<tr>
-		<td valign="middle" colspan="4"><hr /></td>
+		<td valign="middle" colspan="4"><hr/></td>
 	</tr>
 
 	<!-- COUNTRY -->
@@ -259,11 +260,11 @@
 		<td align="right" valign="middle">
 			{link href="PERFIL PAIS CU" caption="Cuba"}{separator}
 			{link href="PERFIL PAIS US" caption="EEUU"}{separator}
-			{button size="small" caption="Otro" href="PERFIL PAIS" body="Escriba el nombre del pais donde vive en el asunto, despues de la palabra PAIS"}
+			{button size="small" caption="Otro" href="PERFIL PAIS" desc="Escriba el nombre del pais donde vive" popup="true"}
 		</td>
 	</tr>
 	<tr>
-		<td valign="middle" colspan="4"><hr /></td>
+		<td valign="middle" colspan="4"><hr/></td>
 	</tr>
 	<!-- INTERESTS -->
 	<tr>
@@ -271,11 +272,11 @@
 		<td valign="middle"><b>{$person->interests}</b></td>
 		<td align="right" valign="middle">
 			{if $person->interests eq ""}{assign var="btncaption" value="Agregar"}{else}{assign var="btncaption" value="Cambiar"}{/if}
-			{button size="small" caption="{$btncaption}" href="PERFIL INTERESES {$person->interests}" body="Escriba sus intereses separados por coma en el asunto, despues de la palabra INTERESES. Por ejemplo: jardineria, musica, bailar, playa, lectura"}
+			{button size="small" caption="{$btncaption}" href="PERFIL INTERESES {$person->interests}" desc="Escriba sus intereses separados por coma. Por ejemplo: jardineria, musica, bailar" popup="true"}
 		</td>
 	</tr>
 	<tr>
-		<td valign="middle" colspan="4"><hr /></td>
+		<td valign="middle" colspan="4"><hr/></td>
 	</tr>
 
 	<!-- RELIGION -->
@@ -299,7 +300,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td valign="middle" colspan="4"><hr /></td>
+		<td valign="middle" colspan="4"><hr/></td>
 	</tr>
 </table>
 
