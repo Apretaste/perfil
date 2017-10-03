@@ -749,7 +749,7 @@ class Perfil extends Service
 		$res = new stdClass();
 		$res->timestamp = time();
 		$res->username = $person[0]->username;
-		$res->credit = number_format($person[0]->credit, 2);
+		$res->credit = number_format($person[0]->credit, 2, '.', '');
 
 		// add the response mailbox
 		// @TODO get mailboxes from the database and always bring the least used one
