@@ -660,7 +660,7 @@ class Perfil extends Service
 		$json = json_decode($request->query);
 
 		// if the method exist, call it
-		foreach ($json as $key=>$value)
+		if (is_array($json)) foreach ($json as $key=>$value)
 		{
 			$key = strtolower($key);
 			if(method_exists($this, "_$key"))
