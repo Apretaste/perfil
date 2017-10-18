@@ -736,11 +736,12 @@ class Perfil extends Service
 	public function _status(Request $request)
 	{
 		// get data for the app
-		$obj = $this->utils->getExternalAppData($request->email, $request->query);
+		$res = $this->utils->getExternalAppData($request->email, $request->query);
 
 		// respond back to the API
 		$response = new Response();
-		return $response->createFromJSON(json_encode($obj));
+		$response->attachments = $res["attachments"];
+		return $response->createFromJSON($res["json"]);
 	}
 
 	/**
