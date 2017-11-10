@@ -745,6 +745,26 @@ class Perfil extends Service
 	}
 
 	/**
+	 * Change the image quality to send to the user
+	 *
+	 * @author salvipascual
+	 * @api
+	 * @version 1.0
+	 * @param Request $request
+	 * @return Response
+	 */
+	public function _imagen(Request $request)
+	{
+		// list of possible values
+		$quality = strtoupper($request->query);
+		$values = array('ORIGINAL', 'REDUCIDA', 'SIN_IMAGEN');
+
+		// save the image quality
+		if(in_array($quality, $values)) $this->update("img_quality='$quality'", $request->email);
+		return new Response();
+	}
+
+	/**
 	 * Update a profile
 	 *
 	 * @param String $sqlset
