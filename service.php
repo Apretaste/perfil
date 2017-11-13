@@ -735,123 +735,33 @@ class Perfil extends Service
 	 */
 	public function _status(Request $request)
 	{
-		$response = new Response();
-
-		// get the last update date
-		$lastUpdateTime = empty($request->query) ? 0 : $request->query;
-		$lastUpdateDate = date("Y-m-d H:i:s", $lastUpdateTime);
-
-		// get the person
-		$connection = new Connection();
-		$person = $connection->query("SELECT * FROM person WHERE email='{$request->email}'");
-
-		// create the response
-		$res = new stdClass();
-		$res->timestamp = time();
-		$res->username = $person[0]->username;
-		$res->credit = number_format($person[0]->credit, 2, '.', '');
-
-		// add the response mailbox
-		// @TODO get mailboxes from the database and always bring the least used one
-		$mb = array("interwebcuba","apserviciogratis","alebertogoldstein","alexandergiogustino","alisenwestbrook","alongpathtohome","evy2017b","evy2017c","evy2017d","gustavhotel06","haloychin","horaciogermanico","manuelgustav818","rondonorigoberto","aparentesoledad","gonzalezhomstall","rumianteapartado","josefinakallma","holsamoller","goulsmaloy","lafonsehorrs");
-		$mailbox = $mb[array_rand($mb)];
-		$pos = rand(1, strlen($mailbox)-1);
-		$mailbox = substr_replace($mailbox, ".", $pos, 0);
-		$mailbox = "$mailbox+{$person[0]->username}@gmail.com";
-		$res->mailbox = $mailbox;
-
-		// check if there is any change in the profile
-		$res->profile = new stdClass();
-		if($lastUpdateTime < strtotime($person[0]->last_update_date))
-		{
-			// get the full profile
-			$social = new Social();
-			$person = $social->prepareUserProfile($person[0]);
-
-			// add user profile to the response
-			$res->profile->full_name = $person->full_name;
-			$res->profile->date_of_birth = $person->date_of_birth;
-			$res->profile->gender = $person->gender;
-			$res->profile->phone = empty($person->cellphone) ? $person->phone : $person->cellphone;
-			$res->profile->eyes = $person->eyes;
-			$res->profile->skin = $person->skin;
-			$res->profile->body_type = $person->body_type;
-			$res->profile->hair = $person->hair;
-			$res->profile->province = $person->province;
-			$res->profile->city = $person->city;
-			$res->profile->highest_school_level = $person->highest_school_level;
-			$res->profile->occupation = $person->occupation;
-			$res->profile->marital_status = $person->marital_status;
-			$res->profile->interests = $person->interests;
-			$res->profile->sexual_orientation = $person->sexual_orientation;
-			$res->profile->religion = $person->religion;
-			$res->profile->picture = basename($person->picture_internal);
-
-			// attach user picture if exist
-			if($person->picture_internal) $response->attachments[] = $person->picture_internal;
-		}
-
-		// get notifications since last update
-		$notifications = $connection->query("
-			SELECT `text`, origin, link, inserted_date
-			FROM notifications
-			WHERE email='{$request->email}'
-			AND inserted_date > '$lastUpdateDate'
-			AND viewed = 0
-			ORDER BY inserted_date DESC LIMIT 20");
-
-		// mark pulled notifications as read
-		if($notifications) $connection->query("
-			UPDATE notifications SET viewed=1, viewed_date=CURRENT_TIMESTAMP
-			WHERE email='{$request->email}'
-			AND inserted_date > '$lastUpdateDate'");
-
-		// add notifications to the response
-		$res->notifications = array();
-		foreach ($notifications as $n) {
-			$notification = new stdClass();
-			$notification->text = $n->text;
-			$notification->service = $n->origin;
-			$notification->link = $n->link;
-			$notification->received = $n->inserted_date;
-			$res->notifications[] = $notification;
-		}
-
-		// get the path to the www folder
-		$di = \Phalcon\DI\FactoryDefault::getDefault();
-		$wwwroot = $di->get('path')['root'];
-
-		// get list of active services
-		$res->active = array();
-		$active = $connection->query("SELECT name FROM service WHERE listed=1");
-		foreach ($active as $a) $res->active[] = $a->name;
-
-		// get all services since last update
-		$services = $connection->query("
-			SELECT name, description, category, creator_email, insertion_date
-			FROM service
-			WHERE listed=1 AND insertion_date > '$lastUpdateDate'");
-
-		// add services to the response
-		$res->services = array();
-		foreach ($services as $s) {
-			// attach user picture if exist
-			$icon = "$wwwroot/services/{$s->name}/{$s->name}.png";
-			if(file_exists($icon)) $response->attachments[] = $icon;
-			else $icon = "";
-
-			$service = new stdClass();
-			$service->name = $s->name;
-			$service->description = $s->description;
-			$service->category = $s->category;
-			$service->creator = $s->creator_email;
-			$service->updated = $s->insertion_date;
-			$service->icon = basename($icon);
-			$res->services[] = $service;
-		}
+		// get data for the app
+		$res = $this->utils->getExternalAppData($request->email, $request->query);
 
 		// respond back to the API
-		return $response->createFromJSON(json_encode($res));
+		$response = new Response();
+		$response->attachments = $res["attachments"];
+		return $response->createFromJSON($res["json"]);
+	}
+
+	/**
+	 * Change the image quality to send to the user
+	 *
+	 * @author salvipascual
+	 * @api
+	 * @version 1.0
+	 * @param Request $request
+	 * @return Response
+	 */
+	public function _imagen(Request $request)
+	{
+		// list of possible values
+		$quality = strtoupper($request->query);
+		$values = array('ORIGINAL', 'REDUCIDA', 'SIN_IMAGEN');
+
+		// save the image quality
+		if(in_array($quality, $values)) $this->update("img_quality='$quality'", $request->email);
+		return new Response();
 	}
 
 	/**
