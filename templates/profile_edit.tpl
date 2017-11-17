@@ -2,7 +2,7 @@
 
 {space5}
 
-{if empty($person->picture) && {$APRETASTE_ENVIRONMENT} != "app"}
+{if empty($person->picture) && ({$APRETASTE_ENVIRONMENT} != "app" && {$APRETASTE_ENVIRONMENT} != "web")}
 <table width="100%">
 	<tr>
 		<td align="center" bgcolor="#F6CED8">
@@ -14,7 +14,7 @@
 
 <table width="100%">
 	<!-- PICTURE -->
-	{if $person->picture && {$APRETASTE_ENVIRONMENT} != "app"}
+	{if $person->picture && ({$APRETASTE_ENVIRONMENT} != "app" && {$APRETASTE_ENVIRONMENT} != "web")}
 	<tr>
 		<td>Foto</td>
 		<td valign="middle">
@@ -35,7 +35,7 @@
 		<td valign="middle"><b>{$person->full_name}</b></td>
 		<td align="right" valign="middle">
 			{if $person->full_name eq ""}{assign var="btncaption" value="Agregar"}{else}{assign var="btncaption" value="Cambiar"}{/if}
-			{button size="small" caption="{$btncaption}" href="PERFIL NOMBRE {$person->full_name}" desc="Escriba su nombre completo" popup="true"}
+			{button size="small" caption="{$btncaption}" href="PERFIL NOMBRE" desc="Escriba su nombre completo" popup="true" wait="false"}
 		</td>
 	</tr>
 	<tr>
@@ -47,9 +47,9 @@
 		<td valign="middle">Sexo</td>
 		<td valign="middle"><b>{$person->gender}</b></td>
 		<td align="right" valign="middle">
-			{link caption="Masculino" href="PERFIL SEXO MASCULINO"}
+			{link caption="Masculino" href="PERFIL SEXO MASCULINO" wait="false"}
 			{separator}
-			{link caption="Femenino" href="PERFIL SEXO FEMENINO"}
+			{link caption="Femenino" href="PERFIL SEXO FEMENINO" wait="false"}
 		</td>
 	</tr>
 	<tr>
@@ -61,11 +61,11 @@
 		<td valign="middle">Orientaci&oacute;n sexual</td>
 		<td valign="middle"><b>{$person->sexual_orientation}</b></td>
 		<td align="right" valign="middle">
-			{link caption="Hetero" href="PERFIL ORIENTACION HETERO"}
+			{link caption="Hetero" href="PERFIL ORIENTACION HETERO" wait="false"}
 			{separator}
-			{link caption="Gay" href="PERFIL ORIENTACION HOMO"}
+			{link caption="Gay" href="PERFIL ORIENTACION HOMO" wait="false"}
 			{separator}
-			{link caption="Bi" href="PERFIL ORIENTACION BI"}
+			{link caption="Bi" href="PERFIL ORIENTACION BI" wait="false"}
 		</td>
 	</tr>
 	<tr>
@@ -78,7 +78,7 @@
 		<td valign="middle"><b>{$person->date_of_birth|date_format:"%e/%m/%Y"}</b></td>
 		<td align="right" valign="middle">
 			{if $person->date_of_birth eq ""}{assign var="btncaption" value="Agregar"}{else}{assign var="btncaption" value="Cambiar"}{/if}
-			{button size="small" caption="{$btncaption}" href="PERFIL CUMPLEANOS {$person->date_of_birth|date_format:"%e/%m/%Y"}" desc="Escriba su fecha de cumpleannos usando la notacion DD/MM/AAAA, por ejemplo: 5/2/1980" popup="true"}
+			{button size="small" caption="{$btncaption}" href="PERFIL CUMPLEANOS" desc="Escriba su fecha de cumpleannos usando la notacion DD/MM/AAAA, por ejemplo: 5/2/1980" popup="true"  wait="false"}
 		</td>
 	</tr>
 	<tr>
@@ -90,13 +90,13 @@
 		<td valign="middle">Cuerpo</td>
 		<td valign="middle"><b>{$person->body_type}</b></td>
 		<td align="right" valign="middle">
-			{link caption="Delgado" href="PERFIL CUERPO DELGADO"}
+			{link caption="Delgado" href="PERFIL CUERPO DELGADO" wait="false"}
 			{separator}
-			{link caption="Medio" href="PERFIL CUERPO MEDIO"}
+			{link caption="Medio" href="PERFIL CUERPO MEDIO" wait="false"}
 			{separator}
-			{link caption="Extra" href="PERFIL CUERPO EXTRA"}
+			{link caption="Extra" href="PERFIL CUERPO EXTRA" wait="false"}
 			{separator}
-			{link caption="Atl&eacute;tico" href="PERFIL CUERPO ATLETICO"}
+			{link caption="Atl&eacute;tico" href="PERFIL CUERPO ATLETICO" wait="false"}
 		</td>
 	</tr>
 	<tr>
@@ -108,17 +108,17 @@
 		<td valign="middle">Ojos</td>
 		<td valign="middle"><b>{$person->eyes}</b></td>
 		<td align="right" valign="middle">
-			{link caption="Negros" href="PERFIL OJOS NEGRO"}
+			{link caption="Negros" href="PERFIL OJOS NEGRO" wait="false"}
 			{separator}
-			{link caption="Carmelitas" href="PERFIL OJOS CARMELITA"}
+			{link caption="Carmelitas" href="PERFIL OJOS CARMELITA" wait="false"}
 			{separator}
-			{link caption="Verdes" href="PERFIL OJOS VERDE"}
+			{link caption="Verdes" href="PERFIL OJOS VERDE" wait="false"}
 			{separator}
-			{link caption="Azules" href="PERFIL OJOS AZUL"}
+			{link caption="Azules" href="PERFIL OJOS AZUL" wait="false"}
 			{separator}
-			{link caption="Avellana" href="PERFIL OJOS AVELLANA"}
+			{link caption="Avellana" href="PERFIL OJOS AVELLANA" wait="false"}
 			{separator}
-			{link caption="Otro color" href="PERFIL OJOS OTRO"}
+			{link caption="Otro color" href="PERFIL OJOS OTRO" wait="false"}
 		</td>
 	</tr>
 	<tr>
@@ -130,19 +130,19 @@
 		<td valign="middle">Pelo</td>
 		<td valign="middle"><b>{$person->hair}</b></td>
 		<td align="right" valign="middle">
-			{link caption="Trigue&ntilde;o" href="PERFIL PELO TRIGUENO"}
+			{link caption="Trigue&ntilde;o" href="PERFIL PELO TRIGUENO" wait="false"}
 			{separator}
-			{link caption="Casta&ntilde;o" href="PERFIL PELO CASTANO"}
+			{link caption="Casta&ntilde;o" href="PERFIL PELO CASTANO" wait="false"}
 			{separator}
-			{link caption="Rubio" href="PERFIL PELO RUBIO"}
+			{link caption="Rubio" href="PERFIL PELO RUBIO" wait="false"}
 			{separator}
-			{link caption="Negro" href="PERFIL PELO NEGRO"}
+			{link caption="Negro" href="PERFIL PELO NEGRO" wait="false"}
 			{separator}
-			{link caption="Rojo" href="PERFIL PELO ROJO"}
+			{link caption="Rojo" href="PERFIL PELO ROJO" wait="false"}
 			{separator}
-			{link caption="Blanco" href="PERFIL PELO BLANCO"}
+			{link caption="Blanco" href="PERFIL PELO BLANCO" wait="false"}
 			{separator}
-			{link caption="Otro" href="PERFIL PELO OTRO"}
+			{link caption="Otro" href="PERFIL PELO OTRO" wait="false"}
 		</td>
 	</tr>
 	<tr>
@@ -154,13 +154,13 @@
 		<td valign="middle">Piel</td>
 		<td valign="middle"><b>{$person->skin}</b></td>
 		<td align="right" valign="middle">
-			{link caption="Blanca" href="PERFIL PIEL BLANCO"}
+			{link caption="Blanca" href="PERFIL PIEL BLANCO" wait="false"}
 			{separator}
-			{link caption="Negra" href="PERFIL PIEL NEGRO"}
+			{link caption="Negra" href="PERFIL PIEL NEGRO" wait="false"}
 			{separator}
-			{link caption="Mestiza" href="PERFIL PIEL MESTIZO"}
+			{link caption="Mestiza" href="PERFIL PIEL MESTIZO" wait="false"}
 			{separator}
-			{link caption="Otro" href="PERFIL PIEL OTRO"}
+			{link caption="Otro" href="PERFIL PIEL OTRO" wait="false"}
 		</td>
 	</tr>
 
@@ -172,10 +172,13 @@
 		<td valign="middle">Estado civil</td>
 		<td valign="middle"><b>{$person->marital_status}</b></td>
 		<td align="right" valign="middle">
-			{link caption="Soltero" href="PERFIL ESTADO SOLTERO"}{separator}
-			{link caption="Saliendo" href="PERFIL ESTADO SALIENDO"}{separator}
-			{link caption="Comprometido" href="PERFIL ESTADO COMPROMETIDO"}{separator}
-			{link caption="Casado" href="PERFIL ESTADO CASADO"}
+			{link caption="Soltero" href="PERFIL ESTADO SOLTERO" wait="false"}
+			{separator}
+			{link caption="Saliendo" href="PERFIL ESTADO SALIENDO" wait="false"}
+			{separator}
+			{link caption="Comprometido" href="PERFIL ESTADO COMPROMETIDO" wait="false"}
+			{separator}
+			{link caption="Casado" href="PERFIL ESTADO CASADO" wait="false"}
 		</td>
 	</tr>
 	<tr>
@@ -187,13 +190,19 @@
 		<td valign="middle">Nivel escolar</td>
 		<td valign="middle"><b>{$person->highest_school_level}</b></td>
 		<td align="right" valign="middle">
-			{link caption="Primaria" href="PERFIL NIVEL PRIMARIO"}{separator}
-			{link caption="Secundaria" href="PERFIL NIVEL SECUNDARIO"}{separator}
-			{link caption="T&eacute;cnico" href="PERFIL NIVEl TECNICO"}{separator}
-			{link caption="Universitario" href="PERFIL NIVEl UNIVERSITARIO"}{separator}
-			{link caption="Postgraduado" href="PERFIL NIVEl POSTGRADUADO"}{separator}
-			{link caption="Doctorado" href="PERFIL NIVEl DOCTORADO"}{separator}
-			{link caption="Otro" href="PERFIL NIVEl OTRO"}
+			{link caption="Primaria" href="PERFIL NIVEL PRIMARIO" wait="false"}
+			{separator}
+			{link caption="Secundaria" href="PERFIL NIVEL SECUNDARIO" wait="false"}
+			{separator}
+			{link caption="T&eacute;cnico" href="PERFIL NIVEl TECNICO" wait="false"}
+			{separator}
+			{link caption="Universitario" href="PERFIL NIVEl UNIVERSITARIO" wait="false"}
+			{separator}
+			{link caption="Postgraduado" href="PERFIL NIVEl POSTGRADUADO" wait="false"}
+			{separator}
+			{link caption="Doctorado" href="PERFIL NIVEl DOCTORADO" wait="false"}
+			{separator}
+			{link caption="Otro" href="PERFIL NIVEl OTRO" wait="false"}
 		</td>
 	</tr>
 	<tr>
@@ -206,7 +215,7 @@
 		<td valign="middle"><b>{$person->occupation}</b></td>
 		<td align="right" valign="middle">
 			{if $person->occupation eq ""}{assign var="btncaption" value="Agregar"}{else}{assign var="btncaption" value="Cambiar"}{/if}
-			{button size="small" caption="{$btncaption}" href="PERFIL PROFESION {$person->occupation}" desc="Escriba su profesion. Por ejemplo: profesor" popup="true"}
+			{button size="small" caption="{$btncaption}" href="PERFIL PROFESION" desc="Escriba su profesion. Por ejemplo: profesor" popup="true" wait="false"}
 		</td>
 	</tr>
 	<tr>
@@ -218,22 +227,37 @@
 		<td valign="middle">Provincia</td>
 		<td valign="middle"><b>{$person->province}</b></td>
 		<td align="right" valign="middle">
-			{link caption="Pinar" href="PERFIL PROVINCIA PINAR_DEL_RIO"}{separator}
-			{link caption="Habana" href="PERFIL PROVINCIA LA_HABANA"}{separator}
-			{link caption="Artemisa" href="PERFIL PROVINCIA ARTEMISA"}{separator}
-			{link caption="Mayabeque" href="PERFIL PROVINCIA MAYABEQUE"}{separator}
-			{link caption="Matanzas" href="PERFIL PROVINCIA MATANZAS"}{separator}
-			{link caption="Las Villas" href="PERFIL PROVINCIA VILLA CLARA"}{separator}
-			{link caption="Cienfuegos" href="PERFIL PROVINCIA CIENFUEGOS"}{separator}
-			{link caption="Sancti Sp&iacute;ritus" href="PERFIL PROVINCIA SANCTI_SPIRITUS"}{separator}
-			{link caption="Ciego" href="PERFIL PROVINCIA CIEGO_DE_AVILA"}{separator}
-			{link caption="Camag&uuml;ey" href="PERFIL PROVINCIA CAMAGUEY"}{separator}
-			{link caption="Las Tunas" href="PERFIL PROVINCIA LAS_TUNAS"}{separator}
-			{link caption="Holgu&iacute;n" href="PERFIL PROVINCIA HOLGUIN"}{separator}
-			{link caption="Granma" href="PERFIL PROVINCIA GRANMA"}{separator}
-			{link caption="Santiago" href="PERFIL PROVINCIA SANTIAGO_DE_CUBA"}{separator}
-			{link caption="Guant&aacute;namo" href="PERFIL PROVINCIA GUANTANAMO"}{separator}
-			{link caption="Isla" href="PERFIL PROVINCIA ISLA_DE_LA_JUVENTUD"}
+			{link caption="Pinar" href="PERFIL PROVINCIA PINAR_DEL_RIO" wait="false"}
+			{separator}
+			{link caption="Habana" href="PERFIL PROVINCIA LA_HABANA" wait="false"}
+			{separator}
+			{link caption="Artemisa" href="PERFIL PROVINCIA ARTEMISA" wait="false"}
+			{separator}
+			{link caption="Mayabeque" href="PERFIL PROVINCIA MAYABEQUE" wait="false"}
+			{separator}
+			{link caption="Matanzas" href="PERFIL PROVINCIA MATANZAS" wait="false"}
+			{separator}
+			{link caption="Las Villas" href="PERFIL PROVINCIA VILLA CLARA" wait="false"}
+			{separator}
+			{link caption="Cienfuegos" href="PERFIL PROVINCIA CIENFUEGOS" wait="false"}
+			{separator}
+			{link caption="Sancti Sp&iacute;ritus" href="PERFIL PROVINCIA SANCTI_SPIRITUS" wait="false"}
+			{separator}
+			{link caption="Ciego" href="PERFIL PROVINCIA CIEGO_DE_AVILA" wait="false"}
+			{separator}
+			{link caption="Camag&uuml;ey" href="PERFIL PROVINCIA CAMAGUEY" wait="false"}
+			{separator}
+			{link caption="Las Tunas" href="PERFIL PROVINCIA LAS_TUNAS" wait="false"}
+			{separator}
+			{link caption="Holgu&iacute;n" href="PERFIL PROVINCIA HOLGUIN" wait="false"}
+			{separator}
+			{link caption="Granma" href="PERFIL PROVINCIA GRANMA" wait="false"}
+			{separator}
+			{link caption="Santiago" href="PERFIL PROVINCIA SANTIAGO_DE_CUBA" wait="false"}
+			{separator}
+			{link caption="Guant&aacute;namo" href="PERFIL PROVINCIA GUANTANAMO" wait="false"}
+			{separator}
+			{link caption="Isla" href="PERFIL PROVINCIA ISLA_DE_LA_JUVENTUD" wait="false"}
 		</td>
 	</tr>
 	<tr>
@@ -246,7 +270,7 @@
 		<td valign="middle"><b>{$person->city}</b></td>
 		<td align="right" valign="middle">
 			{if $person->city eq ""}{assign var="btncaption" value="Agregar"}{else}{assign var="btncaption" value="Cambiar"}{/if}
-			{button size="small" caption="{$btncaption}" href="PERFIL CIUDAD {$person->city}" desc="Escriba el nombre de la ciudad o pueblo donde vive" popup="true"}
+			{button size="small" caption="{$btncaption}" href="PERFIL CIUDAD" desc="Escriba el nombre de la ciudad o pueblo donde vive" popup="true" wait="false"}
 		</td>
 	</tr>
 	<tr>
@@ -258,9 +282,11 @@
 		<td valign="middle">Pa&iacute;s</td>
 		<td valign="middle"><b>{$person->country_name}</b></td>
 		<td align="right" valign="middle">
-			{link href="PERFIL PAIS CU" caption="Cuba"}{separator}
-			{link href="PERFIL PAIS US" caption="EEUU"}{separator}
-			{button size="small" caption="Otro" href="PERFIL PAIS" desc="Escriba el nombre del pais donde vive" popup="true"}
+			{link href="PERFIL PAIS CU" caption="Cuba" wait="false"}
+			{separator}
+			{link href="PERFIL PAIS US" caption="EEUU" wait="false"}
+			{separator}
+			{button size="small" caption="Otro" href="PERFIL PAIS" desc="Escriba el nombre del pais donde vive" popup="true" wait="false"}
 		</td>
 	</tr>
 	<tr>
@@ -272,7 +298,7 @@
 		<td valign="middle"><b>{$person->interests}</b></td>
 		<td align="right" valign="middle">
 			{if $person->interests eq ""}{assign var="btncaption" value="Agregar"}{else}{assign var="btncaption" value="Cambiar"}{/if}
-			{button size="small" caption="{$btncaption}" href="PERFIL INTERESES {$person->interests}" desc="Escriba sus intereses separados por coma. Por ejemplo: jardineria, musica, bailar" popup="true"}
+			{button size="small" caption="{$btncaption}" href="PERFIL INTERESES" desc="Escriba sus intereses separados por coma. Por ejemplo: jardineria, musica, bailar" popup="true" wait="false"}
 		</td>
 	</tr>
 	<tr>
@@ -284,19 +310,31 @@
 		<td valign="middle">Religi&oacute;n</td>
 		<td valign="middle"><b>{$person->religion}</b></td>
 		<td align="right" valign="middle">
-			{link caption="Ate&iacute;smo" href="PERFIL RELIGION ATEISMO"}{separator}
-			{link caption="Secularismo" href="PERFIL RELIGION SECULARISMO"}{separator}
-			{link caption="Agnosticismo" href="PERFIL RELIGION AGNOSTICISMO"}{separator}
-			{link caption="Catolicismo" href="PERFIL RELIGION CATOLICISMO"}{separator}
-			{link caption="Cristianismo" href="PERFIL RELIGION CRISTIANISMO"}{separator}
-			{link caption="Islam" href="PERFIL RELIGION ISLAM"}{separator}
-			{link caption="Raftafarismo" href="PERFIL RELIGION PROTESTANTE"}{separator}
-			{link caption="Judaismo" href="PERFIL RELIGION JUDAISMO"}{separator}
-			{link caption="Espiritismo" href="PERFIL RELIGION SANTERO"}{separator}
-			{link caption="Sijismo" href="PERFIL RELIGION YORUBA"}{separator}
-			{link caption="Sijismo" href="PERFIL RELIGION ABAKUA"}{separator}
-			{link caption="Budismo" href="PERFIL RELIGION BUDISMO"}{separator}
-			{link caption="Otra" href="PERFIL RELIGION OTRA"}
+			{link caption="Ate&iacute;smo" href="PERFIL RELIGION ATEISMO" wait="false"}
+			{separator}
+			{link caption="Secularismo" href="PERFIL RELIGION SECULARISMO" wait="false"}
+			{separator}
+			{link caption="Agnosticismo" href="PERFIL RELIGION AGNOSTICISMO" wait="false"}
+			{separator}
+			{link caption="Catolicismo" href="PERFIL RELIGION CATOLICISMO" wait="false"}
+			{separator}
+			{link caption="Cristianismo" href="PERFIL RELIGION CRISTIANISMO" wait="false"}
+			{separator}
+			{link caption="Islam" href="PERFIL RELIGION ISLAM" wait="false"}
+			{separator}
+			{link caption="Raftafarismo" href="PERFIL RELIGION PROTESTANTE" wait="false"}
+			{separator}
+			{link caption="Judaismo" href="PERFIL RELIGION JUDAISMO" wait="false"}
+			{separator}
+			{link caption="Espiritismo" href="PERFIL RELIGION SANTERO" wait="false"}
+			{separator}
+			{link caption="Sijismo" href="PERFIL RELIGION YORUBA" wait="false"}
+			{separator}
+			{link caption="Sijismo" href="PERFIL RELIGION ABAKUA" wait="false"}
+			{separator}
+			{link caption="Budismo" href="PERFIL RELIGION BUDISMO" wait="false"}
+			{separator}
+			{link caption="Otra" href="PERFIL RELIGION OTRA" wait="false"}
 		</td>
 	</tr>
 	<tr>
