@@ -565,7 +565,7 @@ class Perfil extends Service
 		if ($person->gender == 'M') $person->gender = "Masculino";
 		if ($person->gender == 'F') $person->gender = "Femenino";
 		$person->country_name = $this->utils->getCountryNameByCode($person->country);
-		$person->interests = implode(", ", $person->interests);
+		$person->interests = count($person->interests);
 		$image = $person->picture ? array($person->picture_internal) : array();
 
 		// create date for the selects

@@ -1,13 +1,17 @@
-<h1>Edite su perfil</h1>
+{space10}
 
 <!-- PICTURE -->
 {if {$APRETASTE_ENVIRONMENT} != "app"}
-	<table width="100%"><tr><td align="center">
-		{if $person->picture}
+	<table width="100%">
+		<tr><td align="center">
+			{if $person->picture}
 			{img src="{$person->picture_internal}" alt="Picture" width="100"}
-		{else}{noimage}{/if}
-		{button color="grey" href="PERFIL FOTO" desc="Adjunte su foto de perfil" caption="Cambiar" size="small" wait="false"}
-	</td></tr></table>
+			{else}{noimage}{/if}
+		</td></tr>
+		<tr><td align="center">
+			{button color="grey" href="PERFIL FOTO" desc="Adjunte su foto de perfil" caption="Cambiar" size="small" wait="false"}
+		</td></tr>
+	</table>
 	{space15}
 {/if}
 
@@ -22,14 +26,14 @@
 	<!-- GENDER -->
 	<tr>
 		<td valign="middle"><small>Sexo</small></td>
-		<td></td>
+		<td valign="middle"><b>{$person->gender|lower|capitalize}</b></td>
 		<td align="right" valign="middle">{select options="{$options->gender}" selected="{$person->gender}"}</td>
 	</tr>
 
 	<!-- SEXUAL ORIENTATION -->
 	<tr>
 		<td valign="middle"><small>Orientaci&oacute;n sexual</small></td>
-		<td></td>
+		<td valign="middle"><b>{$person->sexual_orientation|lower|capitalize}</b></td>
 		<td align="right" valign="middle">{select options="{$options->sexual_orientation}" selected="{$person->sexual_orientation}"}</td>
 	</tr>
 
@@ -43,42 +47,42 @@
 	<!-- BODY TYPE -->
 	<tr>
 		<td valign="middle"><small>Cuerpo</small></td>
-		<td></td>
+		<td valign="middle"><b>{$person->body_type|lower|capitalize}</b></td>
 		<td align="right" valign="middle">{select options="{$options->body_type}" selected="{$person->body_type}"}</td>
 	</tr>
 
 	<!-- EYES -->
 	<tr>
 		<td valign="middle"><small>Ojos</small></td>
-		<td></td>
+		<td valign="middle"><b>{$person->eyes|lower|capitalize}</b></td>
 		<td align="right" valign="middle">{select options="{$options->eyes}" selected="{$person->eyes}"}</td>
 	</tr>
 
 	<!-- HAIR -->
 	<tr>
 		<td valign="middle"><small>Pelo</small></td>
-		<td></td>
+		<td valign="middle"><b>{$person->hair|lower|capitalize}</b></td>
 		<td align="right" valign="middle">{select options="{$options->hair}" selected="{$person->hair}"}</td>
 	</tr>
 
 	<!-- SKIN -->
 	<tr>
 		<td valign="middle"><small>Piel</small></td>
-		<td></td>
+		<td valign="middle"><b>{$person->skin|lower|capitalize}</b></td>
 		<td align="right" valign="middle">{select options="{$options->skin}" selected="{$person->skin}"}</td>
 	</tr>
 
 	<!-- MARITAL STATUS -->
 	<tr>
 		<td valign="middle"><small>Estado civil</small></td>
-		<td></td>
+		<td valign="middle"><b>{$person->marital_status|lower|capitalize}</b></td>
 		<td align="right" valign="middle">{select options="{$options->marital_status}" selected="{$person->marital_status}"}</td>
 	</tr>
 
 	<!-- HIGHEST SCHOOL LEVEL-->
 	<tr>
 		<td valign="middle"><small>Nivel escolar</small></td>
-		<td></td>
+		<td valign="middle"><b>{$person->highest_school_level|lower|capitalize}</b></td>
 		<td align="right" valign="middle">{select options="{$options->highest_school_level}" selected="{$person->highest_school_level}"}</td>
 	</tr>
 
@@ -102,7 +106,7 @@
 	<!-- PROVINCE-->
 	<tr>
 		<td valign="middle"><small>Provincia</small></td>
-		<td></td>
+		<td valign="middle"><b>{$person->province|lower|capitalize}</b></td>
 		<td align="right" valign="middle">{select options="{$options->province}" selected="{$person->province}"}</td>
 	</tr>
 
@@ -116,14 +120,14 @@
 	<!-- INTERESTS -->
 	<tr>
 		<td valign="middle"><small>Intereses</small></td>
-		<td valign="middle"><b>{$person->interests|lower}</b></td>
+		<td valign="middle"><b>{$person->interests} intereses</b></td>
 		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL INTERESES" desc="Escriba sus intereses separados por coma. Por ejemplo: jardineria, musica, bailar" popup="true" wait="false"}</td>
 	</tr>
 
 	<!-- RELIGION -->
 	<tr>
 		<td valign="middle"><small>Religi&oacute;n</small></td>
-		<td></td>
+		<td valign="middle"><b>{$person->religion|lower|capitalize}</b></td>
 		<td align="right" valign="middle">{select options="{$options->religion}" selected="{$person->religion}"}</td>
 	</tr>
 </table>
