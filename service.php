@@ -1,11 +1,23 @@
 <?php
 
+/**
+ * Perfil
+ *
+ * Apretaste Service
+ *
+ * @version 1.1
+ *
+ * @author @salvipascual
+ * @author @kumahacker
+ */
 class Perfil extends Service
 {
+
 	/**
 	 * Display your profile
 	 *
 	 * @param Request $request
+	 *
 	 * @return Response
 	 */
 	public function _main (Request $request)
@@ -17,11 +29,11 @@ class Perfil extends Service
 		// get the email for the profile in case it is a username
 		if ( ! filter_var($emailToLookup, FILTER_VALIDATE_EMAIL))
 		{
-			$emailToLookup = $this->utils->getEmailFromUsername($emailToLookup);
+			$emailToLookup = Utils::getEmailFromUsername($emailToLookup);
 		}
 
 		// check if the person exist. If not, message the requestor
-		if ( ! $this->utils->personExist($emailToLookup))
+		if ( ! Utils::personExist($emailToLookup))
 		{
 			$response = new Response();
 			$response->setResponseSubject("No encontramos un perfil para ese usuario");
@@ -30,8 +42,7 @@ class Perfil extends Service
 		}
 
 		// get the person
-		$connection = new Connection();
-		$person = $connection->query("SELECT * FROM person WHERE email = '$emailToLookup'");
+		$person = Connection::query("SELECT * FROM person WHERE email = '$emailToLookup'");
 
 		// prepare the full profile
 		$social = new Social();
@@ -40,11 +51,11 @@ class Perfil extends Service
 		// check if current user follow the user to lookup
 		$profile->follow = false;
 		$sql = "SELECT COUNT(user1) as total FROM relations WHERE user1 = '{$request->email}' AND user2 = '$emailToLookup' AND type = 'follow';";
-		$r = $connection->query($sql);
+		$r = Connection::query($sql);
 		if ($r[0]->total * 1 > 0) $profile->follow = true;
 
 		// get the number of tickets for the raffle
-		$tickets = $connection->query("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '$emailToLookup'");
+		$tickets = Connection::query("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '$emailToLookup'");
 
 		// pass variables to the template
 		$responseContent = array(
@@ -68,6 +79,8 @@ class Perfil extends Service
 	 * Subservice USERNAME
 	 *
 	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function _username (Request $request)
 	{
@@ -76,25 +89,28 @@ class Perfil extends Service
 		$username = strtolower(substr($username, 0, 15));
 
 		// check if the username exist, else recreate it
-		$connection = new Connection();
-		$exist = $connection->query("SELECT COUNT(email) AS exist FROM person WHERE username='$username'");
+		$exist = Connection::query("SELECT COUNT(email) AS exist FROM person WHERE username='$username'");
 		if($exist[0]->exist) $username = substr($username, 0, 10) . rand(11111, 99999);
 
 		// update the username in the database
-		$this->update(" username='$username'", $request->email);
-		return new Response();
+		$request->query = $username;
+		return $this->subServiceSimple($request, 'username', null, 15);
 	}
 
 	/**
 	 * Subservice NOMBRE
 	 *
 	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function _nombre (Request $request)
 	{
 		// get the pieces of names
-		$n = $this->utils->fullNameToNamePieces(trim($request->query));
+		$n = Utils::fullNameToNamePieces(trim($request->query));
 		if ( ! is_array($n)) return new Response();
+
+		for($i=0; $i<4; $i++) $n[$i] = substr($n[$i], 0 , 50);
 
 		// create the query
 		$query = " first_name='{$n[0]}', middle_name='{$n[1]}', last_name='{$n[2]}', mother_name='{$n[3]}'";
@@ -108,64 +124,68 @@ class Perfil extends Service
 	 * Subservice PHONE
 	 *
 	 * @param Request $request
+	 * @return Response
 	 */
 	public function _phone (Request $request)
 	{
 		// remove all non-numeric characters from the phone
 		$phone = preg_replace('/[^0-9.]+/', '', $request->query);
+		$request->query = $phone;
 
-		// update the phone in the database
-		$isCell = substr($phone, 0, 1) == 5;
-		if($isCell) $this->update(" cellphone='$phone'", $request->email);
-		else $this->update(" phone='$phone'", $request->email);
+		// is cell or not?
+		$field = 'phone';
+		if(substr($phone, 0, 1) == '5') $field = 'cellphone';
 
-		return new Response();
+		// update
+		return $this->subServiceSimple($request, $field, null, 10);
 	}
 
 	/**
 	 * Subservice TELEFONO
+	 * This function call to _phone for backward compatibility
 	 *
 	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function _telefono (Request $request)
 	{
 		// get only numbers from string
-		$phone = preg_replace('/\D/', '', $request->query);
+		//$phone = preg_replace('/\D/', '', $request->query);
 
-		// save phone to the database
-		if($phone) {
-			$sql = "phone = '$phone'";
-			$this->update($sql, $request->email);
-		}
-
-		// do not send emails back
-		return new Response();
+		return $this->_phone($request);
 	}
 
 	/**
 	 * Subservice CUMPLEANOS
 	 *
 	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function _cumpleanos (Request $request)
 	{
-		return $this->subserviceDate($request, 'date_of_birth');
+		return $this->subServiceDate($request, 'date_of_birth');
 	}
 
 	/**
 	 * Subservice PROFESION
 	 *
 	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function _profesion (Request $request)
 	{
-		return $this->subserviceSimple($request, 'occupation');
+		return $this->subServiceSimple($request, 'occupation', null, 50);
 	}
 
 	/**
 	 * Subservice RELIGION
 	 *
 	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function _religion (Request $request)
 	{
@@ -193,13 +213,14 @@ class Perfil extends Service
 			'BUDISTA' => 'BUDISMO'
 		);
 
-		return $this->subserviceEnum($request, 'religion', $religions, 'Dinos tu religion o si careces de ella', null, $synon);
+		return $this->subServiceEnum($request, 'religion', $religions, 'Dinos tu religion o si careces de ella', null, $synon);
 	}
 
 	/**
 	 * Subservice PROVINCIA
 	 *
 	 * @param Request $request
+	 *
 	 * @return Response
 	 */
 	public function _provincia (Request $request)
@@ -220,20 +241,20 @@ class Perfil extends Service
 		$this->update("country='CU', usstate=NULL", $request->email);
 
 		// update the province
-		return $this->subserviceEnum($request, 'province', $provs, 'Diga la provincia donde vive', null, $synon);
+		return $this->subServiceEnum($request, 'province', $provs, 'Diga la provincia donde vive', null, $synon);
 	}
 
 	/**
 	 * Subservice PAIS
 	 *
 	 * @param Request $request
+	 *
 	 * @return Response
 	 */
 	public function _pais (Request $request)
 	{
 		// get the list of countries
-		$connection = new Connection();
-		$countries = $connection->query("SELECT code, es AS name FROM countries ORDER BY code");
+		$countries = Connetion::query("SELECT code, es AS name FROM countries ORDER BY code");
 		$country = trim($request->query);
 		$country_original = $country;
 
@@ -303,60 +324,60 @@ class Perfil extends Service
 	 * Subservice CIUDAD
 	 *
 	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function _ciudad (Request $request)
 	{
-		$query = trim($request->query);
-
-		if ( ! empty($query))
-		{
-			$this->update("city = '{$query}'", $request->email);
-		}
-
-		return new Response();
+		return $this->subServiceSimple($request, 'city', null, 100);
 	}
 
 	/**
 	 * Subservice SEXO
 	 *
 	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function _sexo (Request $request)
 	{
-		return $this->subserviceEnum($request, 'gender', array(
+		return $this->subServiceEnum($request, 'gender', [
 				'F',
 				'M'
-		), 'Diga su sexo', null, array(
+		], 'Diga su sexo', null, [
 				'FEMENINO' => 'F',
 				'MUJER' => 'F',
 				'MASCULINO' => 'M',
 				'HOMBRE' => 'M'
-		));
+		]);
 	}
 
 	/**
 	 * Subservice NIVEL
 	 *
 	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function _nivel (Request $request)
 	{
-		return $this->subserviceEnum($request, 'highest_school_level',
-				array(
-						'PRIMARIO',
-						'SECUNDARIO',
-						'TECNICO',
-						'UNIVERSITARIO',
-						'POSTGRADUADO',
-						'DOCTORADO',
-						'OTRO'
-				), 'Diga su nivel escolar', 'ESCOLAR');
+		return $this->subServiceEnum($request, 'highest_school_level',[
+				'PRIMARIO',
+				'SECUNDARIO',
+				'TECNICO',
+				'UNIVERSITARIO',
+				'POSTGRADUADO',
+				'DOCTORADO',
+				'OTRO'
+		], 'Diga su nivel escolar', 'ESCOLAR');
 	}
 
 	/**
 	 * Subservice alias for NIVEL
 	 *
 	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function _nivelescolar (Request $request)
 	{
@@ -372,18 +393,20 @@ class Perfil extends Service
 	 */
 	public function _estado (Request $request)
 	{
-		return $this->subserviceEnum($request, 'marital_status', array(
+		return $this->subServiceEnum($request, 'marital_status', [
 				'SOLTERO',
 				'SALIENDO',
 				'COMPROMETIDO',
 				'CASADO'
-		), 'Diga su estado civil', 'CIVIL');
+		], 'Diga su estado civil', 'CIVIL');
 	}
 
 	/**
 	 * Subservice ESTADO alias
 	 *
 	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function _estadocivil (Request $request)
 	{
@@ -394,36 +417,39 @@ class Perfil extends Service
 	 * Subservice PELO
 	 *
 	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function _pelo (Request $request)
 	{
-		return $this->subserviceEnum($request, 'hair',
-			array(
+		return $this->subServiceEnum($request, 'hair',[
 				'TRIGUENO',
 				'CASTANO',
 				'RUBIO',
 				'NEGRO',
 				'ROJO',
 				'BLANCO',
-				'OTRO'),
-			'Diga su color de pelo');
+				'OTRO'
+		], 'Diga su color de pelo');
 	}
 
 	/**
 	 * Subservice OJOS
 	 *
 	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function _ojos (Request $request)
 	{
-		return $this->subserviceEnum($request, 'eyes', array(
+		return $this->subServiceEnum($request, 'eyes', [
 				'NEGRO',
 				'CARMELITA',
 				'VERDE',
 				'AZUL',
 				'AVELLANA',
 				'OTRO'
-		), 'Diga el color de sus ojos', null, array(
+		], 'Diga el color de sus ojos', null, array(
 				'NEGROS' => 'NEGRO',
 				'CARMELITAS' => 'CARMELITA',
 				'VERDES' => 'VERDE',
@@ -435,20 +461,24 @@ class Perfil extends Service
 	 * Subservice CUERPO
 	 *
 	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function _cuerpo (Request $request)
 	{
-		return $this->subserviceEnum($request, 'body_type', array('DELGADO','MEDIO','EXTRA','ATLETICO'), 'Diga como es su cuerpo');
+		return $this->subServiceEnum($request, 'body_type', array('DELGADO', 'MEDIO', 'EXTRA', 'ATLETICO'), 'Diga como es su cuerpo');
 	}
 
 	/**
 	 * Subservice INTERESES
 	 *
 	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function _intereses (Request $request)
 	{
-		return $this->subserviceSimple($request, 'interests');
+		return $this->subServiceSimple($request, 'interests', null, 1000);
 	}
 
 	/**
@@ -477,11 +507,11 @@ class Perfil extends Service
 				{
 					// get the path to the image
 					$di = \Phalcon\DI\FactoryDefault::getDefault();
-					$wwwroot = $di->get('path')['root'];
+					$www_root = $di->get('path')['root'];
 
 					// create a new random image name and path
 					$fileName = md5($request->email . rand());
-					$filePath = "$wwwroot/public/profile/$fileName.jpg";
+					$filePath = "$www_root/public/profile/$fileName.jpg";
 
 					// save the original copy
 					@copy($attach->path, $filePath);
@@ -501,10 +531,12 @@ class Perfil extends Service
 	 * Subservice ORIENTACION SEXUAL
 	 *
 	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function _orientacion (Request $request)
 	{
-		return $this->subserviceEnum($request, 'sexual_orientation', array(
+		return $this->subServiceEnum($request, 'sexual_orientation', array(
 				'HETERO',
 				'HOMO',
 				'BI'
@@ -520,6 +552,8 @@ class Perfil extends Service
 	 * Alias for subservice ORIENTACION SEXUAL
 	 *
 	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function _orientacionsexual (Request $request)
 	{
@@ -530,10 +564,12 @@ class Perfil extends Service
 	 * Subservice piel
 	 *
 	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function _piel (Request $request)
 	{
-		return $this->subserviceEnum($request, 'skin', array(
+		return $this->subServiceEnum($request, 'skin', array(
 				'NEGRO',
 				'BLANCO',
 				'MESTIZO',
@@ -700,9 +736,6 @@ class Perfil extends Service
 	 */
 	public function _relaciones(Request $request)
 	{
-		// connect to db
-		$connection = new Connection();
-
 		// prepare response
 		$response = new Response();
 
@@ -725,7 +758,7 @@ class Perfil extends Service
 				UNION SELECT 'ignorado' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'ignore'
 				UNION SELECT 'te ignora' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'ignore'";
 
-		$relations = $connection->query(" SELECT * FROM ($sql) subq ORDER BY who;");
+		$relations = Connection::query(" SELECT * FROM ($sql) subq ORDER BY who;");
 
 		foreach ($relations as $k => $v)
 		{
@@ -744,7 +777,7 @@ class Perfil extends Service
 		}
 
 		// get social services
-		$services = $connection->query("SELECT * FROM service WHERE category = 'social';");
+		$services = Connection::query("SELECT * FROM service WHERE category = 'social';");
 
 		// send suggestions
 		$response->setResponseSubject("Te invitamos a socializar");
@@ -780,7 +813,8 @@ class Perfil extends Service
 				$req->query = $value;
 				$req->attachments = $request->attachments;
 				$function = "_$key";
-				$this->$function($req);
+				if (method_exists($this, $function))
+					$this->$function($req);
 			}
 		}
 
@@ -822,12 +856,11 @@ class Perfil extends Service
 		$lang = $request->query;
 
 		// check if the language exist
-		$connection = new Connection();
-		$test = $connection->query("SELECT * FROM languages WHERE code = '$lang'");
+		$test = Connection::query("SELECT * FROM languages WHERE code = '$lang'");
 		if(empty($test)) return new Response();
 
 		// set the new language for the user
-		$connection->query("UPDATE person SET lang='$lang' WHERE email='$email'");
+		Connection::query("UPDATE person SET lang='$lang' WHERE email='$email'");
 		return new Response();
 	}
 
@@ -867,7 +900,11 @@ class Perfil extends Service
 		$values = array('ORIGINAL', 'REDUCIDA', 'SIN_IMAGEN');
 
 		// save the image quality
-		if(in_array($quality, $values)) $this->update("img_quality='$quality'", $request->email);
+		if(in_array($quality, $values))
+		{
+			$request->query = $quality;
+			return $this->subServiceSimple($request, 'img_quality');
+		}
 		return new Response();
 	}
 
@@ -881,8 +918,7 @@ class Perfil extends Service
 	{
 		$query = "UPDATE person SET $sqlset, last_update_date=CURRENT_TIMESTAMP, updated_by_user=1	WHERE email='$email'";
 		$query = preg_replace("/\s+/", " ", $query);
-		$connection = new Connection();
-		$connection->query($query);
+		Connection::query($query);
 	}
 
 	/**
@@ -891,13 +927,14 @@ class Perfil extends Service
 	 * @param Request $request
 	 * @param String $field
 	 * @param array $enum
-	 * @param String $wrong_template
 	 * @param String $wrong_subject
 	 * @param String $field
+	 * @param String $prefix
+	 * @param array $synonymous
 	 *
 	 * @return Response/void
 	 */
-	private function subserviceEnum (Request $request, $field, $enum, $wrong_subject, $prefix = null, $synonymous = array())
+	private function subServiceEnum (Request $request, $field, $enum, $wrong_subject, $prefix = null, $synonymous = [])
 	{
 		if ( ! is_null($prefix))
 		{
@@ -923,8 +960,8 @@ class Perfil extends Service
 			if (array_search($query, $enum) !== false)
 			{
 				// update the field
-				$this->update("$field = '$query'", $request->email);
-				return new Response();
+				$request->query = $query;
+				return $this->subServiceSimple($request, $field);
 			}
 			else
 			{
@@ -947,13 +984,16 @@ class Perfil extends Service
 	}
 
 	/**
-	 * Subservice utitlity for simple profile fields
+	 * Sub-service utility for simple profile fields
 	 *
 	 * @param Request $request
 	 * @param String $field
 	 * @param String $prefix
+	 * @param integer $max_len
+	 *
+	 * @return Response
 	 */
-	private function subserviceSimple (Request $request, $field, $prefix = null)
+	private function subServiceSimple (Request $request, $field, $prefix = null, $max_len = null)
 	{
 		if ( ! is_null($prefix))
 		{
@@ -968,6 +1008,7 @@ class Perfil extends Service
 
 		if ( ! empty($value))
 		{
+			if ( ! is_null($max_len)) $value = Connection::escape("$value", $max_len);
 			$this->update("$field = '$value'", $request->email);
 		}
 
@@ -975,13 +1016,15 @@ class Perfil extends Service
 	}
 
 	/**
-	 * Subservice utility for date profile fields
+	 * Sub-service utility for date profile fields
 	 *
 	 * @param Request $request
 	 * @param String $field
 	 * @param String $prefix
+	 *
+	 * @return Response
 	 */
-	private function subserviceDate (Request $request, $field, $prefix = null)
+	private function subServiceDate (Request $request, $field, $prefix = null)
 	{
 		if ( ! is_null($prefix))
 		{
