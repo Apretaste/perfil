@@ -958,14 +958,11 @@ class Perfil extends Service
 	 * @param integer $max_len
 	 * @return Response
 	 */
-	private function subServiceSimple (Request $request, $field, $prefix = null, $max_len = null)
+	private function subServiceSimple (Request $request, $field, $prefix=null, $max_len=null)
 	{
-		if ( ! is_null($prefix))
+		if ( ! is_null($prefix) && stripos($request->query, $prefix) === 0)
 		{
-			if (stripos($request->query, $prefix) === 0)
-			{
-				$request->query = trim(substr($request->query, strlen($prefix)));
-			}
+			$request->query = trim(substr($request->query, strlen($prefix)));
 		}
 
 		$value = trim($request->query);
@@ -973,7 +970,7 @@ class Perfil extends Service
 
 		if ( ! empty($value))
 		{
-			if ( ! is_null($max_len)) $value = Connection::escape("$value", $max_len);
+			if ( ! is_null($max_len)) $value = Connection::escape($value, $max_len);
 			$this->update("$field = '$value'", $request->email);
 		}
 
