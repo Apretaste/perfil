@@ -6,18 +6,15 @@
  * Apretaste Service
  *
  * @version 1.1
- *
  * @author @salvipascual
  * @author @kumahacker
  */
 class Perfil extends Service
 {
-
 	/**
 	 * Display your profile
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _main (Request $request)
@@ -79,7 +76,6 @@ class Perfil extends Service
 	 * Subservice USERNAME
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _username (Request $request)
@@ -101,7 +97,6 @@ class Perfil extends Service
 	 * Subservice NOMBRE
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _nombre (Request $request)
@@ -145,14 +140,10 @@ class Perfil extends Service
 	 * This function call to _phone for backward compatibility
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _telefono (Request $request)
 	{
-		// get only numbers from string
-		//$phone = preg_replace('/\D/', '', $request->query);
-
 		return $this->_phone($request);
 	}
 
@@ -160,7 +151,6 @@ class Perfil extends Service
 	 * Subservice CUMPLEANOS
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _cumpleanos (Request $request)
@@ -172,7 +162,6 @@ class Perfil extends Service
 	 * Subservice PROFESION
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _profesion (Request $request)
@@ -184,7 +173,6 @@ class Perfil extends Service
 	 * Subservice RELIGION
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _religion (Request $request)
@@ -220,7 +208,6 @@ class Perfil extends Service
 	 * Subservice PROVINCIA
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _provincia (Request $request)
@@ -248,7 +235,6 @@ class Perfil extends Service
 	 * Subservice PAIS
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _pais (Request $request)
@@ -324,7 +310,6 @@ class Perfil extends Service
 	 * Subservice CIUDAD
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _ciudad (Request $request)
@@ -356,7 +341,6 @@ class Perfil extends Service
 	 * Subservice NIVEL
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _nivel (Request $request)
@@ -376,7 +360,6 @@ class Perfil extends Service
 	 * Subservice alias for NIVEL
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _nivelescolar (Request $request)
@@ -388,7 +371,6 @@ class Perfil extends Service
 	 * Subservice ESTADO
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response/void
 	 */
 	public function _estado (Request $request)
@@ -405,7 +387,6 @@ class Perfil extends Service
 	 * Subservice ESTADO alias
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _estadocivil (Request $request)
@@ -417,7 +398,6 @@ class Perfil extends Service
 	 * Subservice PELO
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _pelo (Request $request)
@@ -437,7 +417,6 @@ class Perfil extends Service
 	 * Subservice OJOS
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _ojos (Request $request)
@@ -461,7 +440,6 @@ class Perfil extends Service
 	 * Subservice CUERPO
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _cuerpo (Request $request)
@@ -473,7 +451,6 @@ class Perfil extends Service
 	 * Subservice INTERESES
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _intereses (Request $request)
@@ -489,39 +466,33 @@ class Perfil extends Service
 	 */
 	public function _foto ($request)
 	{
-		// was the image attached?
-		if (count($request->attachments) > 0)
+		// is the image passed in the subject? (web only)
+		if(file_exists($request->query)) {
+			$request->attachments = array($request->query);
+		}
+
+		// is the image attached (email and app)?
+		if($request->attachments) foreach ($request->attachments as $attach)
 		{
 			// get the first image attached
-			foreach ($request->attachments as $attach)
-			{
-				if (is_string($attach))
-				{
-					$filePath = $attach;
-					$attach = new stdClass();
-					$attach->type = image_type_to_mime_type(IMAGETYPE_JPEG);;
-					$attach->path = $filePath;
-				}
+			$mimetype = explode("/", mime_content_type($attach))[0];
+			if($mimetype != "image") continue;
 
-				if ($attach->type == "image/jpeg")
-				{
-					// get the path to the image
-					$di = \Phalcon\DI\FactoryDefault::getDefault();
-					$www_root = $di->get('path')['root'];
+			// get the path to the image
+			$di = \Phalcon\DI\FactoryDefault::getDefault();
+			$wwwroot = $di->get('path')['root'];
 
-					// create a new random image name and path
-					$fileName = md5($request->email . rand());
-					$filePath = "$www_root/public/profile/$fileName.jpg";
+			// create a new random image name and path
+			$fileName = md5($request->email . rand());
+			$filePath = "$wwwroot/public/profile/$fileName.jpg";
 
-					// save the original copy
-					@copy($attach->path, $filePath);
-					$this->utils->optimizeImage($filePath);
+			// save the original copy
+			@copy($attach, $filePath);
+			$this->utils->optimizeImage($filePath);
 
-					// make the changes in the database
-					$this->update("picture='$fileName'", $request->email);
-					break;
-				}
-			}
+			// make the changes in the database
+			$this->update("picture='$fileName'", $request->email);
+			break;
 		}
 
 		return new Response();
@@ -531,7 +502,6 @@ class Perfil extends Service
 	 * Subservice ORIENTACION SEXUAL
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _orientacion (Request $request)
@@ -552,7 +522,6 @@ class Perfil extends Service
 	 * Alias for subservice ORIENTACION SEXUAL
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _orientacionsexual (Request $request)
@@ -564,7 +533,6 @@ class Perfil extends Service
 	 * Subservice piel
 	 *
 	 * @param Request $request
-	 *
 	 * @return Response
 	 */
 	public function _piel (Request $request)
@@ -586,7 +554,6 @@ class Perfil extends Service
 	 *
 	 * @param Request $request
 	 * @return Response
-	 *
 	 */
 	public function _editar (Request $request)
 	{
@@ -931,7 +898,6 @@ class Perfil extends Service
 	 * @param String $field
 	 * @param String $prefix
 	 * @param array $synonymous
-	 *
 	 * @return Response/void
 	 */
 	private function subServiceEnum (Request $request, $field, $enum, $wrong_subject, $prefix = null, $synonymous = [])
@@ -990,7 +956,6 @@ class Perfil extends Service
 	 * @param String $field
 	 * @param String $prefix
 	 * @param integer $max_len
-	 *
 	 * @return Response
 	 */
 	private function subServiceSimple (Request $request, $field, $prefix = null, $max_len = null)
@@ -1021,7 +986,6 @@ class Perfil extends Service
 	 * @param Request $request
 	 * @param String $field
 	 * @param String $prefix
-	 *
 	 * @return Response
 	 */
 	private function subServiceDate (Request $request, $field, $prefix = null)

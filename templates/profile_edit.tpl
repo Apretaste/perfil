@@ -5,11 +5,11 @@
 	<table width="100%">
 		<tr><td align="center">
 			{if $person->picture}
-			{img src="{$person->picture_internal}" alt="Picture" width="100"}
+			{img src="{$person->picture_internal}" alt="Picture" width="100" style="border:1px solid black;"}
 			{else}{noimage}{/if}
 		</td></tr>
 		<tr><td align="center">
-			{button color="grey" href="PERFIL FOTO" desc="Adjunte su foto de perfil" caption="Cambiar" size="small" wait="false"}
+			{button color="grey" href="PERFIL FOTO" desc="Adjunte su foto de perfil" caption="Cambiar" size="small" wait="false" type="upload"}
 		</td></tr>
 	</table>
 	{space15}
@@ -131,12 +131,6 @@
 		<td align="right" valign="middle">{select options="{$options->religion}" selected="{$person->religion}"}</td>
 	</tr>
 </table>
-
-{space15}
-
-<center>
-	{button href="PERFIL" caption="Ver Perfil"}
-</center>
 
 <style>
 	#profile tr {
