@@ -240,7 +240,7 @@ class Perfil extends Service
 	public function _pais (Request $request)
 	{
 		// get the list of countries
-		$countries = Connetion::query("SELECT code, es AS name FROM countries ORDER BY code");
+		$countries = Connection::query("SELECT code, es AS name FROM countries ORDER BY code");
 		$country = trim($request->query);
 		$country_original = $country;
 
