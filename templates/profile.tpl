@@ -50,7 +50,6 @@
 	<h1>Mis tickets para la rifa</h1>
 	<p>Usted tiene {$tickets} ticket(s) para la {link href="RIFA" caption="rifa"}</p>
 {else}
-	{button href="PIROPAZO SI @{$profile->username}" caption="&hearts; Me gusta" wait="false" color="green"}
 	{button href="CHAT @{$profile->username}" caption="Chatear" color="grey"}
 {/if}
 </center>

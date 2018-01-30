@@ -559,8 +559,6 @@ class Perfil extends Service
 	{
 		// get the person to edit profile
 		$person = $this->utils->getPerson($request->email);
-
-		// do not continue for non-existent users
 		if (empty($person)) return new Response();
 
 		// make the person's text readable
@@ -568,8 +566,9 @@ class Perfil extends Service
 		if ($person->gender == 'M') $person->gender = "Masculino";
 		if ($person->gender == 'F') $person->gender = "Femenino";
 		$person->country_name = $this->utils->getCountryNameByCode($person->country);
+		$person->usstate_name = $this->utils->getStateNameByCode($person->usstate);
 		$person->interests = count($person->interests);
-		$image = $person->picture ? array($person->picture_internal) : array();
+		$image = $person->picture ? array($person->picture_internal) : [];
 
 		// create date for the selects
 		$options = new stdClass();
@@ -643,6 +642,12 @@ class Perfil extends Service
 			["caption"=>"Otro", "href"=>"PERFIL NIVEl OTRO"]
 		]);
 
+		// country name
+		$options->country_name = json_encode([
+			["href"=>"PERFIL PAIS CU", "caption"=>"Cuba"],
+			["href"=>"PERFIL PAIS US", "caption"=>"Estados Unidos"]
+		]);
+
 		// province
 		$options->province = json_encode([
 			["caption"=>"Pinar del Rio", "href"=>"PERFIL PROVINCIA PINAR_DEL_RIO"],
@@ -663,10 +668,58 @@ class Perfil extends Service
 			["caption"=>"Isla de la Juventud", "href"=>"PERFIL PROVINCIA ISLA_DE_LA_JUVENTUD"]
 		]);
 
-		// country name
-		$options->country_name = json_encode([
-			["href"=>"PERFIL PAIS CU", "caption"=>"Cuba"],
-			["href"=>"PERFIL PAIS US", "caption"=>"Estados Unidos"]
+		// us state name
+		$options->usstate = json_encode([
+			["caption"=>"Alabama", "href"=>"PERFIL USSTATE AL"],
+			["caption"=>"Alaska", "href"=>"PERFIL USSTATE AK"],
+			["caption"=>"Arizona", "href"=>"PERFIL USSTATE AZ"],
+			["caption"=>"Arkansas", "href"=>"PERFIL USSTATE AR"],
+			["caption"=>"California", "href"=>"PERFIL USSTATE CA"],
+			["caption"=>"Colorado", "href"=>"PERFIL USSTATE CO"],
+			["caption"=>"Connecticut", "href"=>"PERFIL USSTATE CT"],
+			["caption"=>"Delaware", "href"=>"PERFIL USSTATE DE"],
+			["caption"=>"Florida", "href"=>"PERFIL USSTATE FL"],
+			["caption"=>"Georgia", "href"=>"PERFIL USSTATE GA"],
+			["caption"=>"Hawaii", "href"=>"PERFIL USSTATE HI"],
+			["caption"=>"Idaho", "href"=>"PERFIL USSTATE ID"],
+			["caption"=>"Illinois", "href"=>"PERFIL USSTATE IL"],
+			["caption"=>"Indiana", "href"=>"PERFIL USSTATE IN"],
+			["caption"=>"Iowa", "href"=>"PERFIL USSTATE IA"],
+			["caption"=>"Kansas", "href"=>"PERFIL USSTATE KS"],
+			["caption"=>"Kentucky", "href"=>"PERFIL USSTATE KY"],
+			["caption"=>"Louisiana", "href"=>"PERFIL USSTATE LA"],
+			["caption"=>"Maine", "href"=>"PERFIL USSTATE ME"],
+			["caption"=>"Maryland", "href"=>"PERFIL USSTATE MD"],
+			["caption"=>"Massachusetts", "href"=>"PERFIL USSTATE MA"],
+			["caption"=>"Michigan", "href"=>"PERFIL USSTATE MI"],
+			["caption"=>"Minnesota", "href"=>"PERFIL USSTATE MN"],
+			["caption"=>"Mississippi", "href"=>"PERFIL USSTATE MS"],
+			["caption"=>"Missouri", "href"=>"PERFIL USSTATE MO"],
+			["caption"=>"Montana", "href"=>"PERFIL USSTATE MT"],
+			["caption"=>"Nebraska", "href"=>"PERFIL USSTATE NE"],
+			["caption"=>"Nevada", "href"=>"PERFIL USSTATE NV"],
+			["caption"=>"New", "href"=>"PERFIL USSTATE NH"],
+			["caption"=>"New", "href"=>"PERFIL USSTATE NJ"],
+			["caption"=>"New", "href"=>"PERFIL USSTATE NM"],
+			["caption"=>"New", "href"=>"PERFIL USSTATE NY"],
+			["caption"=>"North", "href"=>"PERFIL USSTATE NC"],
+			["caption"=>"North", "href"=>"PERFIL USSTATE ND"],
+			["caption"=>"Ohio", "href"=>"PERFIL USSTATE OH"],
+			["caption"=>"Oklahoma", "href"=>"PERFIL USSTATE OK"],
+			["caption"=>"Oregon", "href"=>"PERFIL USSTATE OR"],
+			["caption"=>"Pennsylvania", "href"=>"PERFIL USSTATE PA"],
+			["caption"=>"Rhode", "href"=>"PERFIL USSTATE RI"],
+			["caption"=>"South", "href"=>"PERFIL USSTATE SC"],
+			["caption"=>"South", "href"=>"PERFIL USSTATE SD"],
+			["caption"=>"Tennessee", "href"=>"PERFIL USSTATE TN"],
+			["caption"=>"Texas", "href"=>"PERFIL USSTATE TX"],
+			["caption"=>"Utah", "href"=>"PERFIL USSTATE UT"],
+			["caption"=>"Vermont", "href"=>"PERFIL USSTATE VT"],
+			["caption"=>"Virginia", "href"=>"PERFIL USSTATE VA"],
+			["caption"=>"Washington", "href"=>"PERFIL USSTATE WA"],
+			["caption"=>"West", "href"=>"PERFIL USSTATE WV"],
+			["caption"=>"Wisconsin", "href"=>"PERFIL USSTATE WI"],
+			["caption"=>"Wyoming", "href"=>"PERFIL USSTATE WY"]
 		]);
 
 		// religion

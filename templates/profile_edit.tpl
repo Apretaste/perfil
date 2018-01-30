@@ -1,17 +1,12 @@
-{space10}
-
 <!-- PICTURE -->
-{if {$APRETASTE_ENVIRONMENT} != "app"}
-	<table width="100%">
-		<tr><td align="center">
-			{if $person->picture}
+{if {$APRETASTE_ENVIRONMENT} == "web"}
+	<center>
+		{if $person->picture}
 			{img src="{$person->picture_internal}" alt="Picture" width="100" style="border:1px solid black;"}
-			{else}{noimage}{/if}
-		</td></tr>
-		<tr><td align="center">
-			{button color="grey" href="PERFIL FOTO" desc="Adjunte su foto de perfil" caption="Cambiar" size="small" wait="false" type="upload"}
-		</td></tr>
-	</table>
+		{else}{noimage}{/if}
+		<br/>
+		{button color="grey" href="PERFIL FOTO" desc="Adjunte su foto de perfil" caption="Cambiar" size="small" wait="false" type="upload"}
+	</center>
 	{space15}
 {/if}
 
@@ -96,7 +91,12 @@
 	<!-- COUNTRY -->
 	<tr>
 		<td valign="middle"><small>Pa&iacute;s</small></td>
-		<td valign="middle"><b>{$person->country_name|lower|capitalize}</b></td>
+		<td valign="middle">
+			{if {$APRETASTE_ENVIRONMENT} eq "web"}
+				<img class="flag" src="/images/flags/{$person->country|lower}.png" alt="{$person->country}"/>
+			{/if}
+			<b>{$person->country_name|lower|capitalize}</b>
+		</td>
 		<td align="right" valign="middle"><nobr>
 			{select options="{$options->country_name}" selected="{$person->country_name}"}
 			{button size="small" color="grey" caption="Otro" href="PERFIL PAIS" desc="Escriba el nombre del pais donde vive" popup="true" wait="false"}
@@ -104,11 +104,22 @@
 	</tr>
 
 	<!-- PROVINCE-->
+	{if $person->country == "CU"}
 	<tr>
 		<td valign="middle"><small>Provincia</small></td>
 		<td valign="middle"><b>{$person->province|lower|capitalize}</b></td>
 		<td align="right" valign="middle">{select options="{$options->province}" selected="{$person->province}"}</td>
 	</tr>
+	{/if}
+
+	<!-- STATE-->
+	{if $person->country == "US"}
+	<tr>
+		<td valign="middle"><small>Estado</small></td>
+		<td valign="middle"><b>{$person->usstate_name|lower|capitalize}</b></td>
+		<td align="right" valign="middle">{select options="{$options->usstate}" selected="{$person->usstate_name}"}</td>
+	</tr>
+	{/if}
 
 	<!-- CITY -->
 	<tr>
