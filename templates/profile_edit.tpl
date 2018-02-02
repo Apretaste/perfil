@@ -5,7 +5,7 @@
 			{img src="{$person->picture_internal}" alt="Picture" width="100" style="border:1px solid black;"}
 		{else}{noimage}{/if}
 		<br/>
-		{button color="grey" href="PERFIL FOTO" desc="Adjunte su foto de perfil" caption="Cambiar" size="small" wait="false" type="upload"}
+		{button color="grey" href="PERFIL FOTO" desc="u:Adjunte su foto de perfil*" caption="Cambiar" size="small" wait="false" popup="true"}
 	</center>
 	{space15}
 {/if}
