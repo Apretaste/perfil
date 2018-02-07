@@ -36,7 +36,7 @@
 	<tr>
 		<td valign="middle"><small>Cumplea&ntilde;os</small></td>
 		<td valign="middle"><b>{$person->date_of_birth|date_format:"%e/%m/%Y"}</b></td>
-		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL CUMPLEANOS" desc="Escriba su fecha de cumpleannos usando la notacion DD/MM/AAAA, por ejemplo: 5/2/1980" popup="true"  wait="false"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL CUMPLEANOS" desc="d:Escriba su fecha de cumpleannos usando la notacion DD/MM/AAAA, por ejemplo 5/2/1980" popup="true"  wait="false"}</td>
 	</tr>
 
 	<!-- BODY TYPE -->
@@ -85,7 +85,7 @@
 	<tr>
 		<td valign="middle"><small>Profesi&oacute;n</small></td>
 		<td valign="middle"><b>{$person->occupation|lower|capitalize}</b></td>
-		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL PROFESION" desc="Escriba su profesion. Por ejemplo: profesor" popup="true" wait="false"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL PROFESION" desc="Escriba su profesion. Por ejemplo profesor" popup="true" wait="false"}</td>
 	</tr>
 
 	<!-- COUNTRY -->
@@ -132,7 +132,7 @@
 	<tr>
 		<td valign="middle"><small>Intereses</small></td>
 		<td valign="middle"><b>{$person->interests} intereses</b></td>
-		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL INTERESES" desc="Escriba sus intereses separados por coma. Por ejemplo: jardineria, musica, bailar" popup="true" wait="false"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL INTERESES" desc="Escriba sus intereses separados por coma. Por ejemplo jardineria, musica, bailar" popup="true" wait="false"}</td>
 	</tr>
 
 	<!-- RELIGION -->

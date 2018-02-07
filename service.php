@@ -177,7 +177,7 @@ class Perfil extends Service
 	 */
 	public function _religion (Request $request)
 	{
-		$religions = array(
+		$religions = [
 			'ATEISMO',
 			'SECULARISMO',
 			'AGNOSTICISMO',
@@ -188,20 +188,11 @@ class Perfil extends Service
 			'YORUBA',
 			'BUDISMO',
 			'CATOLICISMO',
-			'OTRA',
-			'CRISTIANISMO'
-		);
+			'PROTESTANTE',
+			'CRISTIANISMO',
+			'OTRA'];
 
-		$synon = array(
-			'ATEO' => 'ATEISMO',
-			'SECULAR' => 'SECULARISMO',
-			'AGNOSTICO' => 'AGNOSTICISMO',
-			'CATOLICO' => 'CATOLICISMO',
-			'CRISTIANO' => 'CRISTIANISMO',
-			'BUDISTA' => 'BUDISMO'
-		);
-
-		return $this->subServiceEnum($request, 'religion', $religions, 'Dinos tu religion o si careces de ella', null, $synon);
+		return $this->subServiceEnum($request, 'religion', $religions, 'Dinos tu religion o si careces de ella', null);
 	}
 
 	/**
@@ -731,7 +722,6 @@ class Perfil extends Service
 			["caption"=>"Santero", "href"=>"PERFIL RELIGION SANTERO"],
 			["caption"=>"Abakua", "href"=>"PERFIL RELIGION ABAKUA"],
 			["caption"=>"Budismo", "href"=>"PERFIL RELIGION BUDISMO"],
-			["caption"=>"Judaismo", "href"=>"PERFIL RELIGION JUDAISMO"],
 			["caption"=>"Islam", "href"=>"PERFIL RELIGION ISLAM"],
 			["caption"=>"Ateismo", "href"=>"PERFIL RELIGION ATEISMO"],
 			["caption"=>"Agnosticismo", "href"=>"PERFIL RELIGION AGNOSTICISMO"],
