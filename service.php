@@ -155,7 +155,19 @@ class Perfil extends Service
 	 */
 	public function _cumpleanos (Request $request)
 	{
-		return $this->subServiceDate($request, 'date_of_birth');
+		// clean the date passed
+		$query = trim($request->query);
+
+		// calculate the date passed the user
+		$date = DateTime::createFromFormat("d/m/Y", $query);
+		if(empty($date)) $date = new DateTime($query);
+		if (empty($date)) return new Response();
+
+		// save date in the database
+		$dtStr = strftime("%Y-%m-%d", $date->getTimestamp());
+
+		$this->update("date_of_birth='$dtStr'", $request->email);
+		return new Response();
 	}
 
 	/**
@@ -609,7 +621,7 @@ class Perfil extends Service
 		// skin
 		$options->skin = json_encode([
 			["caption"=>"Blanco", "href"=>"PERFIL PIEL BLANCO"],
-			["caption"=>"Negra", "href"=>"PERFIL PIEL NEGRO"],
+			["caption"=>"Negro", "href"=>"PERFIL PIEL NEGRO"],
 			["caption"=>"Mestizo", "href"=>"PERFIL PIEL MESTIZO"],
 			["caption"=>"Otro", "href"=>"PERFIL PIEL OTRO"]
 		]);
@@ -1016,41 +1028,6 @@ class Perfil extends Service
 			if ( ! is_null($max_len)) $value = Connection::escape($value, $max_len);
 			$this->update("$field = '$value'", $request->email);
 		}
-
-		return new Response();
-	}
-
-	/**
-	 * Sub-service utility for date profile fields
-	 *
-	 * @param Request $request
-	 * @param String $field
-	 * @param String $prefix
-	 * @return Response
-	 */
-	private function subServiceDate (Request $request, $field, $prefix = null)
-	{
-		if ( ! is_null($prefix))
-		{
-			if (stripos($request->query, $prefix) === 0)
-			{
-				$request->query = trim(substr($request->query, strlen($prefix)));
-			}
-		}
-
-		$query = trim($request->query);
-
-		// read date in Spanish
-		setlocale(LC_ALL, "es_ES");
-
-		// try getting the date
-		$date = DateTime::createFromFormat("d/m/Y", $query);
-
-		// if date could not be calculated, return null
-		if (empty($date)) return new Response();
-		else $query = "'" . strftime("%Y-%m-%d", $date->getTimestamp()) . "'";
-
-		$this->update("$field = $query", $request->email);
 
 		return new Response();
 	}
