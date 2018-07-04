@@ -24,17 +24,15 @@ class Perfil extends Service
 		$emailToLookup = empty($request->query) ? $request->email : $request->query;
 
 		// get the email for the profile in case it is a username
-		if ( ! filter_var($emailToLookup, FILTER_VALIDATE_EMAIL))
-		{
+		if ( ! filter_var($emailToLookup, FILTER_VALIDATE_EMAIL)) {
 			$emailToLookup = Utils::getEmailFromUsername($emailToLookup);
 		}
 
 		// check if the person exist. If not, message the requestor
-		if ( ! Utils::personExist($emailToLookup))
-		{
+		if ( ! Utils::personExist($emailToLookup)) {
 			$response = new Response();
 			$response->setResponseSubject("No encontramos un perfil para ese usuario");
-			$response->createFromTemplate("inexistent.tpl", array("code"=>"error", "user"=>$emailToLookup));
+			$response->createFromText("Lo sentimos, pero no encontramos al usuario que esta buscando. Por favor revise que cada letra sea correcta e intente nuevamente.");
 			return $response;
 		}
 
@@ -248,13 +246,7 @@ class Perfil extends Service
 		$country_original = $country;
 
 		// do not let empty countries
-		if (empty($country))
-		{
-			$response = new Response();
-			$response->setResponseSubject("Selecciona el pais donde vive");
-			$response->createFromTemplate("profile_edit_country.tpl", array('countries' => $countries));
-			return $response;
-		}
+		if (empty($country)) return new Response();
 
 		// setup country aliases and typos
 		if($country == "US") $country = "Estados Unidos de America";
@@ -266,43 +258,32 @@ class Perfil extends Service
 
 		// get the country to update
 		$max = 0;
-
 		$l_country = strtolower($country);
 		$l_country_original = strtolower($country_original);
-
 		$selectedCountry = null;
 
-		foreach ($countries as $c)
-		{
+		foreach ($countries as $c) {
 			// check percentage similarity
 			$percent = 0;
 
 			similar_text($l_country, strtolower($c->name), $percent);
 
 			// select the country with greater similarity
-			if ($max < $percent && $percent > 90)
-			{
+			if ($max < $percent && $percent > 90) {
 				$max = $percent;
 				$selectedCountry = $c;
 			}
 
 			// select by code
 			$code = strtolower($c->code);
-			if ($code == $l_country || $code == $l_country_original)
-			{
+			if ($code == $l_country || $code == $l_country_original) {
 				$selectedCountry = $c;
 				break;
 			}
 		}
 
-		// if not country was selected, display an error message
-		if (is_null($selectedCountry))
-		{
-			$response = new Response();
-			$response->setResponseSubject("No reconocimos el pais seleccionado, selecciona ahora de esta lista");
-			$response->createFromTemplate("profile_edit_country.tpl", array('countries' => $countries));
-			return $response;
-		}
+		// if not country was selected, do nothing
+		if (is_null($selectedCountry)) return new Response();
 
 		// update country and return empty response
 		$this->update("country='{$selectedCountry->code}'", $request->email);
@@ -571,180 +552,12 @@ class Perfil extends Service
 		$person->country_name = $this->utils->getCountryNameByCode($person->country);
 		$person->usstate_name = $this->utils->getStateNameByCode($person->usstate);
 		$person->interests = count($person->interests);
-		$image = $person->picture ? array($person->picture_internal) : [];
-
-		// create date for the selects
-		$options = new stdClass();
-
-		// gender
-		$options->gender = json_encode([
-			["caption"=>"Masculino", "href"=>"PERFIL SEXO MASCULINO"],
-			["caption"=>"Femenino", "href"=>"PERFIL SEXO FEMENINO"]
-		]);
-
-		// sexual orientation
-		$options->sexual_orientation = json_encode([
-			["caption"=>"Hetero", "href"=>"PERFIL ORIENTACION HETERO"],
-			["caption"=>"Gay", "href"=>"PERFIL ORIENTACION HOMO"],
-			["caption"=>"Bi", "href"=>"PERFIL ORIENTACION BI"]
-		]);
-
-		// body type
-		$options->body_type = json_encode([
-			["caption"=>"Delgado", "href"=>"PERFIL CUERPO DELGADO"],
-			["caption"=>"Medio", "href"=>"PERFIL CUERPO MEDIO"],
-			["caption"=>"Extra", "href"=>"PERFIL CUERPO EXTRA"],
-			["caption"=>"Atletico", "href"=>"PERFIL CUERPO ATLETICO"]
-		]);
-
-		// eyes
-		$options->eyes = json_encode([
-			["caption"=>"Negro", "href"=>"PERFIL OJOS NEGRO"],
-			["caption"=>"Carmelita", "href"=>"PERFIL OJOS CARMELITA"],
-			["caption"=>"Verde", "href"=>"PERFIL OJOS VERDE"],
-			["caption"=>"Azul", "href"=>"PERFIL OJOS AZUL"],
-			["caption"=>"Avellana", "href"=>"PERFIL OJOS AVELLANA"],
-			["caption"=>"Otro", "href"=>"PERFIL OJOS OTRO"]
-		]);
-
-		// hair
-		$options->hair = json_encode([
-			["caption"=>"Trigueno", "href"=>"PERFIL PELO TRIGUENO"],
-			["caption"=>"Castano", "href"=>"PERFIL PELO CASTANO"],
-			["caption"=>"Rubio", "href"=>"PERFIL PELO RUBIO"],
-			["caption"=>"Negro", "href"=>"PERFIL PELO NEGRO"],
-			["caption"=>"Rojo", "href"=>"PERFIL PELO ROJO"],
-			["caption"=>"Blanco", "href"=>"PERFIL PELO BLANCO"],
-			["caption"=>"Otro", "href"=>"PERFIL PELO OTRO"]
-		]);
-
-		// skin
-		$options->skin = json_encode([
-			["caption"=>"Blanco", "href"=>"PERFIL PIEL BLANCO"],
-			["caption"=>"Negro", "href"=>"PERFIL PIEL NEGRO"],
-			["caption"=>"Mestizo", "href"=>"PERFIL PIEL MESTIZO"],
-			["caption"=>"Otro", "href"=>"PERFIL PIEL OTRO"]
-		]);
-
-		// marital status
-		$options->marital_status = json_encode([
-			["caption"=>"Soltero", "href"=>"PERFIL ESTADO SOLTERO"],
-			["caption"=>"Saliendo", "href"=>"PERFIL ESTADO SALIENDO"],
-			["caption"=>"Comprometido", "href"=>"PERFIL ESTADO COMPROMETIDO"],
-			["caption"=>"Casado", "href"=>"PERFIL ESTADO CASADO"]
-		]);
-
-		// highest school level
-		$options->highest_school_level = json_encode([
-			["caption"=>"Primario", "href"=>"PERFIL NIVEL PRIMARIO"],
-			["caption"=>"Secundario", "href"=>"PERFIL NIVEL SECUNDARIO"],
-			["caption"=>"Tecnico", "href"=>"PERFIL NIVEl TECNICO"],
-			["caption"=>"Universitario", "href"=>"PERFIL NIVEl UNIVERSITARIO"],
-			["caption"=>"Postgraduado", "href"=>"PERFIL NIVEl POSTGRADUADO"],
-			["caption"=>"Doctorado", "href"=>"PERFIL NIVEl DOCTORADO"],
-			["caption"=>"Otro", "href"=>"PERFIL NIVEl OTRO"]
-		]);
-
-		// country name
-		$options->country_name = json_encode([
-			["href"=>"PERFIL PAIS CU", "caption"=>"Cuba"],
-			["href"=>"PERFIL PAIS US", "caption"=>"Estados Unidos"]
-		]);
-
-		// province
-		$options->province = json_encode([
-			["caption"=>"Pinar del Rio", "href"=>"PERFIL PROVINCIA PINAR_DEL_RIO"],
-			["caption"=>"La Habana", "href"=>"PERFIL PROVINCIA LA_HABANA"],
-			["caption"=>"Artemisa", "href"=>"PERFIL PROVINCIA ARTEMISA"],
-			["caption"=>"Mayabeque", "href"=>"PERFIL PROVINCIA MAYABEQUE"],
-			["caption"=>"Matanzas", "href"=>"PERFIL PROVINCIA MATANZAS"],
-			["caption"=>"Villa Clara", "href"=>"PERFIL PROVINCIA VILLA CLARA"],
-			["caption"=>"Cienfuegos", "href"=>"PERFIL PROVINCIA CIENFUEGOS"],
-			["caption"=>"Sancti Spiritus", "href"=>"PERFIL PROVINCIA SANCTI_SPIRITUS"],
-			["caption"=>"Ciego de Avila", "href"=>"PERFIL PROVINCIA CIEGO_DE_AVILA"],
-			["caption"=>"Camaguey", "href"=>"PERFIL PROVINCIA CAMAGUEY"],
-			["caption"=>"Las Tunas", "href"=>"PERFIL PROVINCIA LAS_TUNAS"],
-			["caption"=>"Holguin", "href"=>"PERFIL PROVINCIA HOLGUIN"],
-			["caption"=>"Granma", "href"=>"PERFIL PROVINCIA GRANMA"],
-			["caption"=>"Santiago de Cuba", "href"=>"PERFIL PROVINCIA SANTIAGO_DE_CUBA"],
-			["caption"=>"Guantanamo", "href"=>"PERFIL PROVINCIA GUANTANAMO"],
-			["caption"=>"Isla de la Juventud", "href"=>"PERFIL PROVINCIA ISLA_DE_LA_JUVENTUD"]
-		]);
-
-		// us state name
-		$options->usstate = json_encode([
-			["caption"=>"Alabama", "href"=>"PERFIL USSTATE AL"],
-			["caption"=>"Alaska", "href"=>"PERFIL USSTATE AK"],
-			["caption"=>"Arizona", "href"=>"PERFIL USSTATE AZ"],
-			["caption"=>"Arkansas", "href"=>"PERFIL USSTATE AR"],
-			["caption"=>"California", "href"=>"PERFIL USSTATE CA"],
-			["caption"=>"Colorado", "href"=>"PERFIL USSTATE CO"],
-			["caption"=>"Connecticut", "href"=>"PERFIL USSTATE CT"],
-			["caption"=>"Delaware", "href"=>"PERFIL USSTATE DE"],
-			["caption"=>"Florida", "href"=>"PERFIL USSTATE FL"],
-			["caption"=>"Georgia", "href"=>"PERFIL USSTATE GA"],
-			["caption"=>"Hawaii", "href"=>"PERFIL USSTATE HI"],
-			["caption"=>"Idaho", "href"=>"PERFIL USSTATE ID"],
-			["caption"=>"Illinois", "href"=>"PERFIL USSTATE IL"],
-			["caption"=>"Indiana", "href"=>"PERFIL USSTATE IN"],
-			["caption"=>"Iowa", "href"=>"PERFIL USSTATE IA"],
-			["caption"=>"Kansas", "href"=>"PERFIL USSTATE KS"],
-			["caption"=>"Kentucky", "href"=>"PERFIL USSTATE KY"],
-			["caption"=>"Louisiana", "href"=>"PERFIL USSTATE LA"],
-			["caption"=>"Maine", "href"=>"PERFIL USSTATE ME"],
-			["caption"=>"Maryland", "href"=>"PERFIL USSTATE MD"],
-			["caption"=>"Massachusetts", "href"=>"PERFIL USSTATE MA"],
-			["caption"=>"Michigan", "href"=>"PERFIL USSTATE MI"],
-			["caption"=>"Minnesota", "href"=>"PERFIL USSTATE MN"],
-			["caption"=>"Mississippi", "href"=>"PERFIL USSTATE MS"],
-			["caption"=>"Missouri", "href"=>"PERFIL USSTATE MO"],
-			["caption"=>"Montana", "href"=>"PERFIL USSTATE MT"],
-			["caption"=>"Nebraska", "href"=>"PERFIL USSTATE NE"],
-			["caption"=>"Nevada", "href"=>"PERFIL USSTATE NV"],
-			["caption"=>"New", "href"=>"PERFIL USSTATE NH"],
-			["caption"=>"New", "href"=>"PERFIL USSTATE NJ"],
-			["caption"=>"New", "href"=>"PERFIL USSTATE NM"],
-			["caption"=>"New", "href"=>"PERFIL USSTATE NY"],
-			["caption"=>"North", "href"=>"PERFIL USSTATE NC"],
-			["caption"=>"North", "href"=>"PERFIL USSTATE ND"],
-			["caption"=>"Ohio", "href"=>"PERFIL USSTATE OH"],
-			["caption"=>"Oklahoma", "href"=>"PERFIL USSTATE OK"],
-			["caption"=>"Oregon", "href"=>"PERFIL USSTATE OR"],
-			["caption"=>"Pennsylvania", "href"=>"PERFIL USSTATE PA"],
-			["caption"=>"Rhode", "href"=>"PERFIL USSTATE RI"],
-			["caption"=>"South", "href"=>"PERFIL USSTATE SC"],
-			["caption"=>"South", "href"=>"PERFIL USSTATE SD"],
-			["caption"=>"Tennessee", "href"=>"PERFIL USSTATE TN"],
-			["caption"=>"Texas", "href"=>"PERFIL USSTATE TX"],
-			["caption"=>"Utah", "href"=>"PERFIL USSTATE UT"],
-			["caption"=>"Vermont", "href"=>"PERFIL USSTATE VT"],
-			["caption"=>"Virginia", "href"=>"PERFIL USSTATE VA"],
-			["caption"=>"Washington", "href"=>"PERFIL USSTATE WA"],
-			["caption"=>"West", "href"=>"PERFIL USSTATE WV"],
-			["caption"=>"Wisconsin", "href"=>"PERFIL USSTATE WI"],
-			["caption"=>"Wyoming", "href"=>"PERFIL USSTATE WY"]
-		]);
-
-		// religion
-		$options->religion = json_encode([
-			["caption"=>"Cristianismo", "href"=>"PERFIL RELIGION CRISTIANISMO"],
-			["caption"=>"Catolicismo", "href"=>"PERFIL RELIGION CATOLICISMO"],
-			["caption"=>"Yoruba", "href"=>"PERFIL RELIGION YORUBA"],
-			["caption"=>"Protestante", "href"=>"PERFIL RELIGION PROTESTANTE"],
-			["caption"=>"Santero", "href"=>"PERFIL RELIGION SANTERO"],
-			["caption"=>"Abakua", "href"=>"PERFIL RELIGION ABAKUA"],
-			["caption"=>"Budismo", "href"=>"PERFIL RELIGION BUDISMO"],
-			["caption"=>"Islam", "href"=>"PERFIL RELIGION ISLAM"],
-			["caption"=>"Ateismo", "href"=>"PERFIL RELIGION ATEISMO"],
-			["caption"=>"Agnosticismo", "href"=>"PERFIL RELIGION AGNOSTICISMO"],
-			["caption"=>"Secularismo", "href"=>"PERFIL RELIGION SECULARISMO"],
-			["caption"=>"Otra", "href"=>"PERFIL RELIGION OTRA"]
-		]);
+		$image = $person->picture ? [$person->picture_internal] : [];
 
 		// prepare response for the view
 		$response = new Response();
 		$response->setResponseSubject('Edite su perfil');
-		$response->createFromTemplate('profile_edit.tpl', array("person"=>$person, "options"=>$options), $image);
+		$response->createFromTemplate('profile_edit.tpl', ["person"=>$person], $image);
 		return $response;
 	}
 
@@ -758,13 +571,8 @@ class Perfil extends Service
 	 */
 	public function _relaciones(Request $request)
 	{
-		// prepare response
-		$response = new Response();
-
-		// requestor email
-		$e = $request->email;
-
 		// getting relations
+		$e = $request->email;
 		$sql = "SELECT 'amigo' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'friend' AND confirmed = 1
 				UNION SELECT 'amigo' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'friend' AND confirmed = 1
 				UNION SELECT 'bloqueado' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'blocked'
@@ -779,32 +587,24 @@ class Perfil extends Service
 				UNION SELECT 'contacto' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'contact'
 				UNION SELECT 'ignorado' as what, user1 as who, inserted as since FROM relations WHERE user2 = '$e' AND type = 'ignore'
 				UNION SELECT 'te ignora' as what, user2 as who, inserted as since FROM relations WHERE user1 = '$e' AND type = 'ignore'";
+		$relations = Connection::query("SELECT * FROM ($sql) subq ORDER BY who;");
 
-		$relations = Connection::query(" SELECT * FROM ($sql) subq ORDER BY who;");
-
-		foreach ($relations as $k => $v)
-		{
+		// get profiles from relations
+		foreach ($relations as $k => $v) {
 			$relations[$k]->who = $this->utils->getPerson($v->who);
 		}
 
 		// send relations
-		if (isset($relations[0]))
-		{
+		if (isset($relations[0])) {
+			$response = new Response();
 			$response->setResponseSubject("Tus relaciones");
-			$response->createFromTemplate('relations.tpl', array(
-				'relations' => $relations
-			));
-
+			$response->createFromTemplate('relations.tpl', ['relations' => $relations]);
 			return $response;
 		}
 
-		// get social services
-		$services = Connection::query("SELECT * FROM service WHERE category = 'social';");
-
 		// send suggestions
 		$response->setResponseSubject("Te invitamos a socializar");
-		$response->createFromTemplate('norelations.tpl', array('services' => $services));
-
+		$response->createFromText('Usted no tiene amistades. Encuentre amistades en la Pizarra o otros servicios sociales');
 		return $response;
 	}
 

@@ -53,5 +53,3 @@
 	{button href="CHAT @{$profile->username}" caption="Chatear" color="grey"}
 {/if}
 </center>
-
-{space10}

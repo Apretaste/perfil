@@ -22,14 +22,14 @@
 	<tr>
 		<td valign="middle"><small>Sexo</small></td>
 		<td valign="middle"><b>{$person->gender|lower|capitalize}</b></td>
-		<td align="right" valign="middle">{select options="{$options->gender}" selected="{$person->gender}"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL SEXO" desc="m:Describa su genero [Masculino,Femenino]" popup="true"  wait="false"}</td>
 	</tr>
 
 	<!-- SEXUAL ORIENTATION -->
 	<tr>
 		<td valign="middle"><small>Orientaci&oacute;n sexual</small></td>
 		<td valign="middle"><b>{$person->sexual_orientation|lower|capitalize}</b></td>
-		<td align="right" valign="middle">{select options="{$options->sexual_orientation}" selected="{$person->sexual_orientation}"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL ORIENTACION" desc="m:Describa su orientacion sexual [Hetero,Homo,Bi]" popup="true"  wait="false"}</td>
 	</tr>
 
 	<!-- DAY OF BIRTH -->
@@ -43,49 +43,49 @@
 	<tr>
 		<td valign="middle"><small>Cuerpo</small></td>
 		<td valign="middle"><b>{$person->body_type|lower|capitalize}</b></td>
-		<td align="right" valign="middle">{select options="{$options->body_type}" selected="{$person->body_type}"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL CUERPO" desc="m:Describa su composicion fisica [Delgado,Medio,Extra,Atletico]" popup="true"  wait="false"}</td>
 	</tr>
 
 	<!-- EYES -->
 	<tr>
 		<td valign="middle"><small>Ojos</small></td>
 		<td valign="middle"><b>{$person->eyes|lower|capitalize}</b></td>
-		<td align="right" valign="middle">{select options="{$options->eyes}" selected="{$person->eyes}"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL OJOS" desc="m:De que color son sus ojos? [Negro,Carmelita,Verde,Azul,Avellana,Otro]" popup="true"  wait="false"}</td>
 	</tr>
 
 	<!-- HAIR -->
 	<tr>
 		<td valign="middle"><small>Pelo</small></td>
 		<td valign="middle"><b>{$person->hair|lower|capitalize}</b></td>
-		<td align="right" valign="middle">{select options="{$options->hair}" selected="{$person->hair}"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL PELO" desc="m:De que color es tu pelo? [Trigueno,Castano,Rubio,Negro,Rojo,Blanco,Otro]" popup="true"  wait="false"}</td>
 	</tr>
 
 	<!-- SKIN -->
 	<tr>
 		<td valign="middle"><small>Piel</small></td>
 		<td valign="middle"><b>{$person->skin|lower|capitalize}</b></td>
-		<td align="right" valign="middle">{select options="{$options->skin}" selected="{$person->skin}"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL PIEL" desc="m:Describa su piel [Blanco,Negro,Mestizo,Otro]" popup="true"  wait="false"}</td>
 	</tr>
 
 	<!-- MARITAL STATUS -->
 	<tr>
 		<td valign="middle"><small>Estado civil</small></td>
 		<td valign="middle"><b>{$person->marital_status|lower|capitalize}</b></td>
-		<td align="right" valign="middle">{select options="{$options->marital_status}" selected="{$person->marital_status}"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL ESTADO" desc="m:Describa su estado civil [Soltero,Saliendo,Comprometido,Casado]" popup="true"  wait="false"}</td>
 	</tr>
 
 	<!-- HIGHEST SCHOOL LEVEL-->
 	<tr>
 		<td valign="middle"><small>Nivel escolar</small></td>
 		<td valign="middle"><b>{$person->highest_school_level|lower|capitalize}</b></td>
-		<td align="right" valign="middle">{select options="{$options->highest_school_level}" selected="{$person->highest_school_level}"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL NIVEL" desc="m:Cual es su nivel escolar? [Primario,Secundario,Tecnico,Universitario,Postgraduado,Doctorado,Otro]" popup="true"  wait="false"}</td>
 	</tr>
 
 	<!-- OCCUPATION -->
 	<tr>
 		<td valign="middle"><small>Profesi&oacute;n</small></td>
 		<td valign="middle"><b>{$person->occupation|lower|capitalize}</b></td>
-		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL PROFESION" desc="Escriba su profesion. Por ejemplo profesor" popup="true" wait="false"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL PROFESION" desc="m:Describa su profesion [Trabajador estatal,Cuentapropista,Estudiante,Ama de casa,Desempleado]" popup="true"  wait="false"}</td>
 	</tr>
 
 	<!-- COUNTRY -->
@@ -93,13 +93,12 @@
 		<td valign="middle"><small>Pa&iacute;s</small></td>
 		<td valign="middle">
 			{if {$APRETASTE_ENVIRONMENT} eq "web"}
-				<img class="flag" src="/images/flags/{$person->country|lower}.png" alt="{$person->country}"/>
+				<img style="height:15px;" src="/images/flags/{$person->country|lower}.png" alt="{$person->country}"/>
 			{/if}
 			<b>{$person->country_name|lower|capitalize}</b>
 		</td>
 		<td align="right" valign="middle"><nobr>
-			{select options="{$options->country_name}" selected="{$person->country_name}"}
-			{button size="small" color="grey" caption="Otro" href="PERFIL PAIS" desc="Escriba el nombre del pais donde vive" popup="true" wait="false"}
+			{button size="small" color="grey" caption="Cambiar" href="PERFIL PAIS" desc="Escriba el nombre del pais donde vive" popup="true" wait="false"}
 		</nobr></td>
 	</tr>
 
@@ -108,7 +107,7 @@
 	<tr>
 		<td valign="middle"><small>Provincia</small></td>
 		<td valign="middle"><b>{$person->province|lower|capitalize}</b></td>
-		<td align="right" valign="middle">{select options="{$options->province}" selected="{$person->province}"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL PROVINCIA" desc="m:En que provincia vive? [Pinar_del_Rio,La_Habana,Artemisa,Mayabeque,Matanzas,Villa_Clara,Cienfuegos,Sancti_Spiritus,Ciego_de_Avila,Camaguey,Las_Tunas,Holguin,Granma,Santiago_de_Cuba,Guantanamo,Isla_de_la_Juventud]" popup="true"  wait="false"}</td>
 	</tr>
 	{/if}
 
@@ -117,7 +116,7 @@
 	<tr>
 		<td valign="middle"><small>Estado</small></td>
 		<td valign="middle"><b>{$person->usstate_name|lower|capitalize}</b></td>
-		<td align="right" valign="middle">{select options="{$options->usstate}" selected="{$person->usstate_name}"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL USSTATE" desc="m:En que pais vives? [AL,AK,AZ,AR,CA,CO,CT,DE,FL,GA,HI,ID,IL,IN,IA,KS,KY,LA,ME,MD,MA,MI,MN,MS,MO,MT,NE,NV,NH,NJ,NM,NY,NC,ND,OH,OK,OR,PA,RI,SC,SD,TN,TX,UT,VT,VA,WA,WV,WI,WY]" popup="true"  wait="false"}</td>
 	</tr>
 	{/if}
 
@@ -139,7 +138,7 @@
 	<tr>
 		<td valign="middle"><small>Religi&oacute;n</small></td>
 		<td valign="middle"><b>{$person->religion|lower|capitalize}</b></td>
-		<td align="right" valign="middle">{select options="{$options->religion}" selected="{$person->religion}"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL RELIGION" desc="m:Describa su religion [Cristianismo,Catolicismo,Yoruba,Protestante,Santero,Abakua,Budismo,Islam,Ateismo,Agnosticismo,Secularismo,Otra]" popup="true"  wait="false"}</td>
 	</tr>
 </table>
 
