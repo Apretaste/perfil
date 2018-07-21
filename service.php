@@ -161,6 +161,15 @@ class Perfil extends Service
 		if(empty($date)) $date = new DateTime($query);
 		if (empty($date)) return new Response();
 
+		$time = strtotime("-10 year", time());
+		$minBirthDate = DateTime::createFromFormat("U", $time);
+
+		$age=date_diff($date,date_create('today'))->y;
+		if ($date>=$minBirthDate || $age>110) {
+			$this->utils->addNotification($request->email, "perfil", "Su edad debe ser mayor a 10 años y menor a 110 años, no ingrese datos falsos", "PERFIL");
+			return new Response();
+		}
+
 		// save date in the database
 		$dtStr = strftime("%Y-%m-%d", $date->getTimestamp());
 

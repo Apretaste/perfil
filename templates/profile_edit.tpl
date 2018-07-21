@@ -36,7 +36,7 @@
 	<tr>
 		<td valign="middle"><small>Cumplea&ntilde;os</small></td>
 		<td valign="middle"><b>{$person->date_of_birth|date_format:"%e/%m/%Y"}</b></td>
-		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL CUMPLEANOS" desc="d:Escriba su fecha de cumpleannos usando la notacion DD/MM/AAAA, por ejemplo 5/2/1980" popup="true"  wait="false"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL CUMPLEANOS" desc="d:Escriba su fecha de cumpleaños usando la notación DD/MM/AAAA, por ejemplo 5/2/1980" popup="true"  wait="false"}</td>
 	</tr>
 
 	<!-- BODY TYPE -->
