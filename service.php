@@ -60,7 +60,12 @@ class Perfil extends Service
 		);
 
 		// pass profile image to the response
-		$image = $profile->picture ? array($profile->picture_internal) : array();
+		$image=array();
+		if ($profile->picture) $image[]=$profile->picture_internal;
+
+		foreach ($profile->extraPictures_internal as $picture) {
+			$image[]=$picture;
+		}
 
 		// create a new Response object and input the template and the content
 		$response = new Response();
@@ -68,6 +73,25 @@ class Perfil extends Service
 		$response->setResponseSubject("Perfil de Apretaste");
 		$response->createFromTemplate("profile.tpl", $responseContent, $image);
 		return $response;
+	}
+
+	/**
+	 * 
+	 * Subservice VER to see extra pictures
+	 * @param Request
+	 * @return Response
+	 */
+
+	public function _ver(Request $request){
+		if (empty($request->query)) return new Response();
+		$wwwroot = \Phalcon\DI\FactoryDefault::getDefault()->get('path')['root'];
+		$file="$wwwroot/public/profile/$request->query.jpg";
+		if (file_exists($file)) {
+			$response=new Response();
+			$response->subject="Ver imagen";
+			$response->createFromTemplate("verimg.tpl",array('img'=>$file),array($file));
+			return $response;
+		}
 	}
 
 	/**
@@ -174,6 +198,21 @@ class Perfil extends Service
 		$dtStr = strftime("%Y-%m-%d", $date->getTimestamp());
 
 		$this->update("date_of_birth='$dtStr'", $request->email);
+		return new Response();
+	}
+
+	/**
+	 * Subservice DESCRIPCION
+	 * 
+	 * @param Request
+	 * @return Response
+	 */
+	public function _descripcion(Request $request)
+	{
+		$description=strip_tags(trim($request->query));
+		if (empty($description) || strlen($description)<100) return new Response();
+		
+		$this->update("about_me='$description'", $request->email);
 		return new Response();
 	}
 
@@ -485,6 +524,55 @@ class Perfil extends Service
 
 			// make the changes in the database
 			$this->update("picture='$fileName'", $request->email);
+			break;
+		}
+
+		return new Response();
+	}
+
+	/**
+	 * Subservice FOTO
+	 *
+	 * @param Request $request
+	 * @return Response
+	 */
+	public function _extrafoto ($request)
+	{
+		// is the image passed in the subject? (web only)
+		if(file_exists($request->query)) {
+			$request->attachments = array($request->query);
+		}
+
+		// is the image attached (email and app)?
+		if($request->attachments) foreach ($request->attachments as $attach)
+		{
+			// get the first image attached
+			$mimetype = explode("/", mime_content_type($attach))[0];
+			if($mimetype != "image") continue;
+
+			$person = Connection::query("SELECT picture,extra_pictures FROM person WHERE email = '$request->email'")[0];
+			$pics=json_decode($person->extra_pictures,true);
+
+			// get the path to the image
+			$di = \Phalcon\DI\FactoryDefault::getDefault();
+			$wwwroot = $di->get('path')['root'];
+
+			// create a new random image name and path
+			$fileName = md5($request->email . rand());
+			$filePath = "$wwwroot/public/profile/$fileName.jpg";
+
+			//save the new img in the array, max 4 imgs
+			if (count($pics)==4) $pics[3]=$fileName;
+			else $pics[]=$fileName;
+
+			$pics=json_encode($pics);
+
+			// save the original copy
+			@copy($attach, $filePath);
+			$this->utils->optimizeImage($filePath);
+
+			// make the changes in the database
+			$this->update("extra_pictures='$pics'", $request->email);
 			break;
 		}
 
