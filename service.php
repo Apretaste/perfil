@@ -48,26 +48,20 @@ class Perfil extends Service
 		$profile->blocked = false;
 		$profile->blockedByMe = false;
 		if ($emailToLookup==$request->email) {
-			$tickets = Connection::query("SELECT count(ticket_id) as tickets FROM ticket 
+			$tickets = Connection::query("SELECT count(ticket_id) as tickets FROM ticket
 										  WHERE raffle_id is NULL AND email = '$emailToLookup'")[0]->tickets;
 		}
 		else {
 			$tickets=0;
-			$r = Connection::query("SELECT * 
-			FROM ((SELECT COUNT(user1) AS blockedByMe FROM relations 
-					WHERE user1 = '$request->email' AND user2 = '$emailToLookup' 
-					AND `type` = 'blocked' AND confirmed=1) AS A,
-					(SELECT COUNT(user1) AS blocked FROM relations 
-					WHERE user1 = '$emailToLookup' AND user2 = '$request->email' 
-					AND `type` = 'blocked' AND confirmed=1) AS B)");
-			$profile->blocked=($r[0]->blocked>0)?true:false;
-			$profile->blockedByMe=($r[0]->blockedByMe>0)?true:false;
+			$blocks=$this->isBlocked($request->email,$emailToLookup);
+			$profile->blocked=$blocks->blocked;
+			$profile->blockedByMe=$blocks->blockedByMe;
 		}
 
 		if ($profile->blocked) {
 			$response = new Response();
 			$response->setResponseSubject("Lo sentimos, usted no tiene acceso a este perfil");
-			$response->createFromText("Lo sentimos, el perfil que usted nos solicita no puede ser mostrado");
+			$response->createFromTemplate("blocked.tpl",['profile'=>$profile]);
 			return $response;
 		}
 
@@ -95,7 +89,7 @@ class Perfil extends Service
 	}
 
 	/**
-	 * 
+	 *
 	 * Subservice VER to see extra pictures
 	 * @param Request
 	 * @return Response
@@ -111,6 +105,32 @@ class Perfil extends Service
 			$response->createFromTemplate("verimg.tpl",array('img'=>$file),array($file));
 			return $response;
 		}
+	}
+
+	/**
+	 * Get if the user is blocked or has been blocked by
+	 * @author ricardo@apretaste.com
+	 * @param String $user1
+	 * @param String $user2
+	 * @return Object
+	 */
+	private function isBlocked(String $user1, String $user2){
+		$res=new stdClass();
+		$res->blocked = false;
+		$res->blockedByMe = false;
+
+		$r = Connection::query("SELECT *
+		FROM ((SELECT COUNT(user1) AS blockedByMe FROM relations
+				WHERE user1 = '$user1' AND user2 = '$user2'
+				AND `type` = 'blocked' AND confirmed=1) AS A,
+				(SELECT COUNT(user1) AS blocked FROM relations
+				WHERE user1 = '$user2' AND user2 = '$user1'
+				AND `type` = 'blocked' AND confirmed=1) AS B)");
+
+		$res->blocked=($r[0]->blocked>0)?true:false;
+		$res->blockedByMe=($r[0]->blockedByMe>0)?true:false;
+
+		return $res;
 	}
 
 	/**
@@ -222,7 +242,7 @@ class Perfil extends Service
 
 	/**
 	 * Subservice DESCRIPCION
-	 * 
+	 *
 	 * @param Request
 	 * @return Response
 	 */
@@ -230,7 +250,7 @@ class Perfil extends Service
 	{
 		$description=strip_tags(trim($request->query));
 		if (empty($description) || strlen($description)<100) return new Response();
-		
+
 		$this->update("about_me='$description'", $request->email);
 		return new Response();
 	}
@@ -679,7 +699,7 @@ class Perfil extends Service
 
 	/**
 	 * Block an user
-	 * 
+	 *
 	 * @author ricardo@apretaste.com
 	 * @param Request
 	 * @return Response
@@ -693,10 +713,10 @@ class Perfil extends Service
 			FROM `relations`
 			WHERE user1 = '$request->email'
 			AND user2 = '$person->email'");
-			if (isset($r[0])) Connection::query("UPDATE `relations` SET confirmed=1 
-												WHERE user1='$request->email' 
+			if (isset($r[0])) Connection::query("UPDATE `relations` SET confirmed=1
+												WHERE user1='$request->email'
 												AND user2='$person->email' AND `type`='blocked'");
-			else Connection::query("INSERT INTO `relations`(user1,user2,`type`,confirmed) 
+			else Connection::query("INSERT INTO `relations`(user1,user2,`type`,confirmed)
 									VALUES('$request->email','$person->email','blocked',1)");
 		}
 		return $this->_main($request);
@@ -704,7 +724,7 @@ class Perfil extends Service
 
 	/**
 	 * unlock an user
-	 * 
+	 *
 	 * @author ricardo@apretaste.com
 	 * @param Request
 	 * @return Response
@@ -713,8 +733,8 @@ class Perfil extends Service
 		$person=Utils::getEmailFromUsername($request->query);
 		$person=Utils::getPerson($person);
 		if($person){
-			Connection::query("UPDATE `relations` SET confirmed=0 
-								WHERE user1='$request->email' 
+			Connection::query("UPDATE `relations` SET confirmed=0
+								WHERE user1='$request->email'
 								AND user2='$person->email' AND `type`='blocked'");
 		}
 		return $this->_main($request);

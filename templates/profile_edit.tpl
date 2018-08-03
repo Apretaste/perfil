@@ -4,19 +4,17 @@
 		{img src="{$person->picture_internal}" alt="Picture" width="100" style="border:1px solid black;"}
 	{else}{noimage}{/if}
 	<br>
-	{if count($person->extra_pictures)>0}
+	{*if count($person->extra_pictures)>0}
 	{foreach $person->extra_pictures as $key => $picture}
-		{link href="PERFIL VER {$picture}" caption="
-			{img src="{$person->extraPictures_internal[$key]}" alt="Picture" width="45" style="border:.5px solid black;"}
-		"}
+		{link href="PERFIL VER {$picture}" caption="{img src="{$person->extraPictures_internal[$key]}" alt="Picture" width="45" style="border:.5px solid black;"}"}
 	{/foreach}
 	<br>
-	{/if}
+	{/if*}
 	{button color="grey" href="PERFIL FOTO" desc="u:Adjunte su foto de perfil*" caption="Cambiar" size="small" wait="false" popup="true"}
-	{if $person->picture}
+	{*if $person->picture}
 	<br>
 		{button color="grey" href="PERFIL EXTRAFOTO" desc="u:Adjunte su foto para su galeria*" caption="Subir foto" size="small" wait="false" popup="true"}
-	{/if}
+	{/if*}
 </center>
 {space15}
 
