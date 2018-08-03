@@ -40,7 +40,7 @@
 	{/if}
 	{button href="PERFIL EDITAR" caption="Editar mi Perfil" body="Envie este email tal y como esta. Recibira como respuesta su perfil en modo de edicion."}
 
-	{space30}
+	{space15}
 
 	<h1>Mi cr&eacute;dito</h1>
 	<p>Usted tiene &sect;{$profile->credit|money_format} en cr&eacute;dito de Apretaste</p>
@@ -50,6 +50,11 @@
 	<h1>Mis tickets para la rifa</h1>
 	<p>Usted tiene {$tickets} ticket(s) para la {link href="RIFA" caption="rifa"}</p>
 {else}
-	{button href="CHAT @{$profile->username}" caption="Chatear" color="grey"}
+	{if $profile->blockedByMe}
+		{button href="PERFIL DESBLOQUEAR @{$profile->username}" caption="Desbloquear" color="red" size="small"}
+	{else}
+		{button href="CHAT @{$profile->username}" caption="Chatear" color="grey" size="small"}
+		{button href="PERFIL BLOQUEAR @{$profile->username}" caption="Bloquear" color="red" size="small"}
+	{/if}
 {/if}
 </center>

@@ -43,19 +43,38 @@ class Perfil extends Service
 		$social = new Social();
 		$profile = $social->prepareUserProfile($person[0], $request->lang);
 
-		// check if current user follow the user to lookup
-		$profile->follow = false;
-		$sql = "SELECT COUNT(user1) as total FROM relations WHERE user1 = '{$request->email}' AND user2 = '$emailToLookup' AND type = 'follow';";
-		$r = Connection::query($sql);
-		if ($r[0]->total * 1 > 0) $profile->follow = true;
+		// check if current user blocked the user to lookup, or is blocked by
+		// and get the number of tickets for the raffle
+		$profile->blocked = false;
+		$profile->blockedByMe = false;
+		if ($emailToLookup==$request->email) {
+			$tickets = Connection::query("SELECT count(ticket_id) as tickets FROM ticket 
+										  WHERE raffle_id is NULL AND email = '$emailToLookup'")[0]->tickets;
+		}
+		else {
+			$tickets=0;
+			$r = Connection::query("SELECT * 
+			FROM ((SELECT COUNT(user1) AS blockedByMe FROM relations 
+					WHERE user1 = '$request->email' AND user2 = '$emailToLookup' 
+					AND `type` = 'blocked' AND confirmed=1) AS A,
+					(SELECT COUNT(user1) AS blocked FROM relations 
+					WHERE user1 = '$emailToLookup' AND user2 = '$request->email' 
+					AND `type` = 'blocked' AND confirmed=1) AS B)");
+			$profile->blocked=($r[0]->blocked>0)?true:false;
+			$profile->blockedByMe=($r[0]->blockedByMe>0)?true:false;
+		}
 
-		// get the number of tickets for the raffle
-		$tickets = Connection::query("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '$emailToLookup'");
+		if ($profile->blocked) {
+			$response = new Response();
+			$response->setResponseSubject("Lo sentimos, usted no tiene acceso a este perfil");
+			$response->createFromText("Lo sentimos, el perfil que usted nos solicita no puede ser mostrado");
+			return $response;
+		}
 
 		// pass variables to the template
 		$responseContent = array(
 			"profile" => $profile,
-			"tickets" => $tickets[0]->tickets,
+			"tickets" => $tickets,
 			"ownProfile" => $emailToLookup == $request->email
 		);
 
@@ -63,7 +82,7 @@ class Perfil extends Service
 		$image=array();
 		if ($profile->picture) $image[]=$profile->picture_internal;
 
-		foreach ($profile->extraPictures_internal as $picture) {
+		foreach ($profile->extraPictures_internal as $picture){
 			$image[]=$picture;
 		}
 
@@ -656,6 +675,49 @@ class Perfil extends Service
 		$response->setResponseSubject('Edite su perfil');
 		$response->createFromTemplate('profile_edit.tpl', ["person"=>$person], $image);
 		return $response;
+	}
+
+	/**
+	 * Block an user
+	 * 
+	 * @author ricardo@apretaste.com
+	 * @param Request
+	 * @return Response
+	 */
+	public function _bloquear(Request $request){
+		$person=Utils::getEmailFromUsername($request->query);
+		$person=Utils::getPerson($person);
+		if($person){
+			$r = Connection::query("
+			SELECT *
+			FROM `relations`
+			WHERE user1 = '$request->email'
+			AND user2 = '$person->email'");
+			if (isset($r[0])) Connection::query("UPDATE `relations` SET confirmed=1 
+												WHERE user1='$request->email' 
+												AND user2='$person->email' AND `type`='blocked'");
+			else Connection::query("INSERT INTO `relations`(user1,user2,`type`,confirmed) 
+									VALUES('$request->email','$person->email','blocked',1)");
+		}
+		return $this->_main($request);
+	}
+
+	/**
+	 * unlock an user
+	 * 
+	 * @author ricardo@apretaste.com
+	 * @param Request
+	 * @return Response
+	 */
+	public function _desbloquear(Request $request){
+		$person=Utils::getEmailFromUsername($request->query);
+		$person=Utils::getPerson($person);
+		if($person){
+			Connection::query("UPDATE `relations` SET confirmed=0 
+								WHERE user1='$request->email' 
+								AND user2='$person->email' AND `type`='blocked'");
+		}
+		return $this->_main($request);
 	}
 
 	/**
