@@ -204,15 +204,18 @@ class Perfil extends Service
 	 * @param Request $request
 	 * @return Response
 	 */
-	public function _cumpleanos (Request $request)
-	{
+	public function _cumpleanos (Request $request){
 		// clean the date passed
 		$query = trim($request->query);
 
 		// calculate the date passed the user
-		$date = DateTime::createFromFormat("d/m/Y", $query);
-		if(empty($date)) $date = new DateTime($query);
-		if (empty($date)) return new Response();
+		$date = (strlen($query)<8)?DateTime::createFromFormat("j-n-y", $query):DateTime::createFromFormat("d/m/Y", $query);
+		if(empty($date)) try {
+			$date = new DateTime($query);
+		} catch(Exception $e) {
+			$this->utils->addNotification($request->email, "perfil", "Ingreso un formato de fecha no reconocido en su fecha de cumpleaños, por favor use las opciones de la app", "PERFIL");
+			return new Response();
+		}
 
 		$time = strtotime("-10 year", time());
 		$minBirthDate = DateTime::createFromFormat("U", $time);
@@ -997,7 +1000,7 @@ class Perfil extends Service
 					$enum[$k] = str_replace('_', ' ', $v);
 				}
 
-				$response->createFromTemplate('wrong_' . $field . '.tpl', array('list' => $enum));
+				$response->createFromText("El dato que introdujo ($wrong_subject) no esta en un formato reconocido por nuestro sistema");
 				return $response;
 			}
 		}
