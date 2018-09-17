@@ -148,6 +148,15 @@
 		<td valign="middle"><b>{$person->religion|lower|capitalize}</b></td>
 		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL RELIGION" desc="m:Describa su religion [Cristianismo,Catolicismo,Yoruba,Protestante,Santero,Abakua,Budismo,Islam,Ateismo,Agnosticismo,Secularismo,Otra]" popup="true"  wait="false"}</td>
 	</tr>
+
+	<!-- ORIGIN -->
+	{if not $person->origin}
+	<tr>
+		<td valign="middle"><small>&iquest;Donde vi&oacute; la app?</small></td>
+		<td valign="middle"></td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL ORIGIN" desc="m:Donde escucho sobre la app? [Alguien le comento,Un usuario le invito,Por su familia afuera,La vio en Revolico,La vio en el Paquete,La vio en la Internet,En la prensa independiente,En la Prensa Cubana,Otra]" popup="true"  wait="false"}</td>
+	</tr>
+	{/if}
 </table>
 
 <style>

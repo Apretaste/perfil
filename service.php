@@ -1,14 +1,5 @@
 <?php
 
-/**
- * Perfil
- *
- * Apretaste Service
- *
- * @version 1.1
- * @author @salvipascual
- * @author @kumahacker
- */
 class Perfil extends Service
 {
 	/**
@@ -48,8 +39,7 @@ class Perfil extends Service
 		$profile->blocked = false;
 		$profile->blockedByMe = false;
 		if ($emailToLookup==$request->email) {
-			$tickets = Connection::query("SELECT count(ticket_id) as tickets FROM ticket
-										  WHERE raffle_id is NULL AND email = '$emailToLookup'")[0]->tickets;
+			$tickets = Connection::query("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '$emailToLookup'")[0]->tickets;
 		}
 		else {
 			$tickets=0;
@@ -698,6 +688,36 @@ class Perfil extends Service
 	}
 
 	/**
+	 * Show the form of where you hear about the app
+	 *
+	 * @param Request $request
+	 * @return Response
+	 */
+	public function _origen (Request $request)
+	{
+		// get the person to add origin
+		$person = $this->utils->getPerson($request->email);
+		if (empty($person)) return new Response();
+
+		// prepare response for the view
+		$response = new Response();
+		$response->setResponseSubject('Origin de la app');
+		$response->createFromTemplate('origin.tpl', ["person"=>$person]);
+		return $response;
+	}
+
+	/**
+	 * Subservice ORIGIN
+	 *
+	 * @param Request $request
+	 * @return Response
+	 */
+	public function _origin (Request $request)
+	{
+		return $this->subServiceSimple($request, 'origin', null, 100);
+	}
+
+	/**
 	 * Block an user
 	 *
 	 * @author ricardo@apretaste.com
@@ -915,7 +935,7 @@ class Perfil extends Service
 	 * @param String $sqlset
 	 * @param String $email
 	 */
-	private function update ($sqlset, $email)
+	private function update($sqlset, $email)
 	{
 		$query = "UPDATE person SET $sqlset, last_update_date=CURRENT_TIMESTAMP, updated_by_user=1	WHERE email='$email'";
 		$query = preg_replace("/\s+/", " ", $query);
