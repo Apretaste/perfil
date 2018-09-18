@@ -559,7 +559,7 @@ class Perfil extends Service
 			break;
 		}
 
-		return new Response();
+		return $this->_editar($request);
 	}
 
 	/**
@@ -608,7 +608,7 @@ class Perfil extends Service
 			break;
 		}
 
-		return new Response();
+		return $this->_editar($request);
 	}
 
 	/**

@@ -10,10 +10,10 @@
 	{/foreach}
 	<br>
 	{/if*}
-	{button color="grey" href="PERFIL FOTO" desc="u:Adjunte su foto de perfil*" caption="Cambiar" size="small" wait="false" popup="true"}
+	{button color="grey" href="PERFIL FOTO" desc="u:Adjunte su foto de perfil*" caption="Cambiar" size="small" popup="true"}
 	{*if $person->picture}
 	<br>
-		{button color="grey" href="PERFIL EXTRAFOTO" desc="u:Adjunte su foto para su galeria*" caption="Subir foto" size="small" wait="false" popup="true"}
+		{button color="grey" href="PERFIL EXTRAFOTO" desc="u:Adjunte su foto para su galeria*" caption="Subir foto" size="small" popup="true"}
 	{/if*}
 </center>
 {space15}
