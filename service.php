@@ -66,14 +66,14 @@ class Perfil extends Service
 		}
 
 		// pass variables to the template
-		$responseContent = array(
+		$responseContent = [
 			"profile" => $profile,
 			"tickets" => $tickets,
 			"ownProfile" => $emailToLookup == $request->email
-		);
+		];
 
 		// pass profile image to the response
-		$image=array();
+		$image=[];
 		if ($profile->picture) $image[]=$profile->picture_internal;
 
 		foreach ($profile->extraPictures_internal as $picture){
@@ -953,9 +953,12 @@ class Perfil extends Service
 	 */
 	private function update($sqlset, $userId)
 	{
-		$query = "UPDATE person SET $sqlset, last_update_date=CURRENT_TIMESTAMP, updated_by_user=1 WHERE id=$userId";
-		$query = preg_replace("/\s+/", " ", $query);
-		Connection::query($query);
+		if(empty($userId)) return new Response();
+
+		Connection::query("
+			UPDATE person 
+			SET $sqlset, last_update_date=CURRENT_TIMESTAMP, updated_by_user=1 
+			WHERE id='$userId'");
 	}
 
 	/**
@@ -988,7 +991,7 @@ class Perfil extends Service
 	private function updateEnum($value, $enums, $default, $field, $userId)
 	{
 		// do not allow empty responses
-		if(empty($value)) return Response();
+		if(empty($value)) return new Response();
 
 		// set initial params
 		$value = strtolower($value);
