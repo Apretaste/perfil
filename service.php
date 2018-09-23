@@ -1008,10 +1008,13 @@ class Perfil extends Service
 			}
 		}
 
-		// if nothing selected, get the default value
+		// if nothing is selected, get the default value
 		if( ! $selected) $selected = strtolower($default);
 
+		// if empty, make the field NULL
+		$query = empty($selected) ? "$field=NULL" : "$field='$selected'";
+
 		// update the table
-		$this->update("$field='$selected'", $userId);
+		$this->update($query, $userId);
 	}
 }
