@@ -153,7 +153,7 @@ class Perfil extends Service
 		if($exist[0]->exist) $username = Utils::usernameFromEmail($request->email);
 
 		// update the username in the database
-		$this->updateEscape('username', $username, $request->personId, 15);
+		$this->updateEscape('username', $username, $request->userId, 15);
 		return new Response();
 	}
 
@@ -175,7 +175,7 @@ class Perfil extends Service
 		$query = " first_name='{$n[0]}', middle_name='{$n[1]}', last_name='{$n[2]}', mother_name='{$n[3]}'";
 
 		// update the name in the database
-		$this->update($query, $request->personId);
+		$this->update($query, $request->userId);
 		return new Response();
 	}
 
@@ -195,7 +195,7 @@ class Perfil extends Service
 		if(substr($phone, 0, 1) == '5') $field = 'cellphone';
 
 		// update phone
-		$this->updateEscape($field, $phone, $request->personId, 10);
+		$this->updateEscape($field, $phone, $request->userId, 10);
 		return new Response();
 	}
 
@@ -242,7 +242,7 @@ class Perfil extends Service
 
 		// save date in the database
 		$dtStr = strftime("%Y-%m-%d", $date->getTimestamp());
-		$this->update("date_of_birth='$dtStr'", $request->personId);
+		$this->update("date_of_birth='$dtStr'", $request->userId);
 		return new Response();
 	}
 
@@ -257,7 +257,7 @@ class Perfil extends Service
 		$description=strip_tags(trim($request->query));
 		if (empty($description) || strlen($description)<100) return new Response();
 
-		$this->update("about_me='$description'", $request->personId);
+		$this->update("about_me='$description'", $request->userId);
 		return new Response();
 	}
 
@@ -269,7 +269,7 @@ class Perfil extends Service
 	 */
 	public function _profesion (Request $request)
 	{
-		$this->updateEscape('occupation', $request->query, $request->personId, 50);
+		$this->updateEscape('occupation', $request->query, $request->userId, 50);
 		return new Response();
 	}
 
@@ -298,7 +298,7 @@ class Perfil extends Service
 			'OTRA'];
 
 		// update the value on the database
-		$this->updateEnum($request->query, $enums, 'OTRA', 'religion', $request->personId);
+		$this->updateEnum($request->query, $enums, 'OTRA', 'religion', $request->userId);
 		return new Response();
 	}
 
@@ -319,10 +319,10 @@ class Perfil extends Service
 		];
 
 		// save country as Cuba
-		$this->update("country='CU', usstate=NULL", $request->personId);
+		$this->update("country='CU', usstate=NULL", $request->userId);
 
 		// update the value on the database
-		$this->updateEnum($request->query, $enums, '', 'province', $request->personId);
+		$this->updateEnum($request->query, $enums, '', 'province', $request->userId);
 		return new Response();
 	}
 
@@ -380,7 +380,7 @@ class Perfil extends Service
 		if (is_null($selectedCountry)) return new Response();
 
 		// update country and return empty response
-		$this->update("country='{$selectedCountry->code}'", $request->personId);
+		$this->update("country='{$selectedCountry->code}'", $request->userId);
 		return new Response();
 	}
 
@@ -392,7 +392,7 @@ class Perfil extends Service
 	 */
 	public function _ciudad (Request $request)
 	{
-		$this->updateEscape('city', $request->query, $request->personId, 100);
+		$this->updateEscape('city', $request->query, $request->userId, 100);
 		return new Response();
 	}
 
@@ -410,7 +410,7 @@ class Perfil extends Service
 		$enums = ['F','M'];
 
 		// update the value on the database
-		$this->updateEnum($gender, $enums, '', 'gender', $request->personId);
+		$this->updateEnum($gender, $enums, '', 'gender', $request->userId);
 		return new Response();
 	}
 
@@ -426,7 +426,7 @@ class Perfil extends Service
 		$enums = ['PRIMARIO','SECUNDARIO','TECNICO','UNIVERSITARIO','POSTGRADUADO','DOCTORADO','OTRO'];
 
 		// update the value on the database
-		$this->updateEnum($request->query, $enums, 'OTRO', 'highest_school_level', $request->personId);
+		$this->updateEnum($request->query, $enums, 'OTRO', 'highest_school_level', $request->userId);
 		return new Response();
 	}
 
@@ -453,7 +453,7 @@ class Perfil extends Service
 		$enums = ['SOLTERO','SALIENDO','COMPROMETIDO','CASADO','OTRO'];
 	
 		// update the value on the database
-		$this->updateEnum($request->query, $enums, 'OTRO', 'marital_status', $request->personId);
+		$this->updateEnum($request->query, $enums, 'OTRO', 'marital_status', $request->userId);
 		return new Response();
 	}
 
@@ -480,7 +480,7 @@ class Perfil extends Service
 		$enums = ['TRIGUENO','CASTANO','RUBIO','NEGRO','ROJO','BLANCO','OTRO'];
 
 		// update the value on the database
-		$this->updateEnum($request->query, $enums, 'OTRO', 'hair', $request->personId);
+		$this->updateEnum($request->query, $enums, 'OTRO', 'hair', $request->userId);
 		return new Response();
 	}
 
@@ -496,7 +496,7 @@ class Perfil extends Service
 		$enums = ['NEGRO','CARMELITA','VERDE','AZUL','AVELLANA','OTRO'];
 
 		// update the value on the database
-		$this->updateEnum($request->query, $enums, 'OTRO', 'eyes', $request->personId);
+		$this->updateEnum($request->query, $enums, 'OTRO', 'eyes', $request->userId);
 		return new Response();
 	}
 
@@ -512,7 +512,7 @@ class Perfil extends Service
 		$enums = ['DELGADO', 'MEDIO', 'EXTRA', 'ATLETICO'];
 
 		// update the value on the database
-		$this->updateEnum($request->query, $enums, '', 'body_type', $request->personId);
+		$this->updateEnum($request->query, $enums, '', 'body_type', $request->userId);
 		return new Response();
 	}
 
@@ -524,7 +524,7 @@ class Perfil extends Service
 	 */
 	public function _intereses (Request $request)
 	{
-		$this->updateEscape('interests', $request->query, $request->personId, 1000);
+		$this->updateEscape('interests', $request->query, $request->userId, 1000);
 		return new Response();
 	}
 
@@ -561,7 +561,7 @@ class Perfil extends Service
 			$this->utils->optimizeImage($filePath);
 
 			// make the changes in the database
-			$this->update("picture='$fileName'", $request->personId);
+			$this->update("picture='$fileName'", $request->userId);
 			break;
 		}
 
@@ -610,7 +610,7 @@ class Perfil extends Service
 			$this->utils->optimizeImage($filePath);
 
 			// make the changes in the database
-			$this->update("extra_pictures='$pics'", $request->personId);
+			$this->update("extra_pictures='$pics'", $request->userId);
 			break;
 		}
 
@@ -629,7 +629,7 @@ class Perfil extends Service
 		$enums = ['HETERO','HOMO','BI'];
 
 		// update the value on the database
-		$this->updateEnum($request->query, $enums, '', 'sexual_orientation', $request->personId);
+		$this->updateEnum($request->query, $enums, '', 'sexual_orientation', $request->userId);
 		return new Response();
 	}
 
@@ -656,7 +656,7 @@ class Perfil extends Service
 		$enums = ['NEGRO','BLANCO','MESTIZO','OTRO'];
 
 		// update the value on the database
-		$this->updateEnum($request->query, $enums, '', 'skin', $request->personId);
+		$this->updateEnum($request->query, $enums, '', 'skin', $request->userId);
 		return new Response();
 	}
 
@@ -722,7 +722,7 @@ class Perfil extends Service
 	public function _origin (Request $request)
 	{
 		// save the value
-		$this->updateEnum($request->query, $this->origins, 'OTRO', 'origin', $request->personId);
+		$this->updateEnum($request->query, $this->origins, 'OTRO', 'origin', $request->userId);
 		return new Response();
 	}
 
@@ -875,7 +875,7 @@ class Perfil extends Service
 		$states = array("AL","AK","AS","AZ","AR","CA","CO","CT","DE","DC","FL","GA","GU","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MH","MA","MI","FM","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","MP","OH","OK","OR","PW","PA","PR","RI","SC","SD","TN","TX","UT","VT","VA","VI","WA","WV","WI","WY");
 
 		// save US state
-		if(in_array($state, $states)) $this->update("usstate='$state', country='US', province=NULL", $request->personId);
+		if(in_array($state, $states)) $this->update("usstate='$state', country='US', province=NULL", $request->userId);
 		return new Response();
 	}
 
@@ -939,7 +939,7 @@ class Perfil extends Service
 
 		// save the image quality
 		if(in_array($quality, $enums)) {
-			$this->update("img_quality='$quality'", $request->personId);
+			$this->update("img_quality='$quality'", $request->userId);
 		}
 
 		return new Response();
@@ -949,11 +949,11 @@ class Perfil extends Service
 	 * Update a profile
 	 *
 	 * @param String $sqlset
-	 * @param String $personId
+	 * @param String $userId
 	 */
-	private function update($sqlset, $personId)
+	private function update($sqlset, $userId)
 	{
-		$query = "UPDATE person SET $sqlset, last_update_date=CURRENT_TIMESTAMP, updated_by_user=1 WHERE id='$personId'";
+		$query = "UPDATE person SET $sqlset, last_update_date=CURRENT_TIMESTAMP, updated_by_user=1 WHERE id=$userId";
 		$query = preg_replace("/\s+/", " ", $query);
 		Connection::query($query);
 	}
@@ -963,16 +963,16 @@ class Perfil extends Service
 	 *
 	 * @param String $field : field name in the database
 	 * @param String $value : value to save
-	 * @param String $personId
+	 * @param String $userId
 	 * @param Integer $cut : Max length of the value
 	 */
-	private function updateEscape($field, $value, $personId, $cut=false)
+	private function updateEscape($field, $value, $userId, $cut=false)
 	{
 		// escape and cut the string
 		$value = Connection::escape($value, $cut);
 
 		// save to the database
-		$this->update("$field='$value'", $personId);
+		$this->update("$field='$value'", $userId);
 	}
 
 	/**
@@ -983,9 +983,9 @@ class Perfil extends Service
 	 * @param Array $enums : ["ROJO", "VERDE", "AZUL", OTRO] 
 	 * @param String $default : OTRO
 	 * @param String $field : field name in the database
-	 * @param integer $personId
+	 * @param integer $userId
 	 */
-	private function updateEnum($value, $enums, $default, $field, $personId)
+	private function updateEnum($value, $enums, $default, $field, $userId)
 	{
 		// do not allow empty responses
 		if(empty($value)) return Response();
@@ -1012,6 +1012,6 @@ class Perfil extends Service
 		if( ! $selected) $selected = strtolower($default);
 
 		// update the table
-		$this->update("$field='$selected'", $personId);
+		$this->update("$field='$selected'", $userId);
 	}
 }
