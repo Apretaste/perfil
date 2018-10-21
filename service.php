@@ -453,7 +453,7 @@ class Perfil extends Service
 		$enums = ['SOLTERO','SALIENDO','COMPROMETIDO','CASADO','OTRO'];
 	
 		// update the value on the database
-		$this->updateEnum($request->query, $enums, 'OTRO', 'marital_status', $request->userId);
+		$this->updateEnum(strtoupper($request->query), $enums, 'OTRO', 'marital_status', $request->userId);
 		return new Response();
 	}
 
@@ -845,6 +845,7 @@ class Perfil extends Service
 			{
 				$req = new Request();
 				$req->email = $request->email;
+				$req->userId = $request->userId;
 				$req->subject = "PERFIL $key $value";
 				$req->service = "PERFIL";
 				$req->subservice = $key;
@@ -983,7 +984,7 @@ class Perfil extends Service
 	 *
 	 * @author salvipascual
 	 * @param String $value : ASUL
-	 * @param Array $enums : ["ROJO", "VERDE", "AZUL", OTRO] 
+	 * @param Array $enums : ['ROJO', 'VERDE', 'AZUL', 'OTRO'] 
 	 * @param String $default : OTRO
 	 * @param String $field : field name in the database
 	 * @param integer $userId
