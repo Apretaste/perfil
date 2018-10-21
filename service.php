@@ -336,7 +336,7 @@ class Perfil extends Service
 	{
 		// get the list of countries
 		$countries = Connection::query("SELECT code, es AS name FROM countries ORDER BY code");
-		$country = trim($request->query);
+		$country = empty($request->params[0]) ? trim($request->params[1]) : $request->params[0];
 		$country_original = $country;
 
 		// do not let empty countries
