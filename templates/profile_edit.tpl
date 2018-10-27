@@ -44,7 +44,7 @@
 	<tr>
 		<td valign="middle"><small>Cumplea&ntilde;os</small></td>
 		<td valign="middle"><b id="value_birthday">{$person->date_of_birth|date_format:"%e/%m/%Y"}</b></td>
-		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL CUMPLEANOS" desc="d:Escriba su fecha de cumpleaños usando la notación DD/MM/AAAA, por ejemplo 5/2/1980" popup="true"  wait="false" callback="reloadBirthday"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL CUMPLEANOS" desc="m:Que dia usted nacio?[01,02,03,04,05,06,07,08,09,10,11,12,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,30,31]*|m:Que mes usted nacio?[01,02,03,04,05,06,07,08,09,10,11,12]*|m:Que a&ntilde;o usted nacio?[{$person->years}]*" popup="true"  wait="false" callback="reloadBirthday"}</td>
 	</tr>
 
 	<!-- BODY TYPE -->
@@ -152,7 +152,7 @@
 	<tr id="value_origin">
 		<td valign="middle"><small>&iquest;Donde vi&oacute; la app?</small></td>
 		<td valign="middle"></td>
-		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL ORIGIN" desc="m:Donde escucho sobre la app? [{$origins}]" popup="true" wait="false" callback="reloadOrigin"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL ORIGIN" desc="m:Donde escucho sobre la app? [{$person->origins}]" popup="true" wait="false" callback="reloadOrigin"}</td>
 	</tr>
 	{/if}
 </table>
@@ -185,13 +185,7 @@
 	function reloadCity(values) { document.getElementById('value_city').innerHTML = values[0]; }
 	function reloadInterests(values) { document.getElementById('value_interests').innerHTML = values[0].split(",").length + " intereses"; }
 	function reloadReligion(values) { document.getElementById('value_religion').innerHTML = values[0]; }
-	function reloadBirthday(values) {
-		var dt = new Date(values[0]);
-		var day = dt.getDate() + 1;
-		var month = dt.getMonth() + 1;
-		var year = dt.getFullYear();
-		document.getElementById('value_birthday').innerHTML = day+"/"+month+"/"+year;
-	}
+	function reloadBirthday(values) { document.getElementById('value_birthday').innerHTML = values[0]+"/"+values[1]+"/"+values[2]; }
 	function reloadOrigin(values) {
 		var origin = document.getElementById('value_origin');
 		origin.parentNode.removeChild(origin);
