@@ -219,13 +219,41 @@ class Perfil extends Service
 	 */
 	public function _cumpleanos (Request $request)
 	{
-		// get the date passed
-		$day = $request->params[0];
-		$month = $request->params[1];
-		$year = $request->params[2];
+		if(isset($request->fromBulk) && $request->fromBulk){
+			// clean the date passed
+			$query = trim($request->query);
 
+			// calculate the date passed the user
+			$date = (strlen($query)<8)?DateTime::createFromFormat("j-n-y", $query):DateTime::createFromFormat("d/m/Y", $query);
+			if(empty($date)) try {
+				$date = new DateTime($query);
+			} catch(Exception $e) {
+				$this->utils->addNotification($request->email, "perfil", "Ingreso un formato de fecha no reconocido en su fecha de cumpleaños, por favor use las opciones de la app", "PERFIL");
+				return new Response();
+			}
+		}
+		else{
+			// get the date passed
+			$day = $request->params[0];
+			$month = $request->params[1];
+			$year = $request->params[2];
+
+			$date = DateTime::createFromFormat("Y-m-d","$year-$month-$day");
+		}
+
+		$time = strtotime("-10 year", time());
+		$minBirthDate = DateTime::createFromFormat("U", $time);
+
+		$age=date_diff($date,date_create('today'))->y;
+		if ($date>=$minBirthDate || $age>110) {
+			Utils::addNotification($request->id, "perfil", "Su edad debe ser mayor a 10 años y menor a 110 años, no ingrese datos falsos", "PERFIL");
+			return new Response();
+		}
+
+		$dtStr = strftime("%Y-%m-%d", $date->getTimestamp());
+		
 		// save date in the database
-		$this->update("date_of_birth='$year-$month-$day'", $request->userId);
+		$this->update("date_of_birth='$dtStr'", $request->userId);
 		return new Response();
 	}
 
@@ -833,6 +861,7 @@ class Perfil extends Service
 				$req->subject = "PERFIL $key $value";
 				$req->service = "PERFIL";
 				$req->subservice = $key;
+				$req->fromBulk = true;
 				$req->query = $value;
 				$req->attachments = $request->attachments;
 				$function = "_$key";
