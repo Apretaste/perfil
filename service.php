@@ -148,9 +148,9 @@ class Perfil extends Service
 		$username = preg_replace("/[^a-zA-Z0-9]+/", "", $request->query);
 		$username = strtolower(substr($username, 0, 15));
 
-		// check if the username exist, else recreate it
-		$exist = Connection::query("SELECT COUNT(id) AS exist FROM person WHERE username='$username'");
-		if($exist[0]->exist) $username = Utils::usernameFromEmail($request->email);
+		// check if the username not exist, else if not belong to the user, recreate it
+		$exist = Connection::query("SELECT id AS exist FROM person WHERE username='$username'");
+		if(!empty($exist) && $exist[0]->id!=$request->userId) $username = Utils::usernameFromEmail($username);
 
 		// update the username in the database
 		$this->updateEscape('username', $username, $request->userId, 15);

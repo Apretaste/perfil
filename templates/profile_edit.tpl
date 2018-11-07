@@ -26,6 +26,13 @@
 		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL NOMBRE" desc="Escriba su nombre completo" popup="true" wait="false" callback="reloadName"}</td>
 	</tr>
 
+	<!-- USERNAME -->
+	<tr>
+		<td valign="middle"><small>Username</small></td>
+		<td valign="middle"><b id="value_username">@{$person->username}</b></td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL USERNAME" desc="Escriba un nombre de usuario" popup="true" wait="false" callback="reloadUsername"}</td>
+	</tr>
+
 	<!-- GENDER -->
 	<tr>
 		<td valign="middle"><small>Sexo</small></td>
@@ -44,7 +51,7 @@
 	<tr>
 		<td valign="middle"><small>Cumplea&ntilde;os</small></td>
 		<td valign="middle"><b id="value_birthday">{$person->date_of_birth|date_format:"%e/%m/%Y"}</b></td>
-		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL CUMPLEANOS" desc="m:Que dia usted nacio?[01,02,03,04,05,06,07,08,09,10,11,12,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,30,31]*|m:Que mes usted nacio?[01,02,03,04,05,06,07,08,09,10,11,12]*|m:Que a&ntilde;o usted nacio?[{$person->years}]*" popup="true"  wait="false" callback="reloadBirthday"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL CUMPLEANOS" desc="m:Que dia usted nacio?[01,02,03,04,05,06,07,08,09,10,11,12,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31]*|m:Que mes usted nacio?[01,02,03,04,05,06,07,08,09,10,11,12]*|m:Que a&ntilde;o usted nacio?[{$person->years}]*" popup="true"  wait="false" callback="reloadBirthday"}</td>
 	</tr>
 
 	<!-- BODY TYPE -->
@@ -171,6 +178,7 @@
 
 <script>
 	function reloadName(values) { document.getElementById('value_name').innerHTML = values[0]; }
+	function reloadUsername(values) { document.getElementById('value_username').innerHTML = '@'+values[0]; }
 	function reloadSex(values) { document.getElementById('value_sex').innerHTML = values[0]; }
 	function reloadOrientation(values) { document.getElementById('value_orientation').innerHTML = values[0]; }
 	function reloadBody(values) { document.getElementById('value_body').innerHTML = values[0]; }
