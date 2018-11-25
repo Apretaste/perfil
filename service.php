@@ -237,7 +237,6 @@ class Perfil extends Service
 			$day = $request->params[0];
 			$month = $request->params[1];
 			$year = $request->params[2];
-
 			$date = DateTime::createFromFormat("Y-m-d","$year-$month-$day");
 		}
 
@@ -251,9 +250,32 @@ class Perfil extends Service
 		}
 
 		$dtStr = strftime("%Y-%m-%d", $date->getTimestamp());
-		
+
 		// save date in the database
 		$this->update("date_of_birth='$dtStr'", $request->userId);
+		return new Response();
+	}
+
+	/**
+	 * Subservice ANO de nacimiento
+	 *
+	 * @param Request $request
+	 * @return Response
+	 */
+	public function _ano (Request $request)
+	{
+		// get possible birth years ranges
+		$yearMin = date('Y') - 90;
+		$yearMax = date('Y') - 10;
+
+		// remove any string part of the year (like spaces)
+		$year = preg_replace('/\D/', '', $request->query);
+
+		// do not save years out of range
+		if($year < $yearMin || $year > $yearMax) return new Response();
+
+		// save date in the database
+		$this->update("date_of_birth='$year-00-00'", $request->userId);
 		return new Response();
 	}
 
@@ -352,27 +374,21 @@ class Perfil extends Service
 
 		// do not let empty countries
 		if (empty($country)) return new Response();
+		$country = strtolower($country);
+		$country_original = strtolower($country_original);
 
 		// setup country aliases and typos
-		if($country == "US") $country = "Estados Unidos de America";
-		if($country == "USA") $country = "Estados Unidos de America";
-		if($country == "estados unidos") $country = "Estados Unidos de America";
-		if($country == "kuba") $country = "cu";
-		if($country == "usa") $country = "us";
-		if($country == "estados unidos de america") $country = "us";
+		if($country == "us" || $country == "usa" || $country == "united states") $country = "estados unidos";
+		if($country == "cu" || $country == "kuba" || $country == "cuva") $country = "cuba";
 
 		// get the country to update
 		$max = 0;
-		$l_country = strtolower($country);
-		$l_country_original = strtolower($country_original);
 		$selectedCountry = null;
-
 		foreach ($countries as $c) {
 			// check percentage similarity
 			$percent = 0;
 
-			similar_text($l_country, strtolower($c->name), $percent);
-
+			similar_text($country, strtolower($c->name), $percent);
 			// select the country with greater similarity
 			if ($max < $percent && $percent > 90) {
 				$max = $percent;
@@ -381,7 +397,7 @@ class Perfil extends Service
 
 			// select by code
 			$code = strtolower($c->code);
-			if ($code == $l_country || $code == $l_country_original) {
+			if ($code == $country || $code == $country_original) {
 				$selectedCountry = $c;
 				break;
 			}
@@ -416,12 +432,15 @@ class Perfil extends Service
 	 */
 	public function _sexo (Request $request)
 	{
-		// get values
-		$gender = $request->query[0];
-		$enums = ['F','M'];
+		// for hombre/mujer
+		if(strtoupper($request->query) == "HOMBRE") $gender = "M";
+		elseif(strtoupper($request->query) == "MUJER") $gender = "F";
+
+		// for Masculino/Femenino
+		else $gender = strtoupper($request->query[0]);
 
 		// update the value on the database
-		$this->updateEnum($gender, $enums, '', 'gender', $request->userId);
+		$this->updateEnum($gender, ['F','M'], '', 'gender', $request->userId);
 		return new Response();
 	}
 
@@ -453,30 +472,19 @@ class Perfil extends Service
 	}
 
 	/**
-	 * Subservice ESTADO
-	 *
-	 * @param Request $request
-	 * @return Response/void
-	 */
-	public function _estado (Request $request)
-	{
-		// list of possible values
-		$enums = ['SOLTERO','SALIENDO','COMPROMETIDO','CASADO','OTRO'];
-	
-		// update the value on the database
-		$this->updateEnum(strtoupper($request->query), $enums, 'OTRO', 'marital_status', $request->userId);
-		return new Response();
-	}
-
-	/**
-	 * Subservice ESTADO alias
+	 * Subservice ESTADO CIVIL
 	 *
 	 * @param Request $request
 	 * @return Response
 	 */
 	public function _estadocivil (Request $request)
 	{
-		return $this->_estado($request);
+		// list of possible values
+		$enums = ['SOLTERO','SALIENDO','COMPROMETIDO','CASADO','OTRO'];
+	
+		// update the value on the database
+		$this->updateEnum(strtoupper($request->query), $enums, 'OTRO', 'marital_status', $request->userId);
+		return new Response();	
 	}
 
 	/**
@@ -548,9 +556,7 @@ class Perfil extends Service
 	public function _foto ($request)
 	{
 		// is the image passed in the subject? (web only)
-		if(file_exists($request->query)) {
-			$request->attachments = array($request->query);
-		}
+		if(file_exists($request->query)) $request->attachments = [$request->query];
 
 		// is the image attached (email and app)?
 		if($request->attachments) foreach ($request->attachments as $attach)
@@ -576,7 +582,7 @@ class Perfil extends Service
 			break;
 		}
 
-		return $this->_editar($request);
+		return new Response();
 	}
 
 	/**
@@ -645,13 +651,26 @@ class Perfil extends Service
 	}
 
 	/**
-	 * Alias for subservice ORIENTACION SEXUAL
+	 * Subservice orientacion for Piropazo
 	 *
 	 * @param Request $request
 	 * @return Response
 	 */
-	public function _orientacionsexual (Request $request)
+	public function _orientacionbusco (Request $request)
 	{
+		// get the person's gender
+		$perfil = Utils::getPerson($request->userId);
+		if(empty($perfil->gender)) return new Response();
+
+		// get sexual orientation
+		$searchFor = strtoupper($request->query);
+		if($searchFor == "AMBOS") $query = "BI";
+		elseif($perfil->gender == "M" && $searchFor == "MUJERES") $query = "HETERO";
+		elseif($perfil->gender == "F" && $searchFor == "HOMBRES") $query = "HETERO";
+		else $query = "HOMO";
+
+		// save new orientacion
+		$request->query = $query;
 		return $this->_orientacion($request);
 	}
 

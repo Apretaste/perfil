@@ -1,36 +1,39 @@
 <!-- PICTURE -->
 <center>
-	{if $person->picture}
-		{img src="{$person->picture_internal}" alt="Picture" width="100" style="border:1px solid black;"}
-	{else}{noimage}{/if}
-	<br>
+	{img id="value_image" src="{$person->picture_internal}" alt="Picture"}
+
+	<br/>
+
 	{*if count($person->extra_pictures)>0}
-	{foreach $person->extra_pictures as $key => $picture}
-		{link href="PERFIL VER {$picture}" caption="{img src="{$person->extraPictures_internal[$key]}" alt="Picture" width="45" style="border:.5px solid black;"}"}
-	{/foreach}
-	<br>
+		{foreach $person->extra_pictures as $key => $picture}
+			{link href="PERFIL VER {$picture}" caption="{img src="{$person->extraPictures_internal[$key]}" alt="Picture" width="45" style="border:.5px solid black;"}"}
+		{/foreach}
+		<br/>
 	{/if*}
-	{button color="grey" href="PERFIL FOTO" desc="u:Adjunte su foto de perfil*" caption="Cambiar" size="small" popup="true"}
+
+	{button color="grey" href="PERFIL FOTO" desc="u:Toque aqui para agregar su foto*" caption="Cambiar" size="small" popup="true" wait="false" callback="reloadPicture"}
+
 	{*if $person->picture}
-	<br>
-		{button color="grey" href="PERFIL EXTRAFOTO" desc="u:Adjunte su foto para su galeria*" caption="Subir foto" size="small" popup="true"}
+		<br/>
+		{button color="grey" href="PERFIL EXTRAFOTO" desc="u:Adjunte su foto para su galeria*" caption="Subir foto" size="small" popup="true" wait="false"}
 	{/if*}
 </center>
+
 {space15}
 
 <table id="profile" width="100%" cellspacing="0">
-	<!-- NAME -->
-	<tr>
-		<td valign="middle"><small>Nombre</small></td>
-		<td valign="middle"><b id="value_name">{$person->full_name|lower|capitalize}</b></td>
-		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL NOMBRE" desc="Escriba su nombre completo" popup="true" wait="false" callback="reloadName"}</td>
-	</tr>
-
 	<!-- USERNAME -->
 	<tr>
 		<td valign="middle"><small>Username</small></td>
 		<td valign="middle"><b id="value_username">@{$person->username}</b></td>
 		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL USERNAME" desc="Escriba un nombre de usuario" popup="true" wait="false" callback="reloadUsername"}</td>
+	</tr>
+
+	<!-- NAME -->
+	<tr>
+		<td valign="middle"><small>Nombre</small></td>
+		<td valign="middle"><b id="value_name">{$person->full_name|lower|capitalize}</b></td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL NOMBRE" desc="Escriba su nombre completo" popup="true" wait="false" callback="reloadName"}</td>
 	</tr>
 
 	<!-- GENDER -->
@@ -86,7 +89,7 @@
 	<tr>
 		<td valign="middle"><small>Estado civil</small></td>
 		<td valign="middle"><b id="value_civilstatus">{$person->marital_status|lower|capitalize}</b></td>
-		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL ESTADO" desc="m:Describa su estado civil [Soltero,Saliendo,Comprometido,Casado]" popup="true"  wait="false" callback="reloadCivilStatus"}</td>
+		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL ESTADOCIVIL" desc="m:Describa su estado civil [Soltero,Saliendo,Comprometido,Casado]" popup="true"  wait="false" callback="reloadCivilStatus"}</td>
 	</tr>
 
 	<!-- HIGHEST SCHOOL LEVEL-->
@@ -174,6 +177,10 @@
 	.hidden{
 		display: none;
 	}
+	#value_image {
+		border: 2px solid gray; 
+		width: 100px;
+	}
 </style>
 
 <script>
@@ -194,6 +201,7 @@
 	function reloadInterests(values) { document.getElementById('value_interests').innerHTML = values[0].split(",").length + " intereses"; }
 	function reloadReligion(values) { document.getElementById('value_religion').innerHTML = values[0]; }
 	function reloadBirthday(values) { document.getElementById('value_birthday').innerHTML = values[0]+"/"+values[1]+"/"+values[2]; }
+	function reloadPicture(values) { document.getElementById('value_image').src = 'file://' + values[0]; }
 	function reloadOrigin(values) {
 		var origin = document.getElementById('value_origin');
 		origin.parentNode.removeChild(origin);
