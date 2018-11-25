@@ -1,22 +1,12 @@
 <!-- PICTURE -->
 <center>
-	{img id="value_image" src="{$person->picture_internal}" alt="Picture"}
+	<div id="img_container">
+		{img id="img_picture" src="{$person->picture_internal}" alt="Picture"}
+		<div id="img_check">&#x2714;</div>
+	</div>
 
 	<br/>
-
-	{*if count($person->extra_pictures)>0}
-		{foreach $person->extra_pictures as $key => $picture}
-			{link href="PERFIL VER {$picture}" caption="{img src="{$person->extraPictures_internal[$key]}" alt="Picture" width="45" style="border:.5px solid black;"}"}
-		{/foreach}
-		<br/>
-	{/if*}
-
-	{button color="grey" href="PERFIL FOTO" desc="u:Toque aqui para agregar su foto*" caption="Cambiar" size="small" popup="true" wait="false" callback="reloadPicture"}
-
-	{*if $person->picture}
-		<br/>
-		{button color="grey" href="PERFIL EXTRAFOTO" desc="u:Adjunte su foto para su galeria*" caption="Subir foto" size="small" popup="true" wait="false"}
-	{/if*}
+	{button color="grey" href="PERFIL FOTO" desc="u:Toque aqui para agregar su foto*" caption="Editar" size="small" popup="true" wait="false" callback="reloadPicture"}
 </center>
 
 {space15}
@@ -53,7 +43,7 @@
 	<!-- DAY OF BIRTH -->
 	<tr>
 		<td valign="middle"><small>Cumplea&ntilde;os</small></td>
-		<td valign="middle"><b id="value_birthday">{$person->date_of_birth|date_format:"%e/%m/%Y"}</b></td>
+		<td valign="middle"><b id="value_birthday">{$person->date_of_birth|date_format:"%d/%m/%Y"}</b></td>
 		<td align="right" valign="middle">{button size="small" color="grey" caption="Cambiar" href="PERFIL CUMPLEANOS" desc="m:Que dia usted nacio?[01,02,03,04,05,06,07,08,09,10,11,12,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31]*|m:Que mes usted nacio?[01,02,03,04,05,06,07,08,09,10,11,12]*|m:Que a&ntilde;o usted nacio?[{$person->years}]*" popup="true"  wait="false" callback="reloadBirthday"}</td>
 	</tr>
 
@@ -177,15 +167,31 @@
 	.hidden{
 		display: none;
 	}
-	#value_image {
-		border: 2px solid gray; 
+	#img_container {
+		position: relative;
+		text-align: center;
+	}
+	#img_picture {
+		border: 1px solid grey;
+		border-radius: 100px;
 		width: 100px;
+		height: 100px;
+	}
+	#img_check {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		color: green;
+		font-size: 80px;
+		font-weight: bold;
+		display: none;
 	}
 </style>
 
 <script>
-	function reloadName(values) { document.getElementById('value_name').innerHTML = values[0]; }
 	function reloadUsername(values) { document.getElementById('value_username').innerHTML = '@'+values[0]; }
+	function reloadName(values) { document.getElementById('value_name').innerHTML = values[0]; }
 	function reloadSex(values) { document.getElementById('value_sex').innerHTML = values[0]; }
 	function reloadOrientation(values) { document.getElementById('value_orientation').innerHTML = values[0]; }
 	function reloadBody(values) { document.getElementById('value_body').innerHTML = values[0]; }
@@ -201,7 +207,6 @@
 	function reloadInterests(values) { document.getElementById('value_interests').innerHTML = values[0].split(",").length + " intereses"; }
 	function reloadReligion(values) { document.getElementById('value_religion').innerHTML = values[0]; }
 	function reloadBirthday(values) { document.getElementById('value_birthday').innerHTML = values[0]+"/"+values[1]+"/"+values[2]; }
-	function reloadPicture(values) { document.getElementById('value_image').src = 'file://' + values[0]; }
 	function reloadOrigin(values) {
 		var origin = document.getElementById('value_origin');
 		origin.parentNode.removeChild(origin);
@@ -218,5 +223,9 @@
 			document.getElementById('container_state').style.display = "table-row";
 			document.getElementById('container_province').style.display = "none";
 		}
+	}
+	function reloadPicture(values) {
+		document.getElementById('img_picture').style.filter = "blur(3px)";
+		document.getElementById('img_check').style.display = "inline";
 	}
 </script>

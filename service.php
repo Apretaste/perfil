@@ -219,40 +219,31 @@ class Perfil extends Service
 	 */
 	public function _cumpleanos (Request $request)
 	{
-		if(isset($request->fromBulk) && $request->fromBulk){
-			// clean the date passed
-			$query = trim($request->query);
+		// get the params for old versions of the app
+		if(empty($request->params[0])) $request->params = explode(" ", trim($request->query));
 
-			// calculate the date passed the user
-			$date = (strlen($query)<8)?DateTime::createFromFormat("j-n-y", $query):DateTime::createFromFormat("d/m/Y", $query);
-			if(empty($date)) try {
-				$date = new DateTime($query);
-			} catch(Exception $e) {
-				$this->utils->addNotification($request->email, "perfil", "Ingreso un formato de fecha no reconocido en su fecha de cumpleaños, por favor use las opciones de la app", "PERFIL");
-				return new Response();
-			}
-		}
-		else{
-			// get the date passed
-			$day = $request->params[0];
-			$month = $request->params[1];
-			$year = $request->params[2];
-			$date = DateTime::createFromFormat("Y-m-d","$year-$month-$day");
-		}
+		// get the date passed
+		$day = $request->params[0];
+		$month = $request->params[1];
+		$year = $request->params[2];
 
-		$time = strtotime("-10 year", time());
-		$minBirthDate = DateTime::createFromFormat("U", $time);
+		// remove any string-like part (like spaces)
+		$year = preg_replace('/\D/', '', $year);
+		$month = preg_replace('/\D/', '', $month);
+		$day = preg_replace('/\D/', '', $day);
 
-		$age=date_diff($date,date_create('today'))->y;
-		if ($date>=$minBirthDate || $age>110) {
-			Utils::addNotification($request->id, "perfil", "Su edad debe ser mayor a 10 años y menor a 110 años, no ingrese datos falsos", "PERFIL");
-			return new Response();
-		}
+		// get possible birth years ranges
+		$yearMin = date('Y') - 90;
+		$yearMax = date('Y') - 10;
 
-		$dtStr = strftime("%Y-%m-%d", $date->getTimestamp());
+		// do not save dates out of range
+		if($year < $yearMin || $year > $yearMax) return new Response();
+		if($month < 1 || $month > 12) return new Response();
+		if($day < 1 || $day > 31) return new Response();
 
-		// save date in the database
-		$this->update("date_of_birth='$dtStr'", $request->userId);
+		// save the date in the database
+		$this->update("year_of_birth='$year'", $request->userId);
+		$this->update("date_of_birth='$year-$month-$day'", $request->userId);
 		return new Response();
 	}
 
@@ -275,7 +266,7 @@ class Perfil extends Service
 		if($year < $yearMin || $year > $yearMax) return new Response();
 
 		// save date in the database
-		$this->update("date_of_birth='$year-00-00'", $request->userId);
+		$this->update("year_of_birth='$year'", $request->userId);
 		return new Response();
 	}
 
@@ -287,9 +278,11 @@ class Perfil extends Service
 	 */
 	public function _descripcion(Request $request)
 	{
-		$description=strip_tags(trim($request->query));
-		if (empty($description) || strlen($description)<100) return new Response();
+		// do not allow empty or long descriptions
+		$description = Connection::escape($request->query, 250);
+		if (strlen($description) < 50) return new Response();
 
+		// set the description
 		$this->update("about_me='$description'", $request->userId);
 		return new Response();
 	}
@@ -458,17 +451,6 @@ class Perfil extends Service
 		// update the value on the database
 		$this->updateEnum($request->query, $enums, 'OTRO', 'highest_school_level', $request->userId);
 		return new Response();
-	}
-
-	/**
-	 * Subservice alias for NIVEL
-	 *
-	 * @param Request $request
-	 * @return Response
-	 */
-	public function _nivelescolar (Request $request)
-	{
-		return $this->_nivel($request);
 	}
 
 	/**
