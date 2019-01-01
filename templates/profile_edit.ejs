@@ -1,3 +1,198 @@
+<div class="row center-align">
+	<div class="col s12 m8 offset-m2">
+		<div class="card">
+			<div class="card-image row">
+				<div class="col s8 offset-s2">
+					<div class="card">
+						<div class="card-image">
+							<%if(data.person.picture!=""){%>
+							<img src="{$APP_IMG_DIR}<%=data.person.picture_internal%>">
+							<%}else{%>
+							<img src="{$APP_ASSETS}<%=data.profile.picture_internal%>">
+							<%}%>
+							<a class="btn-floating btn-large halfway-fab waves-effect waves-light red" id="picture">
+							<i class="material-icons">photo_camera</i>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="divider"></div>
+			<div class="card-content row">
+				<h6><b>Edite su perfil</b></h6>
+				<form class="col s12">
+				<p><b>Datos basicos</b></p>
+					<div class="row">
+						<div class="input-field col s6">
+						<input id="first_name" type="text" class="validate" value="<%=data.person.first_name%>">
+						<label for="first_name">Nombre</label>
+						</div>
+						<div class="input-field col s6">
+						<input id="last_name" type="text" class="validate" value="<%=data.person.last_name%>">
+						<label for="last_name">Apellido</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="input-field col s6">
+						<input value="@<%=data.person.username%>" id="username" type="text" class="validate">
+						<label for="username">Username</label>
+						</div>
+						<div class="input-field col s6">
+						<input type="text" class="datepicker" id="birthday">
+						<label for="birthday">Cumpleaños</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="input-field col s6">
+							<select id="gender">
+								<option value="Masculino">Masculino</option>
+								<option value="Femenino">Femenino</option>
+							</select>
+							<label>Sexo</label>
+						</div>
+						<div class="input-field col s6">
+							<select id="orientation">
+								<option value="HETERO">Hetero</option>
+								<option value="HOMO">Homo</option>
+								<option value="BI">Bi</option>
+							</select>
+							<label>Orientación Sexual</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="input-field col s6">
+							<select id="marital_status">
+								<option value="Soltero">Soltero</option>
+								<option value="Saliendo">Saliendo</option>
+								<option value="Comprometido">Comprometido</option>
+								<option value="Casado">Casado</option>
+								<option value="Otro">Otro</option>
+							</select>
+							<label>Estado Civil</label>
+						</div>
+						<div class="input-field col s6">
+							<select id="religion">
+								<option value="Cristianismo">Cristianismo</option>
+								<option value="Catolicismo">Catolicismo</option>
+								<option value="Yoruba">Yoruba</option>
+								<option value="Protestante">Protestante</option>
+								<option value="Santero">Santero</option>
+								<option value="Abakua">Abakua</option>
+								<option value="Budismo">Budismo</option>
+								<option value="Islam">Islam</option>
+								<option value="Ateismo">Ateismo</option>
+								<option value="Agnosticismo">Agnosticismo</option>
+								<option value="Secularismo">Secularismo</option>
+								<option value="Otra">Otra</option>
+							</select>
+							<label>Religión</label>
+						</div>
+					</div>
+					<p><b>Dirección</b></p>
+					<div class="row">
+						<div class="input-field col s6">
+							<select id="country" class="input">
+								<option value="Cuba">Cuba</option>
+								<option value="Estados Unidos">Estados Unidos</option>
+								<option value="Espana">España</option>
+								<option value="Italia">Italia</option>
+								<option value="Mexico">Mexico</option>
+								<option value="Brasil">Brasil</option>
+								<option value="Ecuador">Ecuador</option>
+								<option value="Canada">Canada</option>
+								<option value="Venezuela">Venezuela</option>
+								<option value="Alemania">Alemania</option>
+								<option value="Colombia">Colombia</option>
+								<option value="Otro">Otro</option>
+							</select>
+							<label>País</label>
+						</div>
+						<div class="input-field col s6">
+							<select id="country" class="input">
+								<option value="Cuba">Cuba</option>
+								<option value="Estados Unidos">Estados Unidos</option>
+								<option value="Espana">España</option>
+								<option value="Italia">Italia</option>
+								<option value="Mexico">Mexico</option>
+								<option value="Brasil">Brasil</option>
+								<option value="Ecuador">Ecuador</option>
+								<option value="Canada">Canada</option>
+								<option value="Venezuela">Venezuela</option>
+								<option value="Alemania">Alemania</option>
+								<option value="Colombia">Colombia</option>
+								<option value="Otro">Otro</option>
+							</select>
+							<label>País</label>
+						</div>
+					</div>
+					<p><b>Descripción fisica</b></p>
+					<div class="row">
+						<div class="input-field col s6">
+							<select id="body">
+								<option value="Delgado">Delgado</option>
+								<option value="Medio">Medio</option>
+								<option value="Extra">Extra</option>
+								<option value="Atletico">Atletico</option>
+							</select>
+							<label>Cuerpo</label>
+						</div>
+						<div class="input-field col s6">
+							<select id="eyes">
+								<option value="Negro">Negro</option>
+								<option value="Verde">Verde</option>
+								<option value="Azul">Azul</option>
+								<option value="Carmelita">Carmelita</option>
+								<option value="Avellana">Avellana</option>
+								<option value="Otro">Otro</option>
+							</select>
+							<label>Ojos</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="input-field col s6">
+							<select id="hair">
+								<option value="Negro">Negro</option>
+								<option value="Castano">Castaño</option>
+								<option value="Rubio">Rubio</option>
+								<option value="Trigueno">Trigueño</option>
+								<option value="Rojo">Rojo</option>
+								<option value="Blanco">Blanco</option>
+								<option value="Otro">Otro</option>
+							</select>
+							<label>Cabello</label>
+						</div>
+						<div class="input-field col s6">
+							<select id="skin">
+								<option value="Blanco">Blanco</option>
+								<option value="Negro">Negro</option>
+								<option value="Mestizo">Moreno</option>
+								<option value="Otro">Otro</option>
+							</select>
+							<label>Tono de Piel</label>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	$("#picture").click(function() {
+		apretaste.doaction('PERFIL FOTO', false, '', true ,'');
+		return false;
+	});
+	$('#gender option[value="'+data.person.gender+'"]').prop("selected", true);
+	$('#orientation option[value="'+data.person.sexual_orientation+'"]').prop("selected", true);
+
+	$('select').formSelect();
+	$('.datepicker').datepicker({
+		format: 'd/mm/yyyy',
+		defaultDate: new Date(data.person.date_of_birth),
+		setDefaultDate: true
+	});
+<\/script>
+
+
 <!-- PICTURE -->
 <center>
 	<div id="img_container">
@@ -157,38 +352,6 @@
 	{/if}
 </table>
 
-<style>
-	#profile tr {
-		height: 40px;
-	}
-	#profile tr:nth-child(odd) {
-		background-color: #F2F2F2;
-	}
-	.hidden{
-		display: none;
-	}
-	#img_container {
-		position: relative;
-		text-align: center;
-	}
-	#img_picture {
-		border: 1px solid grey;
-		border-radius: 100px;
-		width: 100px;
-		height: 100px;
-	}
-	#img_check {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		color: green;
-		font-size: 80px;
-		font-weight: bold;
-		display: none;
-	}
-</style>
-
 <script>
 	function reloadUsername(values) { document.getElementById('value_username').innerHTML = '@'+values[0]; }
 	function reloadName(values) { document.getElementById('value_name').innerHTML = values[0]; }
@@ -228,4 +391,4 @@
 		document.getElementById('img_picture').style.filter = "blur(3px)";
 		document.getElementById('img_check').style.display = "inline";
 	}
-</script>
+<\/script>

@@ -74,17 +74,19 @@ class Perfil extends Service
 
 		// pass profile image to the response
 		$image=[];
-		if ($profile->picture) $image[]=$profile->picture_internal;
+		if ($profile->picture) {$image[]=$profile->picture_internal;}
+		Utils::parseImgDir($profile->picture_internal);
 
 		foreach ($profile->extraPictures_internal as $picture){
 			$image[]=$picture;
+			Utils::parseImgDir($profile->extraPictures_internal[$picture]);
 		}
 
 		// create a new Response object and input the template and the content
 		$response = new Response();
 		if($request->query) $response->setCache("day");
 		$response->setResponseSubject("Perfil de Apretaste");
-		$response->createFromTemplate("profile.tpl", $responseContent, $image);
+		$response->createFromTemplate("profile.ejs", $responseContent, $image);
 		return $response;
 	}
 
@@ -692,6 +694,7 @@ class Perfil extends Service
 		$person->usstate_name = $this->utils->getStateNameByCode($person->usstate);
 		$person->interests = count($person->interests);
 		$image = $person->picture ? [$person->picture_internal] : [];
+		Utils::parseImgDir($person->picture_internal);
 
 		// add the list of origins and years
 		$person->origins = implode(",", $this->origins);
@@ -700,7 +703,7 @@ class Perfil extends Service
 		// prepare response for the view
 		$response = new Response();
 		$response->setResponseSubject('Edite su perfil');
-		$response->createFromTemplate('profile_edit.tpl', ["person"=>$person], $image);
+		$response->createFromTemplate('profile_edit.ejs', ["person"=>$person], $image);
 		return $response;
 	}
 
@@ -713,16 +716,13 @@ class Perfil extends Service
 	public function _origen (Request $request)
 	{
 		// get the person to add origin
-		$person = $this->utils->getPerson($request->email);
+		$person = Utils::getPerson($request->userId);
 		if (empty($person)) return new Response();
-
-		// create the list of origins
-		$origins = implode(",", $this->origins);
 
 		// prepare response for the view
 		$response = new Response();
 		$response->setResponseSubject('Origen de la app');
-		$response->createFromTemplate('origin.tpl', ["person"=>$person, "origins"=>$origins]);
+		$response->createFromTemplate('origin.ejs', ["person"=>$person, "origins"=>$this->origins]);
 		return $response;
 	}
 
