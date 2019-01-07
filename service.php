@@ -1,6 +1,6 @@
 <?php
 
-class Perfil extends Service
+class Service
 {
 	private $origins = [];
 
@@ -16,99 +16,78 @@ class Perfil extends Service
 	 * Display your profile
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _main (Request $request)
-	{
+	public function _main (Request $request, Response $response){
 		// get the email or the username for the profile
-		$request->query = trim($request->query, "@ ");
-		$emailToLookup = empty($request->query) ? $request->email : $request->query;
+		if(!empty($request->query)){
+			$email = Utils::getEmailFromUsername($request->query);
+			// check if the person exist. If not, message the requestor
+			if (!$email) {
+				$response->setResponseSubject("No encontramos un perfil para ese usuario");
+				$response->createFromText("Lo sentimos, pero no encontramos al usuario que esta buscando. Por favor revise que cada letra sea correcta e intente nuevamente.");
+			}
+			else $person = Utils::getPerson($email);
+			$tickets=0;
+			$ownProfile = false;
 
-		// get the email for the profile in case it is a username
-		if ( ! filter_var($emailToLookup, FILTER_VALIDATE_EMAIL)) {
-			$emailToLookup = Utils::getEmailFromUsername($emailToLookup);
+			// check if current user blocked the user to lookup, or is blocked by
+			$person->blocked = false;
+			$person->blockedByMe = false;
+			$blocks = $this->isBlocked($request->person->email,$person->email);
+			$person->blocked = $blocks->blocked;
+			$person->blockedByMe = $blocks->blockedByMe;
+
+			if ($person->blocked) {
+				$response->setResponseSubject("Lo sentimos, usted no tiene acceso a este perfil");
+				$response->setTemplate("blocked.tpl",['profile'=>$person]);
+			}
 		}
-
-		// check if the person exist. If not, message the requestor
-		if ( ! Utils::personExist($emailToLookup)) {
-			$response = new Response();
-			$response->setResponseSubject("No encontramos un perfil para ese usuario");
-			$response->createFromText("Lo sentimos, pero no encontramos al usuario que esta buscando. Por favor revise que cada letra sea correcta e intente nuevamente.");
-			return $response;
+		else{
+			$person = $request->person;
+			$ownProfile = true;
+			// and get the number of tickets for the raffle
+			$tickets = Connection::query("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '{$person->email}'")[0]->tickets;
 		}
-
-		// get the person
-		$person = Connection::query("SELECT * FROM person WHERE email = '$emailToLookup'");
 
 		// prepare the full profile
-		$social = new Social();
-		$profile = $social->prepareUserProfile($person[0], $request->lang);
+		$profile = Social::prepareUserProfile($person);
 
-		// check if current user blocked the user to lookup, or is blocked by
-		// and get the number of tickets for the raffle
-		$profile->blocked = false;
-		$profile->blockedByMe = false;
-		if ($emailToLookup==$request->email) {
-			$tickets = Connection::query("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '$emailToLookup'")[0]->tickets;
-		}
-		else {
-			$tickets=0;
-			$blocks=$this->isBlocked($request->email,$emailToLookup);
-			$profile->blocked=$blocks->blocked;
-			$profile->blockedByMe=$blocks->blockedByMe;
-		}
+		// pass profile image to the response
+		$image=[];
+		if ($profile->picture) $image[]=$profile->picture_internal;
+		Utils::parseImgDir($profile->picture_internal, $request->environment);
 
-		if ($profile->blocked) {
-			$response = new Response();
-			$response->setResponseSubject("Lo sentimos, usted no tiene acceso a este perfil");
-			$response->createFromTemplate("blocked.tpl",['profile'=>$profile]);
-			return $response;
+		foreach ($profile->extraPictures_internal as $key => $picture){
+			$image[]=$picture;
+			Utils::parseImgDir($profile->extraPictures_internal[$key], $request->environment);
 		}
 
 		// pass variables to the template
 		$responseContent = [
 			"profile" => $profile,
 			"tickets" => $tickets,
-			"ownProfile" => $emailToLookup == $request->email
+			"ownProfile" => $ownProfile
 		];
 
-		// pass profile image to the response
-		$image=[];
-		if ($profile->picture) {$image[]=$profile->picture_internal;}
-		Utils::parseImgDir($profile->picture_internal);
-
-		foreach ($profile->extraPictures_internal as $picture){
-			$image[]=$picture;
-			Utils::parseImgDir($profile->extraPictures_internal[$picture]);
-		}
-
 		// create a new Response object and input the template and the content
-		$response = new Response();
-		if($request->query) $response->setCache("day");
-		$response->setResponseSubject("Perfil de Apretaste");
-		$response->createFromTemplate("profile.ejs", $responseContent, $image);
-		return $response;
+		if(isset($request->input->data->user)) $response->setCache("day");
+		$response->setTemplate("profile.ejs", $responseContent, $image);
 	}
 
 	/**
 	 * Subservice VER to see extra pictures
 	 * 
 	 * @param Request
-	 * @return Response
 	 */
-	public function _ver(Request $request)
+	public function _ver(Request $request, Response $response)
 	{
-		if (empty($request->query)) return new Response();
+		if (empty($request->query)) return;
 
 		$wwwroot = \Phalcon\DI\FactoryDefault::getDefault()->get('path')['root'];
 		$file = "$wwwroot/public/profile/$request->query.jpg";
 
-		if (file_exists($file)) {
-			$response = new Response();
-			$response->subject = "Ver imagen";
-			$response->createFromTemplate("verimg.tpl", ['img'=>$file],[$file]);
-			return $response;
-		}
+		if (file_exists($file)) $response->setTemplate("verimg.tpl", ['img'=>$file],[$file]);
 	}
 
 	/**
@@ -142,9 +121,9 @@ class Perfil extends Service
 	 * Subservice USERNAME
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _username (Request $request)
+	public function _username (Request $request, Response $response)
 	{
 		// clean, shorten and lowercase the text
 		$username = preg_replace("/[^a-zA-Z0-9]+/", "", $request->query);
@@ -152,24 +131,23 @@ class Perfil extends Service
 
 		// check if the username not exist, else if not belong to the user, recreate it
 		$exist = Connection::query("SELECT id AS exist FROM person WHERE username='$username'");
-		if(!empty($exist) && $exist[0]->id!=$request->userId) $username = Utils::usernameFromEmail($username);
+		if(!empty($exist) && $exist[0]->id!=$request->person->id) $username = Utils::usernameFromEmail($username);
 
 		// update the username in the database
-		$this->updateEscape('username', $username, $request->userId, 15);
-		return new Response();
+		$this->updateEscape('username', $username, $request->person->id, 15);
 	}
 
 	/**
 	 * Subservice NOMBRE
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _nombre (Request $request)
+	public function _nombre (Request $request, Response $response)
 	{
 		// get the pieces of names
 		$n = Utils::fullNameToNamePieces(trim($request->query));
-		if ( ! is_array($n)) return new Response();
+		if ( ! is_array($n)) return;
 
 		for($i=0; $i<4; $i++) $n[$i] = substr($n[$i], 0 , 50);
 
@@ -177,17 +155,16 @@ class Perfil extends Service
 		$query = " first_name='{$n[0]}', middle_name='{$n[1]}', last_name='{$n[2]}', mother_name='{$n[3]}'";
 
 		// update the name in the database
-		$this->update($query, $request->userId);
-		return new Response();
+		$this->update($query, $request->person->id);
 	}
 
 	/**
 	 * Subservice PHONE
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _phone(Request $request)
+	public function _phone(Request $request, Response $response)
 	{
 		// remove all non-numeric characters from the phone
 		$phone = preg_replace('/[^0-9.]+/', '', $request->query);
@@ -197,8 +174,7 @@ class Perfil extends Service
 		if(substr($phone, 0, 1) == '5') $field = 'cellphone';
 
 		// update phone
-		$this->updateEscape($field, $phone, $request->userId, 10);
-		return new Response();
+		$this->updateEscape($field, $phone, $request->person->id, 10);
 	}
 
 	/**
@@ -206,9 +182,9 @@ class Perfil extends Service
 	 * This function call to _phone for backward compatibility
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _telefono (Request $request)
+	public function _telefono (Request $request, Response $response)
 	{
 		return $this->_phone($request);
 	}
@@ -217,9 +193,9 @@ class Perfil extends Service
 	 * Subservice CUMPLEANOS
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _cumpleanos (Request $request)
+	public function _cumpleanos (Request $request, Response $response)
 	{
 		// get the params for old versions of the app
 		if(empty($request->params[0])) $request->params = explode(" ", trim($request->query));
@@ -239,23 +215,22 @@ class Perfil extends Service
 		$yearMax = date('Y') - 10;
 
 		// do not save dates out of range
-		if($year < $yearMin || $year > $yearMax) return new Response();
-		if($month < 1 || $month > 12) return new Response();
-		if($day < 1 || $day > 31) return new Response();
+		if($year < $yearMin || $year > $yearMax) return;
+		if($month < 1 || $month > 12) return;
+		if($day < 1 || $day > 31) return;
 
 		// save the date in the database
-		$this->update("year_of_birth='$year'", $request->userId);
-		$this->update("date_of_birth='$year-$month-$day'", $request->userId);
-		return new Response();
+		$this->update("year_of_birth='$year'", $request->person->id);
+		$this->update("date_of_birth='$year-$month-$day'", $request->person->id);
 	}
 
 	/**
 	 * Subservice ANO de nacimiento
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _ano (Request $request)
+	public function _ano (Request $request, Response $response)
 	{
 		// get possible birth years ranges
 		$yearMin = date('Y') - 90;
@@ -265,49 +240,45 @@ class Perfil extends Service
 		$year = preg_replace('/\D/', '', $request->query);
 
 		// do not save years out of range
-		if($year < $yearMin || $year > $yearMax) return new Response();
+		if($year < $yearMin || $year > $yearMax) return;
 
 		// save date in the database
-		$this->update("year_of_birth='$year'", $request->userId);
-		return new Response();
+		$this->update("year_of_birth='$year'", $request->person->id);
 	}
 
 	/**
 	 * Subservice DESCRIPCION
 	 *
 	 * @param Request
-	 * @return Response
 	 */
-	public function _descripcion(Request $request)
+	public function _descripcion(Request $request, Response $response)
 	{
 		// do not allow empty or long descriptions
 		$description = Connection::escape($request->query, 250);
-		if (strlen($description) < 50) return new Response();
+		if (strlen($description) < 50) return;
 
 		// set the description
-		$this->update("about_me='$description'", $request->userId);
-		return new Response();
+		$this->update("about_me='$description'", $request->person->id);
 	}
 
 	/**
 	 * Subservice PROFESION
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _profesion (Request $request)
+	public function _profesion (Request $request, Response $response)
 	{
-		$this->updateEscape('occupation', $request->query, $request->userId, 50);
-		return new Response();
+		$this->updateEscape('occupation', $request->query, $request->person->id, 50);
 	}
 
 	/**
 	 * Subservice RELIGION
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _religion (Request $request)
+	public function _religion (Request $request, Response $response)
 	{
 		// list of religions
 		$enums = [
@@ -326,17 +297,16 @@ class Perfil extends Service
 			'OTRA'];
 
 		// update the value on the database
-		$this->updateEnum($request->query, $enums, 'OTRA', 'religion', $request->userId);
-		return new Response();
+		$this->updateEnum($request->query, $enums, 'OTRA', 'religion', $request->person->id);
 	}
 
 	/**
 	 * Subservice PROVINCIA
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _provincia (Request $request)
+	public function _provincia (Request $request, Response $response)
 	{
 		// get the province codes
 		$enums = [
@@ -347,20 +317,19 @@ class Perfil extends Service
 		];
 
 		// save country as Cuba
-		$this->update("country='CU', usstate=NULL", $request->userId);
+		$this->update("country='CU', usstate=NULL", $request->person->id);
 
 		// update the value on the database
-		$this->updateEnum($request->query, $enums, '', 'province', $request->userId);
-		return new Response();
+		$this->updateEnum($request->query, $enums, '', 'province', $request->person->id);
 	}
 
 	/**
 	 * Subservice PAIS
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _pais (Request $request)
+	public function _pais (Request $request, Response $response)
 	{
 		// get the list of countries
 		$countries = Connection::query("SELECT code, es AS name FROM countries ORDER BY code");
@@ -368,7 +337,7 @@ class Perfil extends Service
 		$country_original = $country;
 
 		// do not let empty countries
-		if (empty($country)) return new Response();
+		if (empty($country)) return;
 		$country = strtolower($country);
 		$country_original = strtolower($country_original);
 
@@ -399,23 +368,21 @@ class Perfil extends Service
 		}
 
 		// if not country was selected, do nothing
-		if (is_null($selectedCountry)) return new Response();
+		if (is_null($selectedCountry)) return;
 
 		// update country and return empty response
-		$this->update("country='{$selectedCountry->code}'", $request->userId);
-		return new Response();
+		$this->update("country='{$selectedCountry->code}'", $request->person->id);
 	}
 
 	/**
 	 * Subservice CIUDAD
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _ciudad (Request $request)
+	public function _ciudad (Request $request, Response $response)
 	{
-		$this->updateEscape('city', $request->query, $request->userId, 100);
-		return new Response();
+		$this->updateEscape('city', $request->query, $request->person->id, 100);
 	}
 
 	/**
@@ -423,9 +390,9 @@ class Perfil extends Service
 	 *
 	 * @author salvipascual
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _sexo (Request $request)
+	public function _sexo (Request $request, Response $response)
 	{
 		// for hombre/mujer
 		if(strtoupper($request->query) == "HOMBRE") $gender = "M";
@@ -435,107 +402,100 @@ class Perfil extends Service
 		else $gender = strtoupper($request->query[0]);
 
 		// update the value on the database
-		$this->updateEnum($gender, ['F','M'], '', 'gender', $request->userId);
-		return new Response();
+		$this->updateEnum($gender, ['F','M'], '', 'gender', $request->person->id);
 	}
 
 	/**
 	 * Subservice NIVEL
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _nivel (Request $request)
+	public function _nivel (Request $request, Response $response)
 	{
 		// list of possible values
 		$enums = ['PRIMARIO','SECUNDARIO','TECNICO','UNIVERSITARIO','POSTGRADUADO','DOCTORADO','OTRO'];
 
 		// update the value on the database
-		$this->updateEnum($request->query, $enums, 'OTRO', 'highest_school_level', $request->userId);
-		return new Response();
+		$this->updateEnum($request->query, $enums, 'OTRO', 'highest_school_level', $request->person->id);
 	}
 
 	/**
 	 * Subservice ESTADO CIVIL
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _estadocivil (Request $request)
+	public function _estadocivil (Request $request, Response $response)
 	{
 		// list of possible values
 		$enums = ['SOLTERO','SALIENDO','COMPROMETIDO','CASADO','OTRO'];
 	
 		// update the value on the database
-		$this->updateEnum(strtoupper($request->query), $enums, 'OTRO', 'marital_status', $request->userId);
-		return new Response();	
+		$this->updateEnum(strtoupper($request->query), $enums, 'OTRO', 'marital_status', $request->person->id);	
 	}
 
 	/**
 	 * Subservice PELO
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _pelo (Request $request)
+	public function _pelo (Request $request, Response $response)
 	{
 		// list of possible values
 		$enums = ['TRIGUENO','CASTANO','RUBIO','NEGRO','ROJO','BLANCO','OTRO'];
 
 		// update the value on the database
-		$this->updateEnum($request->query, $enums, 'OTRO', 'hair', $request->userId);
-		return new Response();
+		$this->updateEnum($request->query, $enums, 'OTRO', 'hair', $request->person->id);
 	}
 
 	/**
 	 * Subservice OJOS
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _ojos (Request $request)
+	public function _ojos (Request $request, Response $response)
 	{
 		// list of possible values
 		$enums = ['NEGRO','CARMELITA','VERDE','AZUL','AVELLANA','OTRO'];
 
 		// update the value on the database
-		$this->updateEnum($request->query, $enums, 'OTRO', 'eyes', $request->userId);
-		return new Response();
+		$this->updateEnum($request->query, $enums, 'OTRO', 'eyes', $request->person->id);
 	}
 
 	/**
 	 * Subservice CUERPO
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _cuerpo (Request $request)
+	public function _cuerpo (Request $request, Response $response)
 	{
 		// list of possible values
 		$enums = ['DELGADO', 'MEDIO', 'EXTRA', 'ATLETICO'];
 
 		// update the value on the database
-		$this->updateEnum($request->query, $enums, '', 'body_type', $request->userId);
-		return new Response();
+		$this->updateEnum($request->query, $enums, '', 'body_type', $request->person->id);
 	}
 
 	/**
 	 * Subservice INTERESES
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _intereses (Request $request)
+	public function _intereses (Request $request, Response $response)
 	{
-		$this->updateEscape('interests', $request->query, $request->userId, 1000);
-		return new Response();
+		$this->updateEscape('interests', $request->query, $request->person->id, 1000);
 	}
 
 	/**
 	 * Subservice FOTO
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
 	public function _foto ($request)
 	{
@@ -559,21 +519,20 @@ class Perfil extends Service
 
 			// save the original copy
 			@copy($attach, $filePath);
-			$this->utils->optimizeImage($filePath);
+			Utils::optimizeImage($filePath);
 
 			// make the changes in the database
-			$this->update("picture='$fileName'", $request->userId);
+			$this->update("picture='$fileName'", $request->person->id);
 			break;
 		}
 
-		return new Response();
 	}
 
 	/**
 	 * Subservice FOTO
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
 	public function _extrafoto ($request)
 	{
@@ -608,10 +567,10 @@ class Perfil extends Service
 
 			// save the original copy
 			@copy($attach, $filePath);
-			$this->utils->optimizeImage($filePath);
+			Utils::optimizeImage($filePath);
 
 			// make the changes in the database
-			$this->update("extra_pictures='$pics'", $request->userId);
+			$this->update("extra_pictures='$pics'", $request->person->id);
 			break;
 		}
 
@@ -622,29 +581,28 @@ class Perfil extends Service
 	 * Subservice ORIENTACION SEXUAL
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _orientacion (Request $request)
+	public function _orientacion (Request $request, Response $response)
 	{
 		// list of possible values
 		$enums = ['HETERO','HOMO','BI'];
 
 		// update the value on the database
-		$this->updateEnum($request->query, $enums, '', 'sexual_orientation', $request->userId);
-		return new Response();
+		$this->updateEnum($request->query, $enums, '', 'sexual_orientation', $request->person->id);
 	}
 
 	/**
 	 * Subservice orientacion for Piropazo
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _orientacionbusco (Request $request)
+	public function _orientacionbusco (Request $request, Response $response)
 	{
 		// get the person's gender
-		$perfil = Utils::getPerson($request->userId);
-		if(empty($perfil->gender)) return new Response();
+		$perfil = Utils::getPerson($request->person->id);
+		if(empty($perfil->gender)) return;
 
 		// get sexual orientation
 		$searchFor = strtoupper($request->query);
@@ -662,81 +620,74 @@ class Perfil extends Service
 	 * Subservice piel
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _piel (Request $request)
+	public function _piel (Request $request, Response $response)
 	{
 		// list of possible values
 		$enums = ['NEGRO','BLANCO','MESTIZO','OTRO'];
 
 		// update the value on the database
-		$this->updateEnum($request->query, $enums, '', 'skin', $request->userId);
-		return new Response();
+		$this->updateEnum($request->query, $enums, '', 'skin', $request->person->id);
 	}
 
 	/**
 	 * Show the edit mode template
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _editar (Request $request)
+	public function _editar (Request $request, Response $response)
 	{
 		// get the person to edit profile
-		$person = $this->utils->getPerson($request->email);
-		if (empty($person)) return new Response();
+		$person = Social::prepareUserProfile($request->person);
 
 		// make the person's text readable
 		$person->province = str_replace("_", " ", $person->province);
 		if ($person->gender == 'M') $person->gender = "Masculino";
 		if ($person->gender == 'F') $person->gender = "Femenino";
-		$person->country_name = $this->utils->getCountryNameByCode($person->country);
-		$person->usstate_name = $this->utils->getStateNameByCode($person->usstate);
+		$person->country_name = Utils::getCountryNameByCode($person->country);
+		$person->usstate_name = Utils::getStateNameByCode($person->usstate);
 		$person->interests = count($person->interests);
 		$image = $person->picture ? [$person->picture_internal] : [];
-		Utils::parseImgDir($person->picture_internal);
+		Utils::parseImgDir($person->picture_internal, $request->environment);
 
 		// add the list of origins and years
 		$person->origins = implode(",", $this->origins);
 		$person->years = implode(",", array_reverse(range(date('Y')-90, date('Y')-10)));
 
 		// prepare response for the view
-		$response = new Response();
 		$response->setResponseSubject('Edite su perfil');
-		$response->createFromTemplate('profile_edit.ejs', ["person"=>$person], $image);
-		return $response;
+		$response->setTemplate('profile_edit.ejs', ["person"=>$person], $image);
 	}
 
 	/**
 	 * Show the form of where you hear about the app
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _origen (Request $request)
+	public function _origen (Request $request, Response $response)
 	{
 		// get the person to add origin
-		$person = Utils::getPerson($request->userId);
-		if (empty($person)) return new Response();
+		$person = Utils::getPerson($request->person->id);
+		if (empty($person)) return;
 
 		// prepare response for the view
-		$response = new Response();
 		$response->setResponseSubject('Origen de la app');
-		$response->createFromTemplate('origin.ejs', ["person"=>$person, "origins"=>$this->origins]);
-		return $response;
+		$response->setTemplate('origin.ejs', ["person"=>$person, "origins"=>$this->origins]);
 	}
 
 	/**
 	 * Subservice ORIGIN
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _origin (Request $request)
+	public function _origin (Request $request, Response $response)
 	{
 		// save the value
-		$this->updateEnum($request->query, $this->origins, 'OTRO', 'origin', $request->userId);
-		return new Response();
+		$this->updateEnum($request->query, $this->origins, 'OTRO', 'origin', $request->person->id);
 	}
 
 	/**
@@ -744,9 +695,8 @@ class Perfil extends Service
 	 *
 	 * @author ricardo@apretaste.com
 	 * @param Request
-	 * @return Response
 	 */
-	public function _bloquear(Request $request)
+	public function _bloquear(Request $request, Response $response)
 	{
 		$person=Utils::getEmailFromUsername($request->query);
 		$person=Utils::getPerson($person);
@@ -774,9 +724,8 @@ class Perfil extends Service
 	 *
 	 * @author ricardo@apretaste.com
 	 * @param Request
-	 * @return Response
 	 */
-	public function _desbloquear(Request $request)
+	public function _desbloquear(Request $request, Response $response)
 	{
 		$person = Utils::getEmailFromUsername($request->query);
 		$person = Utils::getPerson($person);
@@ -796,9 +745,9 @@ class Perfil extends Service
 	 * @author kuma
 	 * @version 1.0
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _relaciones(Request $request)
+	public function _relaciones(Request $request, Response $response)
 	{
 		// getting relations
 		$e = $request->email;
@@ -820,21 +769,20 @@ class Perfil extends Service
 
 		// get profiles from relations
 		foreach ($relations as $k => $v) {
-			$relations[$k]->who = $this->utils->getPerson($v->who);
+			$relations[$k]->who = Utils::getPerson($v->who);
 		}
 
 		// send relations
 		if (isset($relations[0])) {
-			$response = new Response();
+
 			$response->setResponseSubject("Tus relaciones");
-			$response->createFromTemplate('relations.tpl', ['relations' => $relations]);
-			return $response;
+			$response->setTemplate('relations.tpl', ['relations' => $relations]);
+
 		}
 
 		// send suggestions
 		$response->setResponseSubject("Te invitamos a socializar");
 		$response->createFromText('Usted no tiene amistades. Encuentre amistades en la Pizarra o otros servicios sociales');
-		return $response;
 	}
 
 	/**
@@ -843,9 +791,9 @@ class Perfil extends Service
 	 * @author salvipascual
 	 * @version 1.0
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _bulk(Request $request)
+	public function _bulk(Request $request, Response $response)
 	{
 		// get the JSON with the bulk
 		$json = json_decode($request->query);
@@ -858,7 +806,7 @@ class Perfil extends Service
 			{
 				$req = new Request();
 				$req->email = $request->email;
-				$req->userId = $request->userId;
+				$req->person->id = $request->person->id;
 				$req->subject = "PERFIL $key $value";
 				$req->service = "PERFIL";
 				$req->subservice = $key;
@@ -871,7 +819,6 @@ class Perfil extends Service
 			}
 		}
 
-		return new Response();
 	}
 
 	/**
@@ -881,17 +828,16 @@ class Perfil extends Service
 	 * @author salvipascual
 	 * @version 1.0
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _usstate(Request $request)
+	public function _usstate(Request $request, Response $response)
 	{
 		// list of US states
 		$state = strtoupper($request->query);
 		$states = array("AL","AK","AS","AZ","AR","CA","CO","CT","DE","DC","FL","GA","GU","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MH","MA","MI","FM","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","MP","OH","OK","OR","PW","PA","PR","RI","SC","SD","TN","TX","UT","VT","VA","VI","WA","WV","WI","WY");
 
 		// save US state
-		if(in_array($state, $states)) $this->update("usstate='$state', country='US', province=NULL", $request->userId);
-		return new Response();
+		if(in_array($state, $states)) $this->update("usstate='$state', country='US', province=NULL", $request->person->id);
 	}
 
 	/**
@@ -900,9 +846,9 @@ class Perfil extends Service
 	 * @author salvipascual
 	 * @version 1.0
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _lang(Request $request)
+	public function _lang(Request $request, Response $response)
 	{
 		// get the values from the post
 		$email = $request->email;
@@ -910,11 +856,10 @@ class Perfil extends Service
 
 		// check if the language exist
 		$test = Connection::query("SELECT * FROM languages WHERE code = '$lang'");
-		if(empty($test)) return new Response();
+		if(empty($test)) return;
 
 		// set the new language for the user
 		Connection::query("UPDATE person SET lang='$lang' WHERE email='$email'");
-		return new Response();
 	}
 
 	/**
@@ -924,15 +869,14 @@ class Perfil extends Service
 	 * @api
 	 * @version 1.0
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _status(Request $request)
+	public function _status(Request $request, Response $response)
 	{
 		// get data for the app
-		$res = $this->utils->getExternalAppData($request->email, $request->query);
+		$res = Utils::getExternalAppData($request->email, $request->query);
 
 		// respond back to the API
-		$response = new Response();
 		$response->attachments = $res["attachments"];
 		return $response->createFromJSON($res["json"]);
 	}
@@ -944,9 +888,9 @@ class Perfil extends Service
 	 * @api
 	 * @version 1.0
 	 * @param Request $request
-	 * @return Response
+	 * @param Response $response
 	 */
-	public function _imagen(Request $request)
+	public function _imagen(Request $request, Response $response)
 	{
 		// list of possible values
 		$quality = strtoupper($request->query);
@@ -954,10 +898,9 @@ class Perfil extends Service
 
 		// save the image quality
 		if(in_array($quality, $enums)) {
-			$this->update("img_quality='$quality'", $request->userId);
+			$this->update("img_quality='$quality'", $request->person->id);
 		}
 
-		return new Response();
 	}
 
 	/**
@@ -968,7 +911,7 @@ class Perfil extends Service
 	 */
 	private function update($sqlset, $userId)
 	{
-		if(empty($userId)) return new Response();
+		if(empty($userId)) return;
 
 		Connection::query("
 			UPDATE person 
@@ -1006,7 +949,7 @@ class Perfil extends Service
 	private function updateEnum($value, $enums, $default, $field, $userId)
 	{
 		// do not allow empty responses
-		if(empty($value)) return new Response();
+		if(empty($value)) return;
 
 		// set initial params
 		$value = strtolower($value);
