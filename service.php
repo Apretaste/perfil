@@ -23,10 +23,7 @@ class Service
 		if(!empty($request->query)){
 			$email = Utils::getEmailFromUsername($request->query);
 			// check if the person exist. If not, message the requestor
-			if (!$email) {
-				$response->setResponseSubject("No encontramos un perfil para ese usuario");
-				$response->createFromText("Lo sentimos, pero no encontramos al usuario que esta buscando. Por favor revise que cada letra sea correcta e intente nuevamente.");
-			}
+			if (!$email) $response->createFromText("Lo sentimos, pero no encontramos al usuario que esta buscando. Por favor revise que cada letra sea correcta e intente nuevamente.");
 			else $person = Utils::getPerson($email);
 			$tickets=0;
 			$ownProfile = false;
@@ -38,10 +35,7 @@ class Service
 			$person->blocked = $blocks->blocked;
 			$person->blockedByMe = $blocks->blockedByMe;
 
-			if ($person->blocked) {
-				$response->setResponseSubject("Lo sentimos, usted no tiene acceso a este perfil");
-				$response->setTemplate("blocked.tpl",['profile'=>$person]);
-			}
+			if ($person->blocked) $response->setTemplate("blocked.tpl",['profile'=>$person]);
 		}
 		else{
 			$person = $request->person;
@@ -56,11 +50,9 @@ class Service
 		// pass profile image to the response
 		$image=[];
 		if ($profile->picture) $image[]=$profile->picture_internal;
-		Utils::parseImgDir($profile->picture_internal, $request->environment);
 
 		foreach ($profile->extraPictures_internal as $key => $picture){
 			$image[]=$picture;
-			Utils::parseImgDir($profile->extraPictures_internal[$key], $request->environment);
 		}
 
 		// pass variables to the template
@@ -650,14 +642,12 @@ class Service
 		$person->usstate_name = Utils::getStateNameByCode($person->usstate);
 		$person->interests = count($person->interests);
 		$image = $person->picture ? [$person->picture_internal] : [];
-		Utils::parseImgDir($person->picture_internal, $request->environment);
 
 		// add the list of origins and years
 		$person->origins = implode(",", $this->origins);
 		$person->years = implode(",", array_reverse(range(date('Y')-90, date('Y')-10)));
 
 		// prepare response for the view
-		$response->setResponseSubject('Edite su perfil');
 		$response->setTemplate('profile_edit.ejs', ["person"=>$person], $image);
 	}
 
@@ -673,8 +663,6 @@ class Service
 		$person = Utils::getPerson($request->person->id);
 		if (empty($person)) return;
 
-		// prepare response for the view
-		$response->setResponseSubject('Origen de la app');
 		$response->setTemplate('origin.ejs', ["person"=>$person, "origins"=>$this->origins]);
 	}
 
@@ -774,14 +762,9 @@ class Service
 
 		// send relations
 		if (isset($relations[0])) {
-
-			$response->setResponseSubject("Tus relaciones");
 			$response->setTemplate('relations.tpl', ['relations' => $relations]);
 
 		}
-
-		// send suggestions
-		$response->setResponseSubject("Te invitamos a socializar");
 		$response->createFromText('Usted no tiene amistades. Encuentre amistades en la Pizarra o otros servicios sociales');
 	}
 
