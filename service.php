@@ -20,32 +20,36 @@ class Service
 	 */
 	public function _main (Request $request, Response $response){
 		// get the email or the username for the profile
-		if(!empty($request->query)){
-			$email = Utils::getEmailFromUsername($request->query);
+		$data = $request->input->data;
+		$content = new stdClass();
+		if(!empty($data->query)) $data->username = $data->query;
+		if(!empty($data->username)){
+			$user = Utils::getPersonFromUsername($data->username);
 			// check if the person exist. If not, message the requestor
-			if (!$email) $response->createFromText("Lo sentimos, pero no encontramos al usuario que esta buscando. Por favor revise que cada letra sea correcta e intente nuevamente.");
-			else $person = Utils::getPerson($email);
+			if(!$user){
+				$content->username = $data->username;
+				$response->setTemplate("not_found.ejs",$content);
+			}
+
 			$tickets=0;
 			$ownProfile = false;
 
 			// check if current user blocked the user to lookup, or is blocked by
-			$person->blocked = false;
-			$person->blockedByMe = false;
-			$blocks = $this->isBlocked($request->person->email,$person->email);
-			$person->blocked = $blocks->blocked;
-			$person->blockedByMe = $blocks->blockedByMe;
-
-			if ($person->blocked) $response->setTemplate("blocked.tpl",['profile'=>$person]);
+			$blocks = Social::isBlocked($request->person->email,$user->email);
+			$user->blocked = $blocks->blocked;
+			$user->blockedByMe = $blocks->blockedByMe;
+			$content->profile = $user;
+			if ($user->blocked) $response->setTemplate("blocked.ejs",$content);
 		}
 		else{
-			$person = $request->person;
+			$user = $request->person;
 			$ownProfile = true;
 			// and get the number of tickets for the raffle
-			$tickets = Connection::query("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '{$person->email}'")[0]->tickets;
+			$tickets = Connection::query("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '{$user->email}'")[0]->tickets;
 		}
 
 		// prepare the full profile
-		$profile = Social::prepareUserProfile($person);
+		$profile = Social::prepareUserProfile($user);
 
 		// pass profile image to the response
 		$image=[];
@@ -56,15 +60,13 @@ class Service
 		}
 
 		// pass variables to the template
-		$responseContent = [
-			"profile" => $profile,
-			"tickets" => $tickets,
-			"ownProfile" => $ownProfile
-		];
+		$content->profile = $profile;
+		$content->tickets = $tickets;
+		$content->ownProfile = $ownProfile;
 
 		// create a new Response object and input the template and the content
-		if(isset($request->input->data->user)) $response->setCache("day");
-		$response->setTemplate("profile.ejs", $responseContent, $image);
+		if(!$ownProfile) $response->setCache("day");
+		$response->setTemplate("profile.ejs", $content, $image);
 	}
 
 	/**
@@ -80,33 +82,6 @@ class Service
 		$file = "$wwwroot/public/profile/$request->query.jpg";
 
 		if (file_exists($file)) $response->setTemplate("verimg.tpl", ['img'=>$file],[$file]);
-	}
-
-	/**
-	 * Get if the user is blocked or has been blocked by
-	 * 
-	 * @author ricardo@apretaste.com
-	 * @param String $user1
-	 * @param String $user2
-	 * @return Object
-	 */
-	private function isBlocked(String $user1, String $user2)
-	{
-		$res=new stdClass();
-		$res->blocked = false;
-		$res->blockedByMe = false;
-
-		$r = Connection::query("SELECT * FROM ((SELECT COUNT(user1) AS blockedByMe FROM relations
-				WHERE user1 = '$user1' AND user2 = '$user2'
-				AND `type` = 'blocked' AND confirmed=1) AS A,
-				(SELECT COUNT(user1) AS blocked FROM relations
-				WHERE user1 = '$user2' AND user2 = '$user1'
-				AND `type` = 'blocked' AND confirmed=1) AS B)");
-
-		$res->blocked=($r[0]->blocked>0)?true:false;
-		$res->blockedByMe=($r[0]->blockedByMe>0)?true:false;
-
-		return $res;
 	}
 
 	/**
@@ -684,27 +659,25 @@ class Service
 	 * @author ricardo@apretaste.com
 	 * @param Request
 	 */
-	public function _bloquear(Request $request, Response $response)
-	{
-		$person=Utils::getEmailFromUsername($request->query);
-		$person=Utils::getPerson($person);
-
+	public function _bloquear(Request $request, Response $response){
+		$person = Utils::getPersonFromUsername($request->input->data->username);
+		$fromEmail = $request->person->email;
 		if($person){
 			$r = Connection::query("
 				SELECT *
 				FROM `relations`
-				WHERE user1 = '$request->email'
+				WHERE user1 = '$fromEmail'
 				AND user2 = '$person->email'");
 
 			if (isset($r[0])) Connection::query("
 				UPDATE `relations` SET confirmed=1
-				WHERE user1='$request->email'
+				WHERE user1='$fromEmail'
 				AND user2='$person->email' AND `type`='blocked'");
 			else Connection::query("
 				INSERT INTO `relations`(user1,user2,`type`,confirmed)
-				VALUES('$request->email','$person->email','blocked',1)");
+				VALUES('$fromEmail','$person->email','blocked',1)");
 		}
-		return $this->_main($request);
+		return $this->_main($request, $response);
 	}
 
 	/**
@@ -715,16 +688,16 @@ class Service
 	 */
 	public function _desbloquear(Request $request, Response $response)
 	{
-		$person = Utils::getEmailFromUsername($request->query);
-		$person = Utils::getPerson($person);
+		$person = Utils::getPersonFromUsername($request->input->data->username);
+		$fromEmail = $request->person->email;
 
 		if($person){
 			Connection::query("
 				UPDATE relations SET confirmed=0
-				WHERE user1='$request->email'
+				WHERE user1='$fromEmail'
 				AND user2='$person->email' AND `type`='blocked'");
 		}
-		return $this->_main($request);
+		return $this->_main($request, $response);
 	}
 
 	/**

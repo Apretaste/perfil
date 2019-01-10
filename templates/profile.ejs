@@ -2,16 +2,16 @@
 	<div class="col s12 m8 l6 offset-m2 offset-l3">
 		<div class="card">
 			<div class="card-image">
-			<%if(data.profile.picture!=""){%>
-			<img src="{$APP_IMG_DIR}<%=data.profile.picture_internal%>">
+			<%if(profile.picture!=""){%>
+			<img src="{{APP_IMAGE_PATH}}/<%=profile.picture_internal%>">
 			<%}else{%>
-			<img src="{$APP_ASSETS}<%=data.profile.picture_internal%>">
+			<img src="{{APP_IMAGE_PATH}}/<%=profile.picture_internal%>">
 			<%}%>
-			<%if(data.ownProfile){%>
+			<%if(ownProfile){%>
 			<a class="btn-floating btn-large halfway-fab waves-effect waves-light red" id="editar">
 			   <i class="material-icons">edit</i>
 			</a>
-			<%}else if(data.profile.blockedByMe){%>
+			<%}else if(profile.blockedByMe){%>
 			<a class="btn-floating btn-large halfway-fab left waves-effect waves-light red" id="bloquear">
 			   <i class="material-icons">lock_open</i>
 			</a>
@@ -25,48 +25,21 @@
 			<%}%>
 			</div>
 			<div class="card-content">
-			<% name=(data.profile.first_name=="")?'@'+data.profile.username:data.profile.first_name%>
+			<% name=(profile.first_name=="")?'@'+profile.username:profile.first_name%>
 			<span class="card-title"><%=name%></span>
-			<p><%=data.profile.about_me%></p>
+			<p><%=profile.about_me%></p>
 			<h6><b>Mis intereses</b></h6>
-			<%data.profile.interests.forEach((interest)=>{%>
+			<%profile.interests.forEach((interest)=>{%>
 			<div class="chip"><%=interest%></div>
 			<%});%>
-			<%if(data.ownProfile){%>
+			<%if(ownProfile){%>
 			<div class="divider"></div>
 			<ul class="collection">
-				<li class="collection-item">Credito: <%=data.profile.credit%><a id="credito" class="secondary-content"><i class="material-icons">arrow_forward</i></a></li>
-				<li class="collection-item">Tickets para la rifa: <%=data.tickets%><a id="rifa" class="secondary-content"><i class="material-icons">add</i></a></li>
+				<li class="collection-item">Credito: <%=profile.credit%><a id="credito" class="secondary-content"><i class="material-icons">arrow_forward</i></a></li>
+				<li class="collection-item">Tickets para la rifa: <%=tickets%><a id="rifa" class="secondary-content"><i class="material-icons">add</i></a></li>
 			</ul>
 			<%}%>
 			</div>
 		</div>
 	</div>
 </div>
-<script>
-if(data.ownProfile){
-	$("#editar").click(function() {
-		apretaste.doaction('PERFIL EDITAR', false, '', true ,'');
-		return false;
-	});
-	$("#credito").click(function() {
-		apretaste.doaction('CREDITO', false, '', true ,'');
-		return false;
-	});
-	$("#rifa").click(function() {
-		apretaste.doaction('RIFA', false, '', true ,'');
-		return false;
-	});
-}else{
-	$("#chat").click(function() {
-		apretaste.doaction('CHAT @'+data.profile.username, false, '', true ,'');
-		return false;
-	});
-	let block = data.profile.blockedByMe?"DESBLOQUEAR":"BLOQUEAR";
-
-	$("#bloquear").click(function() {
-		apretaste.doaction('PERFIL '+block+' @'+data.profile.username, false, '', true ,'');
-		return false;
-	});
-}
-<\/script>
