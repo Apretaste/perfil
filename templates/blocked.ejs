@@ -1,8 +1,6 @@
 <p>Lo sentimos, el perfil que usted nos solicita no puede ser mostrado debido a que usted ha sido bloqueado por esa persona</p>
-<center>
-{if $profile->blockedByMe}
-{button href="PERFIL DESBLOQUEAR @{$profile->username}" caption="Desbloquear" color="red"}
-{else}
-{button href="PERFIL BLOQUEAR @{$profile->username}" caption="Bloquear" color="red"}
-{/if}
-</center>
+<div class="center-align">
+<button class="btn waves-effect waves-light red" onclick="apretaste.send({'command':'PERFIL BLOQUEAR','data':'<%=username%>'});">Bloquear
+    <i class="material-icons right">block</i>
+</button>
+</div>

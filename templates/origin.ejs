@@ -1,30 +1,18 @@
-<div class="row center-align">
+<div class="center-align">
 	<h5><b>¿Donde escucho sobre la app?</b></h5>
 
 	<p>Gracias por dejarnos saber donde escucho sobre la app para seguir acercando nuestro servicios a m&aacute;s personas.</p>
 
-	<%if (data.person.origin!=""){%>
-		<p>Usted nos dijo que vio la app en: <b><%=data.person.origin%></b></p>
+	<%if (origin!=""){%>
+		<p>Usted nos dijo que vio la app en: <b id="actual"><%=origin%></b></p>
 	<%}%>
 	<div class="input-field col s12">
 		<select id='origin'>
 			<option value="" disabled selected>Escoja su opción</option>
-			<%data.origins.forEach((origin) => {%>
+			<%origins.forEach((origin) => {%>
 			<option value="<%=origin%>"><%=origin%></option>
 			<%});%>
 		</select>
 		<label>Cuentenos</label>
 	</div>
-	<center>
-		{button caption="Dejarnos saber" href="PERFIL ORIGIN" desc="m:Donde escucho sobre la app? [{$origins}]" popup="true"  wait="false"}</td>
-	</center>
 </div>
-<script>
-	$('select').formSelect();
-	$('#origin').change((event) =>{
-		apretaste.doaction('PERFIL ORIGIN '+$('#origin option:selected').val(), false, '', true ,'');
-		return false;
-	});
-
-	$('#origin option[value="'+data.person.origin+'"]').prop("selected", true);
-<\/script>

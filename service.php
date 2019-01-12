@@ -2,15 +2,10 @@
 
 class Service
 {
-	private $origins = [];
-
-	public function __construct() 
-	{
-		// keep origins in just one place to update them easily
-		$this->origins = ["Amigo en Cuba", "Familia Afuera", "Referido", 
-			"El Paquete", "Revolico", "Casa de Apps", "Facebook", "Internet",
-			"La Calle", "Prensa Independiente", "Prensa Cubana", "Otro"];
-	}
+	private $origins = [
+		"Amigo en Cuba", "Familia Afuera", "Referido", 
+		"El Paquete", "Revolico", "Casa de Apps", "Facebook", "Internet",
+		"La Calle", "Prensa Independiente", "Prensa Cubana", "Otro"];
 
 	/**
 	 * Display your profile
@@ -29,6 +24,7 @@ class Service
 			if(!$user){
 				$content->username = $data->username;
 				$response->setTemplate("not_found.ejs",$content);
+				return;
 			}
 
 			$tickets=0;
@@ -38,8 +34,11 @@ class Service
 			$blocks = Social::isBlocked($request->person->email,$user->email);
 			$user->blocked = $blocks->blocked;
 			$user->blockedByMe = $blocks->blockedByMe;
-			$content->profile = $user;
-			if ($user->blocked) $response->setTemplate("blocked.ejs",$content);
+			$content->username = $user->username;
+			if ($user->blocked){
+				$response->setTemplate("blocked.ejs",$content);
+				return;
+			}
 		}
 		else{
 			$user = $request->person;
@@ -76,386 +75,12 @@ class Service
 	 */
 	public function _ver(Request $request, Response $response)
 	{
-		if (empty($request->query)) return;
+		if (empty($request->input->data->img)) return;
 
 		$wwwroot = \Phalcon\DI\FactoryDefault::getDefault()->get('path')['root'];
-		$file = "$wwwroot/public/profile/$request->query.jpg";
+		$file = "$wwwroot/public/profile/$request->input->data->.jpg";
 
 		if (file_exists($file)) $response->setTemplate("verimg.tpl", ['img'=>$file],[$file]);
-	}
-
-	/**
-	 * Subservice USERNAME
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _username (Request $request, Response $response)
-	{
-		// clean, shorten and lowercase the text
-		$username = preg_replace("/[^a-zA-Z0-9]+/", "", $request->query);
-		$username = strtolower(substr($username, 0, 15));
-
-		// check if the username not exist, else if not belong to the user, recreate it
-		$exist = Connection::query("SELECT id AS exist FROM person WHERE username='$username'");
-		if(!empty($exist) && $exist[0]->id!=$request->person->id) $username = Utils::usernameFromEmail($username);
-
-		// update the username in the database
-		$this->updateEscape('username', $username, $request->person->id, 15);
-	}
-
-	/**
-	 * Subservice NOMBRE
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _nombre (Request $request, Response $response)
-	{
-		// get the pieces of names
-		$n = Utils::fullNameToNamePieces(trim($request->query));
-		if ( ! is_array($n)) return;
-
-		for($i=0; $i<4; $i++) $n[$i] = substr($n[$i], 0 , 50);
-
-		// create the query
-		$query = " first_name='{$n[0]}', middle_name='{$n[1]}', last_name='{$n[2]}', mother_name='{$n[3]}'";
-
-		// update the name in the database
-		$this->update($query, $request->person->id);
-	}
-
-	/**
-	 * Subservice PHONE
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _phone(Request $request, Response $response)
-	{
-		// remove all non-numeric characters from the phone
-		$phone = preg_replace('/[^0-9.]+/', '', $request->query);
-
-		// is cell or not?
-		$field = 'phone';
-		if(substr($phone, 0, 1) == '5') $field = 'cellphone';
-
-		// update phone
-		$this->updateEscape($field, $phone, $request->person->id, 10);
-	}
-
-	/**
-	 * Subservice TELEFONO
-	 * This function call to _phone for backward compatibility
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _telefono (Request $request, Response $response)
-	{
-		return $this->_phone($request);
-	}
-
-	/**
-	 * Subservice CUMPLEANOS
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _cumpleanos (Request $request, Response $response)
-	{
-		// get the params for old versions of the app
-		if(empty($request->params[0])) $request->params = explode(" ", trim($request->query));
-
-		// get the date passed
-		$day = $request->params[0];
-		$month = $request->params[1];
-		$year = $request->params[2];
-
-		// remove any string-like part (like spaces)
-		$year = preg_replace('/\D/', '', $year);
-		$month = preg_replace('/\D/', '', $month);
-		$day = preg_replace('/\D/', '', $day);
-
-		// get possible birth years ranges
-		$yearMin = date('Y') - 90;
-		$yearMax = date('Y') - 10;
-
-		// do not save dates out of range
-		if($year < $yearMin || $year > $yearMax) return;
-		if($month < 1 || $month > 12) return;
-		if($day < 1 || $day > 31) return;
-
-		// save the date in the database
-		$this->update("year_of_birth='$year'", $request->person->id);
-		$this->update("date_of_birth='$year-$month-$day'", $request->person->id);
-	}
-
-	/**
-	 * Subservice ANO de nacimiento
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _ano (Request $request, Response $response)
-	{
-		// get possible birth years ranges
-		$yearMin = date('Y') - 90;
-		$yearMax = date('Y') - 10;
-
-		// remove any string part of the year (like spaces)
-		$year = preg_replace('/\D/', '', $request->query);
-
-		// do not save years out of range
-		if($year < $yearMin || $year > $yearMax) return;
-
-		// save date in the database
-		$this->update("year_of_birth='$year'", $request->person->id);
-	}
-
-	/**
-	 * Subservice DESCRIPCION
-	 *
-	 * @param Request
-	 */
-	public function _descripcion(Request $request, Response $response)
-	{
-		// do not allow empty or long descriptions
-		$description = Connection::escape($request->query, 250);
-		if (strlen($description) < 50) return;
-
-		// set the description
-		$this->update("about_me='$description'", $request->person->id);
-	}
-
-	/**
-	 * Subservice PROFESION
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _profesion (Request $request, Response $response)
-	{
-		$this->updateEscape('occupation', $request->query, $request->person->id, 50);
-	}
-
-	/**
-	 * Subservice RELIGION
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _religion (Request $request, Response $response)
-	{
-		// list of religions
-		$enums = [
-			'ATEISMO',
-			'SECULARISMO',
-			'AGNOSTICISMO',
-			'ISLAM',
-			'JUDAISTA',
-			'ABAKUA',
-			'SANTERO',
-			'YORUBA',
-			'BUDISMO',
-			'CATOLICISMO',
-			'PROTESTANTE',
-			'CRISTIANISMO',
-			'OTRA'];
-
-		// update the value on the database
-		$this->updateEnum($request->query, $enums, 'OTRA', 'religion', $request->person->id);
-	}
-
-	/**
-	 * Subservice PROVINCIA
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _provincia (Request $request, Response $response)
-	{
-		// get the province codes
-		$enums = [
-			'PINAR_DEL_RIO', 'LA_HABANA', 'ARTEMISA', 'MAYABEQUE',
-			'MATANZAS', 'VILLA_CLARA', 'CIENFUEGOS', 'SANCTI_SPIRITUS',
-			'CIEGO_DE_AVILA', 'CAMAGUEY', 'LAS_TUNAS', 'HOLGUIN',
-			'GRANMA', 'SANTIAGO_DE_CUBA', 'GUANTANAMO', 'ISLA_DE_LA_JUVENTUD'
-		];
-
-		// save country as Cuba
-		$this->update("country='CU', usstate=NULL", $request->person->id);
-
-		// update the value on the database
-		$this->updateEnum($request->query, $enums, '', 'province', $request->person->id);
-	}
-
-	/**
-	 * Subservice PAIS
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _pais (Request $request, Response $response)
-	{
-		// get the list of countries
-		$countries = Connection::query("SELECT code, es AS name FROM countries ORDER BY code");
-		$country = empty($request->params[0]) ? trim($request->params[1]) : $request->params[0];
-		$country_original = $country;
-
-		// do not let empty countries
-		if (empty($country)) return;
-		$country = strtolower($country);
-		$country_original = strtolower($country_original);
-
-		// setup country aliases and typos
-		if($country == "us" || $country == "usa" || $country == "united states") $country = "estados unidos";
-		if($country == "cu" || $country == "kuba" || $country == "cuva") $country = "cuba";
-
-		// get the country to update
-		$max = 0;
-		$selectedCountry = null;
-		foreach ($countries as $c) {
-			// check percentage similarity
-			$percent = 0;
-
-			similar_text($country, strtolower($c->name), $percent);
-			// select the country with greater similarity
-			if ($max < $percent && $percent > 90) {
-				$max = $percent;
-				$selectedCountry = $c;
-			}
-
-			// select by code
-			$code = strtolower($c->code);
-			if ($code == $country || $code == $country_original) {
-				$selectedCountry = $c;
-				break;
-			}
-		}
-
-		// if not country was selected, do nothing
-		if (is_null($selectedCountry)) return;
-
-		// update country and return empty response
-		$this->update("country='{$selectedCountry->code}'", $request->person->id);
-	}
-
-	/**
-	 * Subservice CIUDAD
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _ciudad (Request $request, Response $response)
-	{
-		$this->updateEscape('city', $request->query, $request->person->id, 100);
-	}
-
-	/**
-	 * Subservice SEXO
-	 *
-	 * @author salvipascual
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _sexo (Request $request, Response $response)
-	{
-		// for hombre/mujer
-		if(strtoupper($request->query) == "HOMBRE") $gender = "M";
-		elseif(strtoupper($request->query) == "MUJER") $gender = "F";
-
-		// for Masculino/Femenino
-		else $gender = strtoupper($request->query[0]);
-
-		// update the value on the database
-		$this->updateEnum($gender, ['F','M'], '', 'gender', $request->person->id);
-	}
-
-	/**
-	 * Subservice NIVEL
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _nivel (Request $request, Response $response)
-	{
-		// list of possible values
-		$enums = ['PRIMARIO','SECUNDARIO','TECNICO','UNIVERSITARIO','POSTGRADUADO','DOCTORADO','OTRO'];
-
-		// update the value on the database
-		$this->updateEnum($request->query, $enums, 'OTRO', 'highest_school_level', $request->person->id);
-	}
-
-	/**
-	 * Subservice ESTADO CIVIL
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _estadocivil (Request $request, Response $response)
-	{
-		// list of possible values
-		$enums = ['SOLTERO','SALIENDO','COMPROMETIDO','CASADO','OTRO'];
-	
-		// update the value on the database
-		$this->updateEnum(strtoupper($request->query), $enums, 'OTRO', 'marital_status', $request->person->id);	
-	}
-
-	/**
-	 * Subservice PELO
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _pelo (Request $request, Response $response)
-	{
-		// list of possible values
-		$enums = ['TRIGUENO','CASTANO','RUBIO','NEGRO','ROJO','BLANCO','OTRO'];
-
-		// update the value on the database
-		$this->updateEnum($request->query, $enums, 'OTRO', 'hair', $request->person->id);
-	}
-
-	/**
-	 * Subservice OJOS
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _ojos (Request $request, Response $response)
-	{
-		// list of possible values
-		$enums = ['NEGRO','CARMELITA','VERDE','AZUL','AVELLANA','OTRO'];
-
-		// update the value on the database
-		$this->updateEnum($request->query, $enums, 'OTRO', 'eyes', $request->person->id);
-	}
-
-	/**
-	 * Subservice CUERPO
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _cuerpo (Request $request, Response $response)
-	{
-		// list of possible values
-		$enums = ['DELGADO', 'MEDIO', 'EXTRA', 'ATLETICO'];
-
-		// update the value on the database
-		$this->updateEnum($request->query, $enums, '', 'body_type', $request->person->id);
-	}
-
-	/**
-	 * Subservice INTERESES
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _intereses (Request $request, Response $response)
-	{
-		$this->updateEscape('interests', $request->query, $request->person->id, 1000);
 	}
 
 	/**
@@ -467,7 +92,7 @@ class Service
 	public function _foto ($request)
 	{
 		// is the image passed in the subject? (web only)
-		if(file_exists($request->query)) $request->attachments = [$request->query];
+		if(file_exists($request->input->data->picture)) $request->attachments = [$request->input->data->picture];
 
 		// is the image attached (email and app)?
 		if($request->attachments) foreach ($request->attachments as $attach)
@@ -496,7 +121,7 @@ class Service
 	}
 
 	/**
-	 * Subservice FOTO
+	 * Subservice EXTRAFOTO
 	 *
 	 * @param Request $request
 	 * @param Response $response
@@ -504,8 +129,8 @@ class Service
 	public function _extrafoto ($request)
 	{
 		// is the image passed in the subject? (web only)
-		if(file_exists($request->query)) {
-			$request->attachments = array($request->query);
+		if(file_exists($request->input->data->extra_picture)) {
+			$request->attachments = array($request->input->data->extra_picture);
 		}
 
 		// is the image attached (email and app)?
@@ -545,60 +170,6 @@ class Service
 	}
 
 	/**
-	 * Subservice ORIENTACION SEXUAL
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _orientacion (Request $request, Response $response)
-	{
-		// list of possible values
-		$enums = ['HETERO','HOMO','BI'];
-
-		// update the value on the database
-		$this->updateEnum($request->query, $enums, '', 'sexual_orientation', $request->person->id);
-	}
-
-	/**
-	 * Subservice orientacion for Piropazo
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _orientacionbusco (Request $request, Response $response)
-	{
-		// get the person's gender
-		$perfil = Utils::getPerson($request->person->id);
-		if(empty($perfil->gender)) return;
-
-		// get sexual orientation
-		$searchFor = strtoupper($request->query);
-		if($searchFor == "AMBOS") $query = "BI";
-		elseif($perfil->gender == "M" && $searchFor == "MUJERES") $query = "HETERO";
-		elseif($perfil->gender == "F" && $searchFor == "HOMBRES") $query = "HETERO";
-		else $query = "HOMO";
-
-		// save new orientacion
-		$request->query = $query;
-		return $this->_orientacion($request);
-	}
-
-	/**
-	 * Subservice piel
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _piel (Request $request, Response $response)
-	{
-		// list of possible values
-		$enums = ['NEGRO','BLANCO','MESTIZO','OTRO'];
-
-		// update the value on the database
-		$this->updateEnum($request->query, $enums, '', 'skin', $request->person->id);
-	}
-
-	/**
 	 * Show the edit mode template
 	 *
 	 * @param Request $request
@@ -615,15 +186,16 @@ class Service
 		if ($person->gender == 'F') $person->gender = "Femenino";
 		$person->country_name = Utils::getCountryNameByCode($person->country);
 		$person->usstate_name = Utils::getStateNameByCode($person->usstate);
-		$person->interests = count($person->interests);
 		$image = $person->picture ? [$person->picture_internal] : [];
-
-		// add the list of origins and years
-		$person->origins = implode(",", $this->origins);
 		$person->years = implode(",", array_reverse(range(date('Y')-90, date('Y')-10)));
 
+		$content = new stdClass();
+		$content->profile = $person;
+		$content->origins = $this->origins;
+		$content->origin = $person->origin;
+
 		// prepare response for the view
-		$response->setTemplate('profile_edit.ejs', ["person"=>$person], $image);
+		$response->setTemplate('profile_edit.ejs', $content, $image);
 	}
 
 	/**
@@ -635,22 +207,11 @@ class Service
 	public function _origen (Request $request, Response $response)
 	{
 		// get the person to add origin
-		$person = Utils::getPerson($request->person->id);
-		if (empty($person)) return;
+		$content = new stdClass();
+		$content->origin = $request->person->origin;
+		$content->origins = $this->origins;
 
-		$response->setTemplate('origin.ejs', ["person"=>$person, "origins"=>$this->origins]);
-	}
-
-	/**
-	 * Subservice ORIGIN
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _origin (Request $request, Response $response)
-	{
-		// save the value
-		$this->updateEnum($request->query, $this->origins, 'OTRO', 'origin', $request->person->id);
+		$response->setTemplate('origin.ejs', $content);
 	}
 
 	/**
@@ -749,66 +310,279 @@ class Service
 	 * @param Request $request
 	 * @param Response $response
 	 */
-	public function _bulk(Request $request, Response $response)
-	{
+	public function _bulk(Request $request, Response $response){
 		// get the JSON with the bulk
-		$json = json_decode($request->query);
+		$json = $request->input->data;
 
 		// if the method exist, call it
-		if (is_object($json)) foreach ($json as $key=>$value)
-		{
+		if (is_object($json)) foreach ($json as $key=>$value){
 			$key = strtolower($key);
-			if(method_exists($this, "_$key"))
-			{
-				$req = new Request();
-				$req->email = $request->email;
-				$req->person->id = $request->person->id;
-				$req->subject = "PERFIL $key $value";
-				$req->service = "PERFIL";
-				$req->subservice = $key;
-				$req->fromBulk = true;
-				$req->query = $value;
-				$req->attachments = $request->attachments;
-				$function = "_$key";
-				if (method_exists($this, $function))
-					$this->$function($req);
-			}
+			if(method_exists($this, $key)) $this->$key($request,$response);
 		}
 
 	}
 
-	/**
-	 * Change state if within the US
-	 * AL,AK,AS,AZ,AR,CA,CO,CT,DE,DC,FL,GA,GU,HI,ID,IL,IN,IA,KS,KY,LA,ME,MD,MH,MA,MI,FM,MN,MS,MO,MT,NE,NV,NH,NJ,NM,NY,NC,ND,MP,OH,OK,OR,PW,PA,PR,RI,SC,SD,TN,TX,UT,VT,VA,VI,WA,WV,WI,WY
-	 *
-	 * @author salvipascual
-	 * @version 1.0
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _usstate(Request $request, Response $response)
+	//FROM HERE ALL FUNCTIONS TO UPDATE THE PROFILE IN THE DB
+
+	private function username (Request $request, Response $response){
+		// clean, shorten and lowercase the text
+		$username = preg_replace("/[^a-zA-Z0-9]+/", "", $request->input->data->username);
+		$username = strtolower(substr($username, 0, 15));
+
+		// check if the username not exist, else if not belong to the user, recreate it
+		$exist = Connection::query("SELECT id AS exist FROM person WHERE username='$username'");
+		if(!empty($exist) && $exist[0]->id!=$request->person->id) $username = Utils::usernameFromEmail($username);
+
+		// update the username in the database
+		$this->updateEscape('username', $username, $request->person->id, 15);
+	}
+
+	private function first_name(Request $request, Response $response){
+		$query = " first_name='{$request->input->data->first_name}'";
+		$this->update($query, $request->person->id);
+	}
+
+	private function middle_name(Request $request, Response $response){
+		$query = " middle_name='{$request->input->data->middle_name}'";
+		$this->update($query, $request->person->id);
+	}
+
+	private function last_name(Request $request, Response $response){
+		$query = " last_name='{$request->input->data->last_name}'";
+		$this->update($query, $request->person->id);
+	}
+
+	private function mother_name(Request $request, Response $response){
+		$query = " mother_name='{$request->input->data->mother_name}'";
+		$this->update($query, $request->person->id);
+	}
+
+	private function phone(Request $request, Response $response){
+		// remove all non-numeric characters from the phone
+		$phone = preg_replace('/[^0-9.]+/', '', $request->input->data->phone);
+
+		// is cell or not?
+		$field = 'phone';
+		if(substr($phone, 0, 1) == '5') $field = 'cellphone';
+
+		// update phone
+		$this->updateEscape($field, $phone, $request->person->id, 10);
+	}
+
+	private function date_of_birth(Request $request, Response $response){
+		// get the params for old versions of the app
+		$pieces = explode("/", $request->input->data->date_of_birth);
+
+		// get the date passed
+		$day = $pieces[0];
+		$month = $pieces[1];
+		$year = $pieces[2];
+
+		// get possible birth years ranges
+		$yearMin = date('Y') - 90;
+		$yearMax = date('Y') - 10;
+
+		// do not save dates out of range
+		if($year < $yearMin || $year > $yearMax) return;
+		if($month < 1 || $month > 12) return;
+		if($day < 1 || $day > 31) return;
+
+		// save the date in the database
+		$this->update("year_of_birth='$year'", $request->person->id);
+		$this->update("date_of_birth='$year-$month-$day'", $request->person->id);
+	}
+
+	private function description(Request $request, Response $response){
+		// do not allow empty or long descriptions
+		$description = Connection::escape($request->input->data->description, 250);
+		if (strlen($description) < 50) return;
+
+		// set the description
+		$this->update("about_me='$description'", $request->person->id);
+	}
+
+	private function occupation(Request $request, Response $response){
+		$this->updateEscape('occupation', $request->input->data->occupation, $request->person->id, 50);
+	}
+
+	private function religion(Request $request, Response $response){
+		// list of religions
+		$enums = [
+			'ATEISMO',
+			'SECULARISMO',
+			'AGNOSTICISMO',
+			'ISLAM',
+			'JUDAISTA',
+			'ABAKUA',
+			'SANTERO',
+			'YORUBA',
+			'BUDISMO',
+			'CATOLICISMO',
+			'PROTESTANTE',
+			'CRISTIANISMO',
+			'OTRA'];
+
+		// update the value on the database
+		$this->updateEnum($request->input->data->religion, $enums, 'OTRA', 'religion', $request->person->id);
+	}
+
+	private function province(Request $request, Response $response){
+		// get the province codes
+		$enums = [
+			'PINAR_DEL_RIO', 'LA_HABANA', 'ARTEMISA', 'MAYABEQUE',
+			'MATANZAS', 'VILLA_CLARA', 'CIENFUEGOS', 'SANCTI_SPIRITUS',
+			'CIEGO_DE_AVILA', 'CAMAGUEY', 'LAS_TUNAS', 'HOLGUIN',
+			'GRANMA', 'SANTIAGO_DE_CUBA', 'GUANTANAMO', 'ISLA_DE_LA_JUVENTUD'
+		];
+
+		// save country as Cuba
+		$this->update("country='CU', usstate=NULL", $request->person->id);
+
+		// update the value on the database
+		$this->updateEnum($request->input->data->province, $enums, '', 'province', $request->person->id);
+	}
+
+	private function country(Request $request, Response $response){
+		// get the list of countries
+		$countries = Connection::query("SELECT code, es AS name FROM countries ORDER BY code");
+		$country = $request->input->data->country;
+		$country_original = $country;
+
+		// do not let empty countries
+		if (empty($country)) return;
+		$country = strtolower($country);
+		$country_original = strtolower($country_original);
+
+		// setup country aliases and typos
+		if($country == "us" || $country == "usa" || $country == "united states") $country = "estados unidos";
+		if($country == "cu" || $country == "kuba" || $country == "cuva") $country = "cuba";
+
+		// get the country to update
+		$max = 0;
+		$selectedCountry = null;
+		foreach ($countries as $c) {
+			// check percentage similarity
+			$percent = 0;
+
+			similar_text($country, strtolower($c->name), $percent);
+			// select the country with greater similarity
+			if ($max < $percent && $percent > 90) {
+				$max = $percent;
+				$selectedCountry = $c;
+			}
+
+			// select by code
+			$code = strtolower($c->code);
+			if ($code == $country || $code == $country_original) {
+				$selectedCountry = $c;
+				break;
+			}
+		}
+
+		// if not country was selected, do nothing
+		if (is_null($selectedCountry)) return;
+
+		// update country and return empty response
+		$this->update("country='{$selectedCountry->code}'", $request->person->id);
+	}
+
+	private function city(Request $request, Response $response){
+		$this->updateEscape('city', $request->input->data->city, $request->person->id, 100);
+	}
+
+	private function gender(Request $request, Response $response){
+		// for hombre/mujer
+		$gender = strtoupper($request->input->data->gender);
+		if($gender == "HOMBRE") $gender = "M";
+		elseif($gender == "MUJER") $gender = "F";
+
+		// update the value on the database
+		$this->updateEnum($gender, ['F','M'], '', 'gender', $request->person->id);
+	}
+
+	private function highest_school_level (Request $request, Response $response){
+		// list of possible values
+		$enums = ['PRIMARIO','SECUNDARIO','TECNICO','UNIVERSITARIO','POSTGRADUADO','DOCTORADO','OTRO'];
+
+		// update the value on the database
+		$this->updateEnum($request->input->data->highest_school_level, $enums, 'OTRO', 'highest_school_level', $request->person->id);
+	}
+
+	private function marital_status (Request $request, Response $response){
+		// list of possible values
+		$enums = ['SOLTERO','SALIENDO','COMPROMETIDO','CASADO','OTRO'];
+	
+		// update the value on the database
+		$this->updateEnum(strtoupper($request->input->data->marital_status), $enums, 'OTRO', 'marital_status', $request->person->id);	
+	}
+
+	private function hair (Request $request, Response $response){
+		// list of possible values
+		$enums = ['TRIGUENO','CASTANO','RUBIO','NEGRO','ROJO','BLANCO','OTRO'];
+
+		// update the value on the database
+		$this->updateEnum($request->input->data->hair, $enums, 'OTRO', 'hair', $request->person->id);
+	}
+
+	private function eyes (Request $request, Response $response){
+		// list of possible values
+		$enums = ['NEGRO','CARMELITA','VERDE','AZUL','AVELLANA','OTRO'];
+
+		// update the value on the database
+		$this->updateEnum($request->input->data->eyes, $enums, 'OTRO', 'eyes', $request->person->id);
+	}
+
+	private function body_type (Request $request, Response $response){
+		// list of possible values
+		$enums = ['DELGADO', 'MEDIO', 'EXTRA', 'ATLETICO'];
+
+		// update the value on the database
+		$this->updateEnum($request->input->data->body_type, $enums, '', 'body_type', $request->person->id);
+	}
+
+	private function interests (Request $request, Response $response){
+		$interests = [];
+		foreach($request->input->data->interests as $interest) $interests[] = $interest->tag;
+		$interests = implode(',',$interests);
+		$this->updateEscape('interests', $interests, $request->person->id, 1000);
+	}
+
+	private function sexual_orientation (Request $request, Response $response){
+		// list of possible values
+		$enums = ['HETERO','HOMO','BI'];
+
+		// update the value on the database
+		$this->updateEnum($request->input->data->sexual_orientation, $enums, '', 'sexual_orientation', $request->person->id);
+	}
+
+	private function skin (Request $request, Response $response)
 	{
+		// list of possible values
+		$enums = ['NEGRO','BLANCO','MESTIZO','OTRO'];
+
+		// update the value on the database
+		$this->updateEnum($request->input->data->skin, $enums, '', 'skin', $request->person->id);
+	}
+
+	private function origin (Request $request, Response $response){
+		// save the value
+		$this->updateEnum($request->input->data->origin, $this->origins, 'OTRO', 'origin', $request->person->id);
+	}
+
+	private function usstate(Request $request, Response $response){
 		// list of US states
-		$state = strtoupper($request->query);
+		$state = strtoupper($request->input->data->usstate);
 		$states = array("AL","AK","AS","AZ","AR","CA","CO","CT","DE","DC","FL","GA","GU","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MH","MA","MI","FM","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","MP","OH","OK","OR","PW","PA","PR","RI","SC","SD","TN","TX","UT","VT","VA","VI","WA","WV","WI","WY");
 
 		// save US state
 		if(in_array($state, $states)) $this->update("usstate='$state', country='US', province=NULL", $request->person->id);
 	}
 
-	/**
-	 * Change language
-	 *
-	 * @author salvipascual
-	 * @version 1.0
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _lang(Request $request, Response $response)
+	private function lang(Request $request, Response $response)
 	{
 		// get the values from the post
 		$email = $request->email;
-		$lang = $request->query;
+		$lang = $request->input->data->lang;
 
 		// check if the language exist
 		$test = Connection::query("SELECT * FROM languages WHERE code = '$lang'");
@@ -818,38 +592,9 @@ class Service
 		Connection::query("UPDATE person SET lang='$lang' WHERE email='$email'");
 	}
 
-	/**
-	 * Get the global info for the General app
-	 *
-	 * @author salvipascual
-	 * @api
-	 * @version 1.0
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _status(Request $request, Response $response)
-	{
-		// get data for the app
-		$res = Utils::getExternalAppData($request->email, $request->query);
-
-		// respond back to the API
-		$response->attachments = $res["attachments"];
-		return $response->createFromJSON($res["json"]);
-	}
-
-	/**
-	 * Change the image quality to send to the user
-	 *
-	 * @author salvipascual
-	 * @api
-	 * @version 1.0
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _imagen(Request $request, Response $response)
-	{
+	private function img_quality(Request $request, Response $response){
 		// list of possible values
-		$quality = strtoupper($request->query);
+		$quality = strtoupper($request->input->data->quality);
 		$enums = ['ORIGINAL', 'REDUCIDA', 'SIN_IMAGEN'];
 
 		// save the image quality
@@ -865,8 +610,7 @@ class Service
 	 * @param String $sqlset
 	 * @param String $userId
 	 */
-	private function update($sqlset, $userId)
-	{
+	private function update($sqlset, $userId){
 		if(empty($userId)) return;
 
 		Connection::query("
@@ -883,8 +627,7 @@ class Service
 	 * @param String $userId
 	 * @param Integer $cut : Max length of the value
 	 */
-	private function updateEscape($field, $value, $userId, $cut=false)
-	{
+	private function updateEscape($field, $value, $userId, $cut=false){
 		// escape and cut the string
 		$value = Connection::escape($value, $cut);
 
@@ -902,8 +645,7 @@ class Service
 	 * @param String $field : field name in the database
 	 * @param integer $userId
 	 */
-	private function updateEnum($value, $enums, $default, $field, $userId)
-	{
+	private function updateEnum($value, $enums, $default, $field, $userId){
 		// do not allow empty responses
 		if(empty($value)) return;
 

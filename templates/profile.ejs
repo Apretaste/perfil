@@ -1,6 +1,5 @@
-<div class="row center-align">
-	<div class="col s12 m8 l6 offset-m2 offset-l3">
-		<div class="card">
+
+		<div class="card col s12 m8 l6 offset-m2 offset-l3 center-align">
 			<div class="card-image">
 			<%if(profile.picture!=""){%>
 			<img src="{{APP_IMAGE_PATH}}/<%=profile.picture_internal%>">
@@ -33,7 +32,6 @@
 			<div class="chip"><%=interest%></div>
 			<%});%>
 			<%if(ownProfile){%>
-			<div class="divider"></div>
 			<ul class="collection">
 				<li class="collection-item">Credito: <%=profile.credit%><a id="credito" class="secondary-content"><i class="material-icons">arrow_forward</i></a></li>
 				<li class="collection-item">Tickets para la rifa: <%=tickets%><a id="rifa" class="secondary-content"><i class="material-icons">add</i></a></li>
@@ -41,5 +39,3 @@
 			<%}%>
 			</div>
 		</div>
-	</div>
-</div>
