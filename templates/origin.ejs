@@ -1,0 +1,18 @@
+<div class="center-align">
+	<h5><b>¿Donde escucho sobre la app?</b></h5>
+
+	<p>Gracias por dejarnos saber donde escucho sobre la app para seguir acercando nuestro servicios a m&aacute;s personas.</p>
+
+	<%if (origin!=""){%>
+		<p>Usted nos dijo que vio la app en: <b id="actual"><%=origin%></b></p>
+	<%}%>
+	<div class="input-field col s12">
+		<select id='origin'>
+			<option value="" disabled selected>Escoja su opción</option>
+			<%origins.forEach((origin) => {%>
+			<option value="<%=origin%>"><%=origin%></option>
+			<%});%>
+		</select>
+		<label>Cuentenos</label>
+	</div>
+</div>

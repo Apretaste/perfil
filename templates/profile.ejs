@@ -1,0 +1,41 @@
+
+		<div class="card col s12 m8 l6 offset-m2 offset-l3 center-align">
+			<div class="card-image">
+			<%if(profile.picture!=""){%>
+			<img src="{{APP_IMAGE_PATH}}/<%=profile.picture_internal%>">
+			<%}else{%>
+			<img src="{{APP_IMAGE_PATH}}/<%=profile.picture_internal%>">
+			<%}%>
+			<%if(ownProfile){%>
+			<a class="btn-floating btn-large halfway-fab waves-effect waves-light red" id="editar">
+			   <i class="material-icons">edit</i>
+			</a>
+			<%}else if(profile.blockedByMe){%>
+			<a class="btn-floating btn-large halfway-fab left waves-effect waves-light red" id="bloquear">
+			   <i class="material-icons">lock_open</i>
+			</a>
+			<%}else{%>
+			<a class="btn-floating btn-large halfway-fab waves-effect waves-light red" id="chat">
+			   <i class="material-icons">message</i>
+			</a>
+			<a class="btn-floating btn-large halfway-fab left waves-effect waves-light red" id="bloquear">
+			   <i class="material-icons">block</i>
+			</a>
+			<%}%>
+			</div>
+			<div class="card-content">
+			<% name=(profile.first_name=="")?'@'+profile.username:profile.first_name%>
+			<span class="card-title"><%=name%></span>
+			<p><%=profile.about_me%></p>
+			<h6><b>Mis intereses</b></h6>
+			<%profile.interests.forEach((interest)=>{%>
+			<div class="chip"><%=interest%></div>
+			<%});%>
+			<%if(ownProfile){%>
+			<ul class="collection">
+				<li class="collection-item">Credito: <%=profile.credit%><a id="credito" class="secondary-content"><i class="material-icons">arrow_forward</i></a></li>
+				<li class="collection-item">Tickets para la rifa: <%=tickets%><a id="rifa" class="secondary-content"><i class="material-icons">add</i></a></li>
+			</ul>
+			<%}%>
+			</div>
+		</div>
