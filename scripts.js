@@ -41,9 +41,18 @@ $(document).ready(() => {
 
     //For profile edit
     if($('#picture').length){
-        $("#picture").click(function() {
-            apretaste.doaction('PERFIL FOTO', false, '', true ,'');
-            return false;
+        $('#uploadPhoto').click((e) => $('input:file')[0].click());
+        $("#picture").change(() => {
+            let file = $("#picture").prop("files")[0];
+            let files = [file];
+
+            return apretaste.send({
+                "command":"PERFIL FOTO",
+                "data":{'picture':file.name},
+                "files":files,
+                "redirect":false,
+                "callback":{"name":"showToast","data":"Imagen de perfil enviada"}
+            });
         });
 
         let provinces = [

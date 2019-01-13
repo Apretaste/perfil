@@ -1,5 +1,5 @@
 <?php
-
+use \Phalcon\DI\FactoryDefault;
 class Service
 {
 	private $origins = [
@@ -77,7 +77,7 @@ class Service
 	{
 		if (empty($request->input->data->img)) return;
 
-		$wwwroot = \Phalcon\DI\FactoryDefault::getDefault()->get('path')['root'];
+		$wwwroot = FactoryDefault::getDefault()->get('path')['root'];
 		$file = "$wwwroot/public/profile/$request->input->data->.jpg";
 
 		if (file_exists($file)) $response->setTemplate("verimg.tpl", ['img'=>$file],[$file]);
@@ -89,35 +89,24 @@ class Service
 	 * @param Request $request
 	 * @param Response $response
 	 */
-	public function _foto ($request)
-	{
-		// is the image passed in the subject? (web only)
-		if(file_exists($request->input->data->picture)) $request->attachments = [$request->input->data->picture];
-
-		// is the image attached (email and app)?
-		if($request->attachments) foreach ($request->attachments as $attach)
-		{
-			// get the first image attached
-			$mimetype = explode("/", mime_content_type($attach))[0];
-			if($mimetype != "image") continue;
-
-			// get the path to the image
-			$di = \Phalcon\DI\FactoryDefault::getDefault();
-			$wwwroot = $di->get('path')['root'];
+	public function _foto (Request $request, Response $response){
+		$picture = $request->input->data->picture;
+		$files = $request->input->files;
+		if(isset($files[$picture]) && file_exists($files[$picture])){
+			$img = $files[$picture];
+			$wwwroot = FactoryDefault::getDefault()->get('path')['root'];
 
 			// create a new random image name and path
-			$fileName = md5($request->email . rand());
+			$fileName = md5($request->person->email . rand());
 			$filePath = "$wwwroot/public/profile/$fileName.jpg";
 
 			// save the original copy
-			@copy($attach, $filePath);
+			@copy($img, $filePath);
 			Utils::optimizeImage($filePath);
 
 			// make the changes in the database
 			$this->update("picture='$fileName'", $request->person->id);
-			break;
 		}
-
 	}
 
 	/**
@@ -144,7 +133,7 @@ class Service
 			$pics=json_decode($person->extra_pictures,true);
 
 			// get the path to the image
-			$di = \Phalcon\DI\FactoryDefault::getDefault();
+			$di = FactoryDefault::getDefault();
 			$wwwroot = $di->get('path')['root'];
 
 			// create a new random image name and path
