@@ -51,11 +51,11 @@ class Service
 		$profile = Social::prepareUserProfile($user);
 
 		// pass profile image to the response
-		$image=[];
-		if ($profile->picture) $image[]=$profile->picture_internal;
+		$image = [];
+		if ($profile->picture) $image[] = $profile->picture;
 
-		foreach ($profile->extraPictures_internal as $key => $picture){
-			$image[]=$picture;
+		foreach ($profile->extra_pictures as $key => $picture){
+			$image[] = $picture;
 		}
 
 		// pass variables to the template
@@ -175,7 +175,7 @@ class Service
 		if ($person->gender == 'F') $person->gender = "Femenino";
 		$person->country_name = Utils::getCountryNameByCode($person->country);
 		$person->usstate_name = Utils::getStateNameByCode($person->usstate);
-		$image = $person->picture ? [$person->picture_internal] : [];
+		$image = $person->picture ? [$person->picture] : [];
 		$person->years = implode(",", array_reverse(range(date('Y')-90, date('Y')-10)));
 
 		$content = new stdClass();

@@ -2,9 +2,9 @@
 		<div class="card col s12 m8 l6 offset-m2 offset-l3 center-align">
 			<div class="card-image">
 			<%if(profile.picture!=""){%>
-			<img src="{{APP_IMAGE_PATH}}/<%=profile.picture_internal%>">
+			<img src="{{APP_IMAGE_PATH}}/<%=profile.picture%>">
 			<%}else{%>
-			<img src="{{APP_IMAGE_PATH}}/<%=profile.picture_internal%>">
+			<img src="{{APP_IMAGE_PATH}}/<%=profile.picture%>">
 			<%}%>
 			<%if(ownProfile){%>
 			<a class="btn-floating btn-large halfway-fab waves-effect waves-light red" id="editar">
