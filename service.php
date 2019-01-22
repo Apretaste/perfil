@@ -19,7 +19,7 @@ class Service
 		$content = new stdClass();
 		if(!empty($data->query)) $data->username = $data->query;
 		if(!empty($data->username)){
-			$user = Utils::getPersonFromUsername($data->username);
+			$user = Utils::getPerson($data->username);
 			// check if the person exist. If not, message the requestor
 			if(!$user){
 				$content->username = $data->username;
@@ -27,11 +27,12 @@ class Service
 				return;
 			}
 
+			$profile = Social::prepareUserProfile($user);
 			$tickets=0;
 			$ownProfile = false;
 
 			// check if current user blocked the user to lookup, or is blocked by
-			$blocks = Social::isBlocked($request->person->email,$user->email);
+			$blocks = Social::isBlocked($request->person->id,$user->id);
 			$user->blocked = $blocks->blocked;
 			$user->blockedByMe = $blocks->blockedByMe;
 			$content->username = $user->username;
@@ -41,14 +42,11 @@ class Service
 			}
 		}
 		else{
-			$user = $request->person;
+			$profile = $request->person;
 			$ownProfile = true;
 			// and get the number of tickets for the raffle
-			$tickets = Connection::query("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '{$user->email}'")[0]->tickets;
+			$tickets = Connection::query("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '{$profile->email}'")[0]->tickets;
 		}
-
-		// prepare the full profile
-		$profile = Social::prepareUserProfile($user);
 
 		// pass profile image to the response
 		$image = [];
@@ -167,7 +165,7 @@ class Service
 	public function _editar (Request $request, Response $response)
 	{
 		// get the person to edit profile
-		$person = Social::prepareUserProfile($request->person);
+		$person = $request->person;
 
 		// make the person's text readable
 		$person->province = str_replace("_", " ", $person->province);
@@ -210,7 +208,7 @@ class Service
 	 * @param Request
 	 */
 	public function _bloquear(Request $request, Response $response){
-		$person = Utils::getPersonFromUsername($request->input->data->username);
+		$person = Utils::getPerson($request->input->data->username);
 		$fromEmail = $request->person->email;
 		if($person){
 			$r = Connection::query("
@@ -238,7 +236,7 @@ class Service
 	 */
 	public function _desbloquear(Request $request, Response $response)
 	{
-		$person = Utils::getPersonFromUsername($request->input->data->username);
+		$person = Utils::getPerson($request->input->data->username);
 		$fromEmail = $request->person->email;
 
 		if($person){
