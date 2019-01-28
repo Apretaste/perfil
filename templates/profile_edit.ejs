@@ -4,9 +4,9 @@
 			<div class="card">
 				<div class="card-image">
 					<%if(profile.picture!=""){%>
-					<img src="{{APP_IMAGE_PATH}}<%=profile.picture_internal%>">
+						<img src="{{APP_IMAGE_PATH}}<%=profile.picture%>">
 					<%}else{%>
-					<img src="{{APP_IMAGE_PATH}}<%=profile.picture_internal%>">
+						<img src="{{APP_IMAGE_PATH}}<%=profile.picture%>">
 					<%}%>
 					<a class="btn-floating btn-large halfway-fab waves-effect waves-light red" id="picture">
 						<i class="material-icons">photo_camera</i>
