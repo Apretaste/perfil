@@ -44,15 +44,15 @@ $(document).ready(() => {
         $('#uploadPhoto').click((e) => $('input:file')[0].click());
         $("#picture").change(() => {
             let file = $("#picture").prop("files")[0];
-            let files = [file];
-
-            return apretaste.send({
-                "command":"PERFIL FOTO",
-                "data":{'picture':file.name},
-                "files":files,
-                "redirect":false,
-                "callback":{"name":"showToast","data":"Imagen de perfil enviada"}
+            file.toBase64().then(data => {
+                apretaste.send({
+                    "command":"PERFIL FOTO",
+                    "data":{'picture':data},
+                    "redirect":false,
+                    "callback":{"name":"updatePicture","data":file}
+                });
             });
+            return false;
         });
 
         let provinces = [
@@ -116,7 +116,7 @@ $(document).ready(() => {
 
             if(!$.isEmptyObject(data)){
                 return apretaste.send({
-                    "command":"PERFIL BULK",
+                    "command":"PERFIL UPDATE",
                     "data":data,
                     "redirect":false,
                     "callback":{"name":"showToast","data":"Sus cambios han sido guardados"}
@@ -136,4 +136,13 @@ function showToast(text){
     M.toast({html: text});
 }
 
+function updatePicture(file){
+    // display the picture on the img
+	var URL = window.URL || window.webkitURL;
+	var url = URL.createObjectURL(file);
+    $('#pic').attr('src', url);
+
+    // show confirmation text
+    showToast('Su foto ha sido cambiada correctamente');
+}
 

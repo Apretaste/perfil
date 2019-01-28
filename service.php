@@ -76,17 +76,16 @@ class Service
 	public function _foto (Request $request, Response $response)
 	{
 		// do not allow empty files
-		$content = $request->input->data->content;
-		if (empty($content)) return $response;
+		if(!isset($request->input->data->picture)) return;
+		$picture = $request->input->data->picture;
 
 		// get the image name and path
-		$di = \Phalcon\DI\FactoryDefault::getDefault();
-		$wwwroot = $di->get('path')['root'];
+		$wwwroot = FactoryDefault::getDefault()->get('path')['root'];
 		$fileName = Utils::generateRandomHash();
 		$filePath = "$wwwroot/public/profile/$fileName.jpg";
 
 		// save the optimized image on the user folder
-		file_put_contents($filePath, base64_decode($content));
+		file_put_contents($filePath, base64_decode($picture));
 		Utils::optimizeImage($filePath);
 
 		// save changes on the database 
