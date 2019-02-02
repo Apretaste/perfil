@@ -1,0 +1,9 @@
+.card.col{
+    padding: 0;
+}
+.row{
+    margin-bottom: 10px;
+}
+.card-content{
+    padding: 16px !important;
+}

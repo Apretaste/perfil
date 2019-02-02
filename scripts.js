@@ -1,5 +1,6 @@
 $(document).ready(() => {
     //For main profile
+    $('.materialboxed').materialbox();
     if (typeof profile!="undefined" && typeof ownProfile!="undefined") {
         if(ownProfile){
             $("#editar").click(function() {
@@ -15,10 +16,9 @@ $(document).ready(() => {
             $("#chat").click(function() {
                 apretaste.send({"command": 'CHAT', data: {"username":profile.username}});
             });
-            let block = profile.blockedByMe?"DESBLOQUEAR":"BLOQUEAR";
 
             $("#bloquear").click(function() {
-                apretaste.send({"command": 'PERFIL '+block, data: {"username":profile.username}});
+                apretaste.send({"command": 'PERFIL BLOQUEAR', data: {"username":profile.username}});
             });
         }
     }

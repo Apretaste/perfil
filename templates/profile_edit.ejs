@@ -4,7 +4,7 @@
 			<div class="card">
 				<div class="card-image">
 					<%if(profile.picture!=""){%>
-						<img id="pic" src="{{APP_IMAGE_PATH}}<%=profile.picture%>">
+						<img class="materialboxed" id="pic" src="{{APP_IMAGE_PATH}}<%=profile.picture%>">
 					<%}else{%>
 						<img src="{{APP_IMAGE_PATH}}<%=profile.picture%>">
 					<%}%>
@@ -16,8 +16,8 @@
 			</div>
 		</div>
 	</div>
-	<div class="divider"></div>
-	<div>
+
+	<div class="col s12">
 		<h5><b>Edite su perfil</b></h5>
 		<form>
 			<p><b>Datos basicos</b></p>
