@@ -33,12 +33,11 @@ class Service
 			$ownProfile = false;
 
 			// check if current user blocked the user to lookup, or is blocked by
-			$blocks = Social::isBlocked($request->person->id,$user->id);
-			$user->blocked = $blocks->blocked;
-			$user->blockedByMe = $blocks->blockedByMe;
-			$content->username = $user->username;
-			if ($user->blocked){
-				$response->setTemplate("blocked.ejs",$content);
+			$blocks = Social::isBlocked($request->person->id, $user->id);
+			if ($blocks->blocked || $blocks->blockedByMe){
+				$content->username = $user->username;
+				$content->blocks = $blocks;
+				$response->setTemplate("blocked.ejs", $content);
 				return;
 			}
 		}
@@ -136,6 +135,50 @@ class Service
 		$content->origins = $this->origins;
 
 		$response->setTemplate('origin.ejs', $content);
+	}
+
+		/**
+	 * Block an user
+	 *
+	 * @author ricardo@apretaste.com
+	 * @param Request
+	 */
+	public function _bloquear(Request $request, Response $response){
+		$person = Utils::getPerson($request->input->data->username);
+		$fromId = $request->person->id;
+		if($person){
+			$r = Connection::query("
+				SELECT *
+				FROM `relations`
+				WHERE user1 = '$fromId'
+				AND user2 = '$person->id'");
+			if (isset($r[0])) Connection::query("
+				UPDATE `relations` SET confirmed=1
+				WHERE user1='$fromId'
+				AND user2='$person->id' AND `type`='blocked'");
+			else Connection::query("
+				INSERT INTO `relations`(user1,user2,`type`,confirmed)
+				VALUES('$fromId','$person->id','blocked',1)");
+		}
+		return $this->_main($request, $response);
+	}
+	/**
+	 * unlock an user
+	 *
+	 * @author ricardo@apretaste.com
+	 * @param Request
+	 */
+	public function _desbloquear(Request $request, Response $response)
+	{
+		$person = Utils::getPerson($request->input->data->username);
+		$fromId = $request->person->id;
+		if($person){
+			Connection::query("
+				UPDATE relations SET confirmed=0
+				WHERE user1='$fromId'
+				AND user2='$person->id' AND `type`='blocked'");
+		}
+		return $this->_main($request, $response);
 	}
 
 	/**
