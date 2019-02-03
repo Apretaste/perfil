@@ -6,7 +6,7 @@
 					<%if(profile.picture!=""){%>
 						<img class="materialboxed" id="pic" src="{{APP_IMAGE_PATH}}<%=profile.picture%>">
 					<%}else{%>
-						<img src="{{APP_IMAGE_PATH}}<%=profile.picture%>">
+						<img src="{{APP_RESOURCES}}/image/user.jpg">
 					<%}%>
 					<%if(ownProfile){%>
 					<a class="btn-floating btn-large halfway-fab waves-effect waves-light red" id="editar">
