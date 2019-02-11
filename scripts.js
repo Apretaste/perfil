@@ -29,7 +29,7 @@ $(document).ready(() => {
         $('#origin').change((event) =>{
             let selected = $('#origin option:selected').val();
             return apretaste.send({
-                "command":"PERFIL BULK",
+                "command":"PERFIL UPDATE",
                 "data":{"origin":selected},
                 "redirect":false,
                 "callback":(!$('#picture').length)?{"name":"reloadOrigin","data":selected}:false
