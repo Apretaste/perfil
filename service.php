@@ -33,20 +33,21 @@ class Service
 			$ownProfile = false;
 
 			// check if current user blocked the user to lookup, or is blocked by
-			$blocks = Social::isBlocked($request->person->id,$user->id);
-			$user->blocked = $blocks->blocked;
-			$user->blockedByMe = $blocks->blockedByMe;
-			$content->username = $user->username;
-			if ($user->blocked){
-				$response->setTemplate("blocked.ejs",$content);
+			$blocks = Social::isBlocked($request->person->id, $user->id);
+			if ($blocks->blocked || $blocks->blockedByMe){
+				$content->username = $user->username;
+				$content->blocks = $blocks;
+				$response->setTemplate("blocked.ejs", $content);
 				return;
 			}
 		}
 		else{
 			$profile = $request->person;
 			$ownProfile = true;
+			$email = Utils::getPerson($request->person->id)->email;
 			// and get the number of tickets for the raffle
-			$tickets = Connection::query("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '{$profile->email}'")[0]->tickets;
+			// @TODO change email with id
+			$tickets = Connection::query("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '{$email}'")[0]->tickets;
 		}
 
 		// pass profile image to the response
@@ -76,17 +77,16 @@ class Service
 	public function _foto (Request $request, Response $response)
 	{
 		// do not allow empty files
-		$content = $request->input->data->content;
-		if (empty($content)) return $response;
+		if(!isset($request->input->data->picture)) return;
+		$picture = $request->input->data->picture;
 
 		// get the image name and path
-		$di = \Phalcon\DI\FactoryDefault::getDefault();
-		$wwwroot = $di->get('path')['root'];
+		$wwwroot = FactoryDefault::getDefault()->get('path')['root'];
 		$fileName = Utils::generateRandomHash();
 		$filePath = "$wwwroot/public/profile/$fileName.jpg";
 
 		// save the optimized image on the user folder
-		file_put_contents($filePath, base64_decode($content));
+		file_put_contents($filePath, base64_decode($picture));
 		Utils::optimizeImage($filePath);
 
 		// save changes on the database 
@@ -137,6 +137,50 @@ class Service
 		$content->origins = $this->origins;
 
 		$response->setTemplate('origin.ejs', $content);
+	}
+
+		/**
+	 * Block an user
+	 *
+	 * @author ricardo@apretaste.com
+	 * @param Request
+	 */
+	public function _bloquear(Request $request, Response $response){
+		$person = Utils::getPerson($request->input->data->username);
+		$fromId = $request->person->id;
+		if($person){
+			$r = Connection::query("
+				SELECT *
+				FROM `relations`
+				WHERE user1 = '$fromId'
+				AND user2 = '$person->id'");
+			if (isset($r[0])) Connection::query("
+				UPDATE `relations` SET confirmed=1
+				WHERE user1='$fromId'
+				AND user2='$person->id' AND `type`='blocked'");
+			else Connection::query("
+				INSERT INTO `relations`(user1,user2,`type`,confirmed)
+				VALUES('$fromId','$person->id','blocked',1)");
+		}
+		return $this->_main($request, $response);
+	}
+	/**
+	 * unlock an user
+	 *
+	 * @author ricardo@apretaste.com
+	 * @param Request
+	 */
+	public function _desbloquear(Request $request, Response $response)
+	{
+		$person = Utils::getPerson($request->input->data->username);
+		$fromId = $request->person->id;
+		if($person){
+			Connection::query("
+				UPDATE relations SET confirmed=0
+				WHERE user1='$fromId'
+				AND user2='$person->id' AND `type`='blocked'");
+		}
+		return $this->_main($request, $response);
 	}
 
 	/**

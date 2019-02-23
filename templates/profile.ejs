@@ -1,35 +1,37 @@
-<div class="card col s12 m10 offset-m1 center-align">
-	<div class="card-image">
+<div class="row">
+	<div class="img-wrap">
 		<%if(profile.picture!=""){%>
-		<img src="{{APP_IMAGE_PATH}}/<%=profile.picture%>">
+		<img class="fullscreen" id="pic" src="{{APP_IMAGE_PATH}}<%=profile.picture%>">
 		<%}else{%>
-		<img src="{{APP_IMAGE_PATH}}/<%=profile.picture%>">
-		<%}%>
-		<%if(ownProfile){%>
-		<a class="btn-floating btn-large halfway-fab waves-effect waves-light red" id="editar">
-			<i class="material-icons">edit</i>
-		</a>
-		<%}else if(profile.blockedByMe){%>
-		<a class="btn-floating btn-large halfway-fab left waves-effect waves-light red" id="bloquear">
-			<i class="material-icons">lock_open</i>
-		</a>
-		<%}else{%>
-		<a class="btn-floating btn-large halfway-fab waves-effect waves-light red" id="chat">
-			<i class="material-icons">message</i>
-		</a>
-		<a class="btn-floating btn-large halfway-fab left waves-effect waves-light red" id="bloquear">
-			<i class="material-icons">block</i>
-		</a>
+		<img src="{{APP_RESOURCES}}/image/user.jpg">
 		<%}%>
 	</div>
-	<div class="card-content">
+	<%if(ownProfile){%>
+	<a class="btn-floating btn-large waves-effect waves-light red fab-align right" id="editar">
+		<i class="material-icons">edit</i>
+	</a>
+	<%}else{%>
+	<a class="btn-floating btn-large waves-effect waves-light red fab-align right" id="chat">
+		<i class="material-icons">message</i>
+	</a>
+	<a class="btn-floating btn-large waves-effect waves-light red fab-align left" id="bloquear">
+		<i class="material-icons">block</i>
+	</a>
+	<%}%>
+	<div class="col s12">
 		<% name=(profile.first_name=="")?'@'+profile.username:profile.first_name%>
-		<span class="card-title">
-			<%=name%></span>
+		<p>
+			<%=name%> &nbsp;<b>&middot;</b>&nbsp;
+			<%if (profile.age!=""){%>
+			<%=profile.age%> años
+			&nbsp;<b>&middot;</b>&nbsp;
+			<%}%>
+			<img class="flag" src="{{APP_RESOURCES}}/images/flags/<%= profile.country %>.png" />
+			<%= profile.location %>
+		</p>
 		<p>
 			<%=profile.about_me%>
 		</p>
-		<h6><b>Mis intereses</b></h6>
 		<%profile.interests.forEach((interest)=>{%>
 		<div class="chip">
 			<%=interest%>
