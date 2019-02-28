@@ -1,5 +1,7 @@
 <?php
+
 use \Phalcon\DI\FactoryDefault;
+
 class Service
 {
 	private $origins = [
