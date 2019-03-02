@@ -41,19 +41,7 @@ $(document).ready(() => {
 
 	//For profile edit
 	if($('#picture').length){
-		$('#uploadPhoto').click((e) => $('input:file')[0].click());
-		$("#picture").change(() => {
-			let file = $("#picture").prop("files")[0];
-			file.toBase64().then(data => {
-				apretaste.send({
-					"command":"PERFIL FOTO",
-					"data":{'picture':data},
-					"redirect":false,
-					"callback":{"name":"updatePicture","data":file}
-				});
-			});
-			return false;
-		});
+		$('#uploadPhoto').click((e) => loadFileToBase64());
 
 		let provinces = [
 			'Pinar del Rio', 'La Habana', 'Artemisa', 'Mayabeque',
@@ -137,12 +125,18 @@ function showToast(text){
 }
 
 function updatePicture(file){
-	// display the picture on the img
-	var URL = window.URL || window.webkitURL;
-	var url = URL.createObjectURL(file);
-	$('#pic').attr('src', url);
+    // display the picture on the img
+    $('#pic').attr('src', "data:image/jpg;base64,"+file);
 
-	// show confirmation text
-	showToast('Su foto ha sido cambiada correctamente');
+    // show confirmation text
+    showToast('Su foto ha sido cambiada correctamente');
 }
 
+function sendFile(base64File){
+    apretaste.send({
+        "command":"PERFIL FOTO",
+        "data":{'picture':base64File},
+        "redirect":false,
+        "callback":{"name":"updatePicture","data":base64File}
+    });
+}
