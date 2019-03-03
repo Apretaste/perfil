@@ -1,49 +1,50 @@
 <div class="row">
-	<div class="img-wrap">
-		<%if(profile.picture!=""){%>
-		<img class="fullscreen" id="pic" src="{{APP_IMAGE_PATH}}<%=profile.picture%>">
-		<%}else{%>
-		<img src="{{APP_RESOURCES}}/image/user.jpg">
-		<%}%>
-	</div>
-	<%if(ownProfile){%>
-	<a class="btn-floating btn-large waves-effect waves-light green fab-align right" id="editar">
-		<i class="material-icons">edit</i>
-	</a>
-	<%}else{%>
-	<a class="btn-floating btn-large waves-effect waves-light red fab-align right" id="chat">
-		<i class="material-icons">message</i>
-	</a>
-	<a class="btn-floating btn-large waves-effect waves-light red fab-align left" id="bloquear">
-		<i class="material-icons">block</i>
-	</a>
-	<%}%>
-	<div class="col s12">
-		<% name=(profile.first_name=="")?'@'+profile.username:profile.first_name%>
-		<p>
-			<%=name%> &nbsp;<b>&middot;</b>&nbsp;
-			<%if (profile.age!=""){%>
-			<%=profile.age%> años
-			&nbsp;<b>&middot;</b>&nbsp;
-			<%}%>
-			<img class="flag" src="{{APP_RESOURCES}}/images/flags/<%= profile.country %>.png" />
-			<%= profile.location %>
-		</p>
-		<p>
-			<%=profile.about_me%>
-		</p>
-		<%profile.interests.forEach((interest)=>{%>
-		<div class="chip">
-			<%=interest%>
-		</div>
-		<%});%>
-		<%if(ownProfile){%>
-		<ul class="collection">
-			<li class="collection-item">Credito:
-				<%=profile.credit%><a id="credito" class="secondary-content"><i class="material-icons">arrow_forward</i></a></li>
-			<li class="collection-item">Tickets para la rifa:
-				<%=tickets%><a id="rifa" class="secondary-content"><i class="material-icons">add</i></a></li>
-		</ul>
-		<%}%>
-	</div>
+    <div class="img-wrap">
+        <% if(profile.picture != ""){ %>
+        <img class="fullscreen" id="pic" src="{{APP_IMAGE_PATH}}<%= profile.picture %>">
+        <% }else{ %>
+        <img src="{{APP_RESOURCES}}/image/user.jpg">
+        <% } %>
+    </div>
+    <% if(ownProfile){ %>
+    <a class="btn-floating btn-large waves-effect waves-light green fab-align right" id="editar">
+        <i class="material-icons">edit</i>
+    </a>
+    <% }else{ %>
+    <a class="btn-floating btn-large waves-effect waves-light red fab-align right" id="chat">
+        <i class="material-icons">message</i>
+    </a>
+    <a class="btn-floating btn-large waves-effect waves-light red fab-align left" id="bloquear">
+        <i class="material-icons">block</i>
+    </a>
+    <% } %>
+    <div class="col s12">
+        <% name = (profile.first_name == "") ? '@' + profile.username : profile.first_name %>
+        <p>
+            <%= name %> &nbsp;<b>&middot;</b>&nbsp;
+            <% if (profile.age != ""){ %>
+            <%= profile.age %> años
+            &nbsp;<b>&middot;</b>&nbsp;
+            <% } %>
+            <img class="flag" src="{{APP_RESOURCES}}/images/flags/<%= profile.country %>.png"/>
+            <%= profile.location %>
+        </p>
+        <p>
+            <%= profile.about_me %>
+        </p>
+        <% profile.interests.forEach((interest)=>{ %>
+        <div class="chip">
+            <%= interest %>
+        </div>
+        <% }); %>
+        <% if(ownProfile){ %>
+        <ul class="collection">
+            <li class="collection-item">Credito:
+                <%= profile.credit %><a id="credito" class="secondary-content"><i
+                            class="material-icons">arrow_forward</i></a></li>
+            <li class="collection-item">Tickets para la rifa:
+                <%= tickets %><a id="rifa" class="secondary-content"><i class="material-icons">add</i></a></li>
+        </ul>
+        <% } %>
+    </div>
 </div>
