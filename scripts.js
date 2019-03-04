@@ -68,10 +68,20 @@ $(document).ready(() => {
 		$('#occupation option[value="'+profile.occupation+'"]').prop("selected", true);
 		
 		$('select').formSelect();
+
+    var date = new Date();
+    var today = '12/31/' + date.getFullYear();
+    
 		$('.datepicker').datepicker({
 			format: 'd/mm/yyyy',
 			defaultDate: new Date(profile.date_of_birth),
-			setDefaultDate: true
+			setDefaultDate: true,
+      selectMonths: true, // Creates a dropdown to control month
+      selectYears: 15, // Creates a dropdown of 15 years to control year,
+      max: today,
+      today: 'Hoy',
+      clear: 'Limpiar',
+      close: 'Aceptar'
 		});
 
 		profile.date_of_birth = $('#date_of_birth').val();
