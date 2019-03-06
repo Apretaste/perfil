@@ -49,6 +49,59 @@ $(document).ready(() => {
 			'Ciego de Avila', 'Camaguey', 'Las Tunas', 'Holguin',
 			'Granma', 'Santiago de Cuba', 'Guantanamo', 'Isla de la Juventud','Otro'
 		];
+
+		let states = [
+      {caption:'Alabama', value:'AL'},
+      {caption:'Alaska', value:'AK'},
+      {caption:'Arizona', value:'AZ'},
+      {caption:'Arkansas', value:'AR'},
+      {caption:'California', value:'CA'},
+      {caption:'Carolina del Norte', value:'NC'},
+      {caption:'Carolina del Sur', value:'SC'},
+      {caption:'Colorado', value:'CO'},
+      {caption:'Connecticut', value:'CT'},
+      {caption:'Dakota del Norte', value:'ND'},
+      {caption:'Dakota del Sur', value:'SD'},
+      {caption:'Delaware', value:'DE'},
+      {caption:'Florida', value:'FL'},
+      {caption:'Georgia', value:'GA'},
+      {caption:'Hawái', value:'HI'},
+      {caption:'Idaho', value:'ID'},
+      {caption:'Illinois', value:'IL'},
+      {caption:'Indiana', value:'IN'},
+      {caption:'Iowa', value:'IA'},
+      {caption:'Kansas', value:'KS'},
+      {caption:'Kentucky', value:'KY'},
+      {caption:'Luisiana', value:'LA'},
+      {caption:'Maine', value:'ME'},
+      {caption:'Maryland', value:'MD'},
+      {caption:'Massachusetts', value:'MA'},
+      {caption:'Míchigan', value:'MI'},
+      {caption:'Minnesota', value:'MN'},
+      {caption:'Misisipi', value:'MS'},
+      {caption:'Misuri', value:'MO'},
+      {caption:'Montana', value:'MT'},
+      {caption:'Nebraska', value:'NE'},
+      {caption:'Nevada', value:'NV'},
+      {caption:'Nueva Jersey', value:'NJ'},
+      {caption:'Nueva York', value:'NY'},
+      {caption:'Nuevo Hampshire', value:'NH'},
+      {caption:'Nuevo México', value:'NM'},
+      {caption:'Ohio', value:'OH'},
+      {caption:'Oklahoma', value:'OK'},
+      {caption:'Oregón', value:'OR'},
+      {caption:'Pensilvania', value:'PA'},
+      {caption:'Rhode Island', value:'RI'},
+      {caption:'Tennessee', value:'TN'},
+      {caption:'Texas', value:'TX'},
+      {caption:'Utah', value:'UT'},
+      {caption:'Vermont', value:'VT'},
+      {caption:'Virginia', value:'VA'},
+      {caption:'Virginia Occidental', value:'WV'},
+      {caption:'Washington', value:'WA'},
+      {caption:'Wisconsin', value:'WI'},
+      {caption:'Wyoming', value:'WY'}
+    ];
 		
 		provinces.forEach((province) => {
 			$('#province').prepend('<option value=\''+province.toUpperCase()+'\'>'+province+'</option>');
@@ -66,12 +119,25 @@ $(document).ready(() => {
 		$('#hair option[value="'+profile.hair+'"]').prop("selected", true);
 		$('#highest_school_level option[value="'+profile.highest_school_level+'"]').prop("selected", true);
 		$('#occupation option[value="'+profile.occupation+'"]').prop("selected", true);
-		
+
+		$('#country').click(function(){
+      $('#province').html('');
+			if ($(this).val() == 'US'){
+        states.forEach((state) => {
+          $('#province').prepend('<option value=\''+state.value+'\'>'+state.caption+'</option>');
+        });
+			} else {
+        provinces.forEach((province) => {
+          $('#province').prepend('<option value=\''+province.toUpperCase()+'\'>'+province+'</option>');
+        });
+			}
+		});
+
 		$('select').formSelect();
 
     var date = new Date();
     var today = '12/31/' + date.getFullYear();
-    
+
 		$('.datepicker').datepicker({
 			format: 'd/mm/yyyy',
 			defaultDate: new Date(profile.date_of_birth),
