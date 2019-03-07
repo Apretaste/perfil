@@ -138,17 +138,6 @@ $(document).ready(() => {
     var date = new Date();
     var today = '12/31/' + date.getFullYear();
 
-
-
-    var d = new Date();
-    d.setFullYear( d.getFullYear() - 100 );
-    $('.datepicker').datepicker(
-        {
-          selectMonths: true,
-          selectYears: d,
-          max: new Date()
-        });
-    /*
 		$('.datepicker').datepicker({
 			format: 'd/mm/yyyy',
 			defaultDate: new Date(profile.date_of_birth),
@@ -160,7 +149,7 @@ $(document).ready(() => {
       clear: 'Limpiar',
       close: 'Aceptar'
 		});
-*/
+
 		profile.date_of_birth = $('#date_of_birth').val();
 		let interests = [];
 		profile.interests.forEach((interest) => {
