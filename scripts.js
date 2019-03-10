@@ -14,13 +14,13 @@ $(document).ready(() => {
       });
     }
     else {
-      $("#chat").click(function () {
+     /* $("#chat").click(function () {
         apretaste.send({
           "command": 'CHAT',
           data: {"username": profile.username}
         });
       });
-
+*/
       $("#bloquear").click(function () {
         apretaste.send({
           "command": 'PERFIL BLOQUEAR',
