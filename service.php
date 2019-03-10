@@ -208,8 +208,8 @@ class Service
 		$pieces = [];
 		foreach ($request->input->data as $key=>$value) {
 
-		  if (!is_scalar($value))
-        $value = serialize($value);
+		  if (is_array($value))
+        $value = implode(',', $value);
 
 		  if(in_array($key, $fields)) $pieces[] = "$key='$value'";
 		}
