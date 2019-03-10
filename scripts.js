@@ -130,7 +130,7 @@ $(document).ready(() => {
     $('#highest_school_level option[value="' + profile.highest_school_level + '"]').prop("selected", true);
     $('#occupation option[value="' + profile.occupation + '"]').prop("selected", true);
 
-    $('#country').on('change', function () {
+    $('#country'.on('change', () => {
       $('#province').html('');
       if ($(this).val() == 'US') {
         states.forEach((state) => {
