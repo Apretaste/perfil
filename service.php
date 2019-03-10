@@ -15,7 +15,7 @@ class Service
 	 * @param Request $request
 	 * @param Response $response
 	 */
-	public function _main (Request $request, Response $response)
+	public function _main (Request $request, Response &$response)
 	{
 		// get the email or the username for the profile
 		$data = $request->input->data;
@@ -101,7 +101,7 @@ class Service
 	 * @param Request $request
 	 * @param Response $response
 	 */
-	public function _editar (Request $request, Response $response)
+	public function _editar (Request $request, Response &$response)
 	{
 		// get the person to edit profile
 		$person = $request->person;
@@ -131,7 +131,7 @@ class Service
 	 * @param Request $request
 	 * @param Response $response
 	 */
-	public function _origen (Request $request, Response $response)
+	public function _origen (Request $request, Response &$response)
 	{
 		// get the person to add origin
 		$content = new stdClass();
@@ -147,7 +147,7 @@ class Service
 	 * @author ricardo@apretaste.com
 	 * @param Request
 	 */
-	public function _bloquear(Request $request, Response $response){
+	public function _bloquear(Request $request, Response &$response){
 		$person = Utils::getPerson($request->input->data->username);
 		$fromId = $request->person->id;
 		if($person){
@@ -164,7 +164,8 @@ class Service
 				INSERT INTO `relations`(user1,user2,`type`,confirmed)
 				VALUES('$fromId','$person->id','blocked',1)");
 		}
-		return $this->_main($request, $response);
+
+		$this->_main($request, $response);
 	}
 	/**
 	 * unlock an user
@@ -172,7 +173,7 @@ class Service
 	 * @author ricardo@apretaste.com
 	 * @param Request
 	 */
-	public function _desbloquear(Request $request, Response $response)
+	public function _desbloquear(Request $request, Response &$response)
 	{
 		$person = Utils::getPerson($request->input->data->username);
 		$fromId = $request->person->id;
@@ -182,7 +183,7 @@ class Service
 				WHERE user1='$fromId'
 				AND user2='$person->id' AND `type`='blocked'");
 		}
-		return $this->_main($request, $response);
+		$this->_main($request, $response);
 	}
 
 	/**
