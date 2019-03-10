@@ -35,7 +35,7 @@
             <%= profile.age %> años
             &nbsp;<b>&middot;</b>&nbsp;
             <% } %>
-            <img class="flag" src="{{APP_RESOURCES}}/images/flags/<%= profile.country %>.png"/>
+            <img class="flag" src="{{APP_RESOURCES}}/images/flags/<%= profile.country.toLowerCase() %>.png"/>
             <%= profile.location %>
         </p>
     </div>
