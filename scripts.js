@@ -138,6 +138,7 @@ $(document).ready(() => {
         });
       }
       else {
+
         provinces.forEach((province) => {
           $('#province').prepend('<option value=\'' + province.toUpperCase() + '\'>' + province + '</option>');
         });

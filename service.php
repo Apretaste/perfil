@@ -115,6 +115,9 @@ class Service
 		$image = $person->picture ? [$person->picture] : [];
 		$person->years = implode(",", array_reverse(range(date('Y')-90, date('Y')-10)));
 
+		if (!is_array($person->interests))
+      $person->interests = explode(',', $person->interests);
+		
 		// create the info for the view
 		$content = new stdClass();
 		$content->profile = $person;
