@@ -268,6 +268,11 @@ class Service {
     $pieces = [];
     foreach ($request->input->data as $key => $value) {
 
+      if ($key == 'date_of_birth') {
+        $value = strtotime($value);
+        $value = date('Y-m-d', $value);
+      }
+
       if ($key == 'interests') {
         $interests = [];
 
