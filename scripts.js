@@ -117,12 +117,17 @@ $(document).ready(() => {
       $('#province').prepend('<option value=\'' + province.toUpperCase() + '\'>' + province + '</option>');
     });
 
+    states.forEach((state) => {
+      $('#province').prepend('<option value=\'' + state.value + '\'>' + state.caption + '</option>');
+    });
+
     $('#gender option[value="' + profile.gender + '"]').prop("selected", true);
     $('#orientation option[value="' + profile.sexual_orientation + '"]').prop("selected", true);
     $('#marital_status option[value="' + profile.marital_status + '"]').prop("selected", true);
     $('#religion option[value="' + profile.religion + '"]').prop("selected", true);
     $('#country option[value="' + profile.country + '"]').prop("selected", true);
     $('#province option[value="' + profile.province + '"]').prop("selected", true);
+    $('#usstate option[value="' + profile.usstate + '"]').prop("selected", true);
     $('#body_type option[value="' + profile.body_type + '"]').prop("selected", true);
     $('#eyes option[value="' + profile.eyes + '"]').prop("selected", true);
     $('#skin option[value="' + profile.skin + '"]').prop("selected", true);
@@ -130,20 +135,16 @@ $(document).ready(() => {
     $('#highest_school_level option[value="' + profile.highest_school_level + '"]').prop("selected", true);
     $('#occupation option[value="' + profile.occupation + '"]').prop("selected", true);
 
+
     $('#country').on('change', function () { // Important! Do not use lambda notation
-      $('#province').html('');
       if ($(this).val() == 'US') {
-        states.forEach((state) => {
-          $('#province').prepend('<option value=\'' + state.value + '\'>' + state.caption + '</option>');
-        });
+        $(".province-section").hide();
+        $(".usstate-section").show();
       }
       else {
-
-        provinces.forEach((province) => {
-          $('#province').prepend('<option value=\'' + province.toUpperCase() + '\'>' + province + '</option>');
-        });
+        $(".province-section").show();
+        $(".usstate-section").hide();
       }
-      $('select').formSelect();
     });
 
     $('select').formSelect();
