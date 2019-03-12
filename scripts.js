@@ -122,12 +122,12 @@ $(document).ready(() => {
     });
 
     if (profile.country == 'US') {
-      $(".province-section").hide();
-      $(".usstate-section").show();
+      $("#province-section").hide();
+      $("#usstate-section").show();
     }
     else {
-      $(".province-section").show();
-      $(".usstate-section").hide();
+      $("#province-section").show();
+      $("#usstate-section").hide();
     }
 
     $('#gender option[value="' + profile.gender + '"]').prop("selected", true);
@@ -147,12 +147,12 @@ $(document).ready(() => {
 
     $('#country').on('change', function () { // Important! Do not use lambda notation
       if ($(this).val() == 'US') {
-        $(".province-section").hide();
-        $(".usstate-section").show();
+        $("#province-section").hide();
+        $("#usstate-section").show();
       }
       else {
-        $(".province-section").show();
-        $(".usstate-section").hide();
+        $("#province-section").show();
+        $("#usstate-section").hide();
       }
     });
 
