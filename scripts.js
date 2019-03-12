@@ -118,10 +118,10 @@ $(document).ready(() => {
     });
 
     states.forEach((state) => {
-      $('#province').prepend('<option value=\'' + state.value + '\'>' + state.caption + '</option>');
+      $('#usstate').prepend('<option value=\'' + state.value + '\'>' + state.caption + '</option>');
     });
 
-    if (profile.country == 'US') {
+    if (profile.country.toUpperCase() == 'US') {
       $("#province-section").hide();
       $("#usstate-section").show();
     }
