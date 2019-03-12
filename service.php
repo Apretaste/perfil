@@ -269,7 +269,7 @@ class Service {
     foreach ($request->input->data as $key => $value) {
 
       if ($key == 'date_of_birth') {
-        $value = DateTime::createFromFormat('d/m/Y')->format('Y-m-d');
+        $value = DateTime::createFromFormat('d/m/Y', $value)->format('Y-m-d');
       }
 
       if ($key == 'interests') {
