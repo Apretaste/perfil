@@ -121,6 +121,15 @@ $(document).ready(() => {
       $('#province').prepend('<option value=\'' + state.value + '\'>' + state.caption + '</option>');
     });
 
+    if (profile.country == 'US') {
+      $(".province-section").hide();
+      $(".usstate-section").show();
+    }
+    else {
+      $(".province-section").show();
+      $(".usstate-section").hide();
+    }
+
     $('#gender option[value="' + profile.gender + '"]').prop("selected", true);
     $('#orientation option[value="' + profile.sexual_orientation + '"]').prop("selected", true);
     $('#marital_status option[value="' + profile.marital_status + '"]').prop("selected", true);
