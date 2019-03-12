@@ -117,7 +117,7 @@ class Service
 
 		if (!is_array($person->interests))
       $person->interests = explode(',', $person->interests);
-		
+
 		// create the info for the view
 		$content = new stdClass();
 		$content->profile = $person;
@@ -212,8 +212,24 @@ class Service
 		$pieces = [];
 		foreach ($request->input->data as $key=>$value) {
 
+		  $pieces = function($arr) {
+		    global $pieces;
+        foreach($arr as $piece)
+        {
+          if (is_object($piece)) {
+            $piece = get_object_vars($piece);
+            yield array_shift($piece);
+          }
+
+          if (is_array($piece))
+            yield implode(',', $pieces($piece));
+
+          yield $piece;
+        }
+      };
+
 		  if (is_array($value))
-        $value = implode(',', $value);
+        $value = implode(',', $pieces($value));
 
 		  if(in_array($key, $fields)) $pieces[] = "$key='$value'";
 		}
