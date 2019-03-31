@@ -131,7 +131,7 @@ $(document).ready(() => {
     }
 
     $('#gender option[value="' + profile.gender.substring(0,1) + '"]').prop("selected", true);
-    $('#orientation option[value="' + profile.sexual_orientation + '"]').prop("selected", true);
+    $('#sexual_orientation option[value="' + profile.sexual_orientation + '"]').prop("selected", true);
     $('#marital_status option[value="' + profile.marital_status + '"]').prop("selected", true);
     $('#religion option[value="' + profile.religion + '"]').prop("selected", true);
     $('#country option[value="' + profile.country.toUpperCase() + '"]').prop("selected", true);
