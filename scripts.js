@@ -130,7 +130,7 @@ $(document).ready(() => {
       $("#usstate-section").hide();
     }
 
-    $('#gender option[value="' + profile.gender + '"]').prop("selected", true);
+    $('#gender option[value="' + profile.gender.substring(0,1) + '"]').prop("selected", true);
     $('#orientation option[value="' + profile.sexual_orientation + '"]').prop("selected", true);
     $('#marital_status option[value="' + profile.marital_status + '"]').prop("selected", true);
     $('#religion option[value="' + profile.religion + '"]').prop("selected", true);
