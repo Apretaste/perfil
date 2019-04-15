@@ -114,7 +114,7 @@ $(document).ready(() => {
     ];
 
     provinces.forEach((province) => {
-      $('#province').prepend('<option value=\'' + province.toUpperCase().replace(' ', '_') + '\'>' + province + '</option>');
+      $('#province').prepend('<option value=\'' + province.toUpperCase().replace(/\s/g, '_') + '\'>' + province + '</option>');
     });
 
     states.forEach((state) => {
