@@ -57,7 +57,7 @@ $(document).ready(() => {
       'Pinar del Rio', 'La Habana', 'Artemisa', 'Mayabeque',
       'Matanzas', 'Villa Clara', 'Cienfuegos', 'Sancti Spiritus',
       'Ciego de Avila', 'Camaguey', 'Las Tunas', 'Holguin',
-      'Granma', 'Santiago de Cuba', 'Guantanamo', 'Isla de la Juventud', 'Otro'
+      'Granma', 'Santiago de Cuba', 'Guantanamo', 'Isla de la Juventud'
     ];
 
     let states = [
