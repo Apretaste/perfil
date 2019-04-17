@@ -288,6 +288,6 @@ class Service {
     }
 
     // save changes on the database
-    Connection::query("UPDATE person SET " . implode(",", $pieces) . " WHERE id={$request->person->id}");
+    if (!empty($pieces)) Connection::query("UPDATE person SET " . implode(",", $pieces) . " WHERE id={$request->person->id}");
   }
 }
