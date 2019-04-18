@@ -14,13 +14,13 @@ $(document).ready(() => {
       });
     }
     else {
-     /* $("#chat").click(function () {
+     $("#chat").click(function () {
         apretaste.send({
           "command": 'CHAT',
-          data: {"username": profile.username}
+          data: {"userId": profile.id}
         });
       });
-*/
+
       $("#bloquear").click(function () {
         apretaste.send({
           "command": 'PERFIL BLOQUEAR',
@@ -159,11 +159,13 @@ $(document).ready(() => {
     $('select').formSelect();
 
     var date = new Date();
-    var today = '12/31/' + date.getFullYear();
+    var initDate = '12/31/' + (date.getFullYear()-25);
+    if(profile.date_of_birth != "") initDate = new Date(profile.date_of_birth+' 00:00') //To create in local timezone
+    else initDate = new Date (initDate);
 
     $('.datepicker').datepicker({
       format: 'd/mm/yyyy',
-      defaultDate: new Date(profile.date_of_birth),
+      defaultDate: initDate,
       setDefaultDate: true,
       selectMonths: true, // Creates a dropdown to control month
       selectYears: 15, // Creates a dropdown of 15 years to control year,

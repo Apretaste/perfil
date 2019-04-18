@@ -1,8 +1,9 @@
 {
 	"name": "perfil",
-	"version": "5",
+	"version": "6",
 	"description": "Muestra el perfil suyo o de otro usuario, contiene informacion util y le permite editar su perfil",
 	"category": "social",
 	"creator": "salvi@apretaste.org",
-	"listed": false
+	"listed": false,
+	"guest_allowed": false
 }
