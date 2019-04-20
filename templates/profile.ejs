@@ -13,11 +13,9 @@
             <i class="material-icons">edit</i>
         </a>
         <% }else{ %>
-        <!--
-        <a class="btn-floating btn-large waves-effect waves-light green fab-align right link-simple" onclick="  apretaste.send({command: 'CHAT',data: {username: profile.username}});">
+        <a class="btn-floating btn-large waves-effect waves-light green fab-align right link-simple" onclick="  apretaste.send({command: 'CHAT',data: {userId: '<%=profile.username%>'}});">
             <i class="material-icons">message</i>
         </a>
-        -->
         <a class="btn-floating btn-large waves-effect waves-light green fab-align right" id="bloquear">
             <i class="material-icons">block</i>
         </a>
