@@ -261,7 +261,11 @@ class Service {
     // clean, shorten and lowercase the username, if passed
     if (!empty($request->input->data->username)) {
       $username                       = preg_replace("/[^a-zA-Z0-9]+/", "", $request->input->data->username);
-      $request->input->data->username = strtolower(substr($username, 0, 15));
+	  $request->input->data->username = strtolower(substr($username, 0, 15));
+	  if(Utils::getPerson($username)){
+		  Utils::addNotification($request->person->id, "Lo sentimos, el username @$username ya esta siendo usado");
+		  unset($request->input->data->username);
+	  }
     }
 
     // get the JSON with the bulk
