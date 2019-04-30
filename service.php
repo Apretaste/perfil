@@ -28,10 +28,8 @@ class Service {
   public function _main(Request $request, Response &$response) {
     // get the email or the username for the profile
     $data    = $request->input->data;
-    $content = new stdClass();
-    if (!empty($data->query)) {
-      $data->username = $data->query;
-    }
+	$content = new stdClass();
+	
     if (!empty($data->username)) {
       $user = Utils::getPerson($data->username);
       // check if the person exist. If not, message the requestor
@@ -43,7 +41,9 @@ class Service {
 
       $profile    = Social::prepareUserProfile($user);
       $tickets    = 0;
-      $ownProfile = FALSE;
+	  $ownProfile = FALSE;
+	  
+	  unset($profile->credit, $profile->tickets);
 
       // check if current user blocked the user to lookup, or is blocked by
       $blocks = Social::isBlocked($request->person->id, $user->id);
@@ -71,7 +71,9 @@ class Service {
 
     foreach ($profile->extra_pictures as $key => $picture) {
       $image[] = $picture;
-    }
+	}
+	
+	unset($profile->blocked, $profile->religion);
 
     // pass variables to the template
     $content->profile    = $profile;
