@@ -9,7 +9,7 @@
 	<div class="input-field col s12">
 		<select id='origin'>
 			<option value="" disabled selected>Escoja su opción</option>
-			<%origins.forEach((origin) => {%>
+			<%origins.forEach(function(origin){%>
 			<option value="<%=origin%>"><%=origin%></option>
 			<%});%>
 		</select>
