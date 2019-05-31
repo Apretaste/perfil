@@ -191,7 +191,7 @@ $(document).ready(() => {
       var names = [
         'first_name', 'last_name', 'username', 'date_of_birth', 'country', 'province',
         'city', 'gender', 'sexual_orientation', 'marital_status', 'religion', 'body_type',
-        'eyes', 'skin', 'hair', 'highest_school_level', 'occupation', 'origin'
+        'eyes', 'skin', 'hair', 'highest_school_level', 'occupation', 'origin', 'phone', 'cellphone'
       ];
       $('#username').val($('#username').val().replace('@', ''));
       var data = new Object;
