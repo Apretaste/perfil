@@ -232,7 +232,8 @@ class Service {
       'first_name',
       'middle_name',
       'last_name',
-      'mother_name',
+	  'mother_name',
+	  'about_me',
       'year_of_birth',
       'date_of_birth',
       'gender',
@@ -286,7 +287,9 @@ class Service {
         }
 
         $value = implode(',', $interests);
-      }
+	  }
+	  
+	  $value = Connection::escape($value);
 
       if (in_array($key, $fields)) {
         $pieces[] = "$key='$value'";
