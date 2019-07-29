@@ -60,7 +60,7 @@ class Service {
       $email      = Utils::getPerson($request->person->id)->email;
       // and get the number of tickets for the raffle
       // @TODO change email with id
-      $tickets = Connection::query("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND email = '{$email}'")[0]->tickets;
+      $tickets = Connection::query("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND person_id = '{$request->person->id}'")[0]->tickets;
     }
 
     // pass profile image to the response
