@@ -254,13 +254,21 @@ else var src = "{{APP_RESOURCES}}/images/user.jpg"; %>
             <label for="religion">Religión</label>
         </div>
 
+        <%if(typeof cellphone != "undefined"){%>
+        <div class="input-field col <%=colSize%> <%= !isMyOwnProfile ? "hide" : "" %>">
+            <i class="material-icons prefix grey-text text-darken-2">phone</i>
+            <input value="<%=profile.cellphone%>" id="cellphone" type="tel" maxlength="10" class="validate">
+            <label for="cellphone">Celular</label>
+        </div>
+        <%}%>
+
         <div class="input-field col s12 <%= !isMyOwnProfile ? "hide" : "" %>">
             <i class="material-icons prefix grey-text text-darken-2">description</i>
             <div class="chips chips-initial left-align" id="interests"></div>
             <label for="interests">Intereses</label>
         </div>
 
-        <div class="col 12 center-align">
+        <div class="col 12 center-align <%= isMyOwnProfile ? "hide" : "" %>">
             <% profile.interests.forEach(function(interest){ %>
                 <div class="chip">
                     <%= interest %>

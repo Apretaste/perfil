@@ -43,7 +43,7 @@ class Service {
       $tickets    = 0;
 	  $ownProfile = FALSE;
 	  
-	  unset($profile->credit, $profile->tickets);
+	  unset($profile->credit, $profile->tickets, $profile->cellphone);
 
       // check if current user blocked the user to lookup, or is blocked by
       $blocks = Social::isBlocked($request->person->id, $user->id);
@@ -194,7 +194,6 @@ class Service {
       'year_of_birth',
       'date_of_birth',
       'gender',
-      'phone',
       'cellphone',
       'eyes',
       'skin',
