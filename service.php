@@ -56,8 +56,7 @@ class Service {
     }
     else {
       $profile    = $request->person;
-      $ownProfile = TRUE;
-      $email      = Utils::getPerson($request->person->id)->email;
+      $ownProfile = true;
       // and get the number of tickets for the raffle
       // @TODO change email with id
       $tickets = Connection::query("SELECT count(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND person_id = '{$request->person->id}'")[0]->tickets;
@@ -69,16 +68,11 @@ class Service {
       $image[] = $profile->picture;
     }
 
-    foreach ($profile->extra_pictures as $key => $picture) {
-      $image[] = $picture;
-	}
-	
-	unset($profile->blocked, $profile->religion);
-
     // pass variables to the template
     $content->profile    = $profile;
     $content->tickets    = $tickets;
-    $content->ownProfile = $ownProfile;
+    $content->isMyOwnProfile = $ownProfile;
+    $content->origins = $this->origins;
 
     // create a new Response object and input the template and the content
     if (!$ownProfile) {
@@ -111,43 +105,6 @@ class Service {
 
     // save changes on the database
     Connection::query("UPDATE person SET picture='$fileName' WHERE id={$request->person->id}");
-  }
-
-  /**
-   * Show the edit mode template
-   *
-   * @param Request $request
-   * @param Response $response
-   */
-  public function _editar(Request $request, Response &$response) {
-    // get the person to edit profile
-    $person = $request->person;
-
-    // make the person's text readable
-    $person->province = str_replace("_", " ", $person->province);
-    if ($person->gender == 'M') {
-      $person->gender = "Masculino";
-    }
-    if ($person->gender == 'F') {
-      $person->gender = "Femenino";
-    }
-    $person->country_name = Utils::getCountryNameByCode($person->country);
-    $person->usstate_name = Utils::getStateNameByCode($person->usstate);
-    $image                = $person->picture ? [$person->picture] : [];
-    $person->years        = implode(",", array_reverse(range(date('Y') - 90, date('Y') - 10)));
-
-    if (!is_array($person->interests)) {
-      $person->interests = explode(',', $person->interests);
-    }
-
-    // create the info for the view
-    $content          = new stdClass();
-    $content->profile = $person;
-    $content->origins = $this->origins;
-    $content->origin  = $person->origin;
-
-    // prepare response for the view
-    $response->setTemplate('profile_edit.ejs', $content, $image);
   }
 
   /**
@@ -278,6 +235,10 @@ class Service {
       if ($key == 'date_of_birth') {
         $value = DateTime::createFromFormat('d/m/Y', $value)->format('Y-m-d');
       }
+
+      if ($key == "first_name" || $key == "last_name"){
+      	$value = ucfirst($value);
+	  }
 
       if ($key == 'interests') {
         $interests = [];
