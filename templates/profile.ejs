@@ -47,7 +47,7 @@ else var src = "{{APP_RESOURCES}}/images/user.jpg"; %>
         </div>
 
         <!-- NAME -->
-        <div class="input-field col <%= colSize %>">
+        <div class="input-field col <%= colSize %> <%= !isMyOwnProfile && profile.first_name == "" ? "hide" : "" %>">
             <i class="material-icons prefix grey-text text-darken-2">person</i>
             <input <%= isDisabled %> id="first_name" type="text" value="<%= profile.first_name %>" class="validate"/>
             <label for="first_name">Nombre</label>
@@ -60,7 +60,7 @@ else var src = "{{APP_RESOURCES}}/images/user.jpg"; %>
         </div>
 
         <!-- GENDER -->
-        <div class="input-field col <%= colSize %>">
+        <div class="input-field col <%= colSize %> <%= !isMyOwnProfile && profile.gender == "" ? "hide" : "" %>">
             <i class="material-icons prefix grey-text text-darken-2">wc</i>
             <select <%= isDisabled %> id="gender" class="validate">
                 <option value=""></option>
@@ -78,7 +78,7 @@ else var src = "{{APP_RESOURCES}}/images/user.jpg"; %>
 
         <!-- SEXUAL ORIENTATION -->
         <% var orientation = ["HETERO", "HOMO", "BI"] %>
-        <div class="input-field col <%= colSize %>">
+        <div class="input-field col <%= colSize %> <%= !isMyOwnProfile && profile.sexual_orientation == "" ? "hide" : "" %>">
             <i class="material-icons prefix grey-text text-darken-2">favorite</i>
             <select <%= isDisabled %> id="sexual_orientation" class="validate">
                 <option value=""></option>
@@ -92,7 +92,7 @@ else var src = "{{APP_RESOURCES}}/images/user.jpg"; %>
         </div>
 
         <!-- BIRTH YEAR -->
-        <div class="input-field col <%= colSize %>">
+        <div class="input-field col <%= colSize %> <%= !isMyOwnProfile && profile.date_of_birth == "" ? "hide" : "" %>">
             <i class="material-icons prefix grey-text text-darken-2">cake</i>
             <input type="text" <%= isDisabled %> id="date_of_birth" class="datepicker">
             <label for="date_of_birth">Cumpleaños</label>
@@ -254,7 +254,7 @@ else var src = "{{APP_RESOURCES}}/images/user.jpg"; %>
             <label for="religion">Religión</label>
         </div>
 
-        <%if(typeof cellphone != "undefined"){%>
+        <%if(typeof profile.cellphone != "undefined"){%>
         <div class="input-field col <%=colSize%> <%= !isMyOwnProfile ? "hide" : "" %>">
             <i class="material-icons prefix grey-text text-darken-2">phone</i>
             <input value="<%=profile.cellphone%>" id="cellphone" type="tel" maxlength="10" class="validate">
