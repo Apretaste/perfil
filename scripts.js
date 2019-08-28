@@ -250,7 +250,7 @@ function resizeImg() {
 
 	$('#edit-fields').css('margin-top', 5 - $(window).height() / 8 + 'px'); // move the row before to the top to fill the empty space
 
-	$('#img-pre').height(img.height() * 0.5); // set the height of the colored div after the photo
+	$('#img-pre').height(img.height() * 0.8); // set the height of the colored div after the photo
 }
 
 function reloadOrigin(origin) {

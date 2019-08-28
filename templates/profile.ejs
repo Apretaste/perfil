@@ -10,13 +10,16 @@ if(!isMyOwnProfile){ %>
             margin: 0;
         }
 
+        .input-field input{
+            background-color: white !important;
+        }
+
         textarea {
             margin-bottom: 0;
-            padding: 0;
         }
     </style>
 <% } %>
-<div id="img-pre"></div>
+<div id="img-pre" class="green apretaste"></div>
 
 <!-- PICTURE -->
 <% if (profile.picture) var src = "{{APP_IMAGE_PATH}}" + profile.picture;
@@ -33,7 +36,7 @@ else var src = "{{APP_RESOURCES}}/images/user.jpg"; %>
 <div class="row">
     <div class="row" id="edit-fields">
         <!-- USERNAME -->
-        <div class="input-field col s8 m4 offset-s2 offset-m4">
+        <div class="input-field col s12 center-align">
             <input <%= isDisabled %> id="username" type="text" value="@<%= profile.username %>" class="validate"/>
             <label for="username">Nombre de usuario</label>
         </div>
@@ -265,7 +268,7 @@ else var src = "{{APP_RESOURCES}}/images/user.jpg"; %>
         <div class="input-field col s12 <%= !isMyOwnProfile ? "hide" : "" %>">
             <i class="material-icons prefix grey-text text-darken-2">description</i>
             <div class="chips chips-initial left-align" id="interests"></div>
-            <label for="interests">Intereses</label>
+            <label for="interests" style="top: -12px">Intereses</label>
         </div>
 
         <div class="col 12 center-align <%= isMyOwnProfile ? "hide" : "" %>">
@@ -299,12 +302,12 @@ else var src = "{{APP_RESOURCES}}/images/user.jpg"; %>
 
         <div class="row">
             <div class="col s12 m12">
-                <ul class="collection">
-                    <li class="collection-item">Credito:
-                        <%= profile.credit %><a id="credito" class="secondary-content"><i
+                <ul class="collection" style="border: none">
+                    <li class="collection-item">Crédito:
+                        <%= profile.credit %><a onclick="apretaste.send({'command':'CREDITO'})" id="credito" class="secondary-content"><i
                                     class="material-icons">arrow_forward</i></a></li>
                     <li class="collection-item">Tickets para la rifa:
-                        <%= tickets %><a id="rifa" class="secondary-content"><i class="material-icons">add</i></a>
+                        <%= tickets %><a onclick="apretaste.send({'command':'RIFA'})" id="rifa" class="secondary-content"><i class="material-icons">add</i></a>
                     </li>
                 </ul>
             </div>

@@ -16,9 +16,25 @@
 	margin-bottom: 10px;
 }
 
-#edit-fields .input-field:first-child > input{
+#username{
 	text-align: center;
-	font-size: 1.8rem;
+	font-size: 1.7rem;
+}
+
+@media screen and (max-width: 420px) {
+	#username{ width: 55% !important; }
+}
+
+@media screen and (min-width: 421px) and (max-width: 600px) {
+	#username{ width: 45% !important; }
+}
+
+@media screen and (min-width: 601px) and (max-width: 800px) {
+	#username{ width: 40% !important; }
+}
+
+@media screen and (min-width: 801px) {
+	#username{ width: 30% !important; }
 }
 
 #edit-fields .input-field:first-child > label{
