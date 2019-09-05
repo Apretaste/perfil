@@ -292,7 +292,10 @@ class Service {
 	  $value = Connection::escape($value);
 
       if (in_array($key, $fields)) {
-        $pieces[] = "$key='$value'";
+        if ($value === null)
+            $pieces[] = "$key = null";
+        else
+            $pieces[] = "$key='$value'";
       }
     }
 
