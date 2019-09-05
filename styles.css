@@ -1,30 +1,44 @@
-.img-wrap {
-	width: 100%;
-	height: 200px;
+#profile-rounded-img{
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
 	position: relative;
-	display: inline-block;
-	overflow: hidden;
-	margin: 0;
+	margin: auto;
+	border: 4px solid white;
 }
 
-.img-wrap img {
-	display: block;
+#picture-upload-btn{
 	position: absolute;
-	top: 50%;
+	bottom: 5px;
+	right: 0px;
+}
+
+#edit-fields{
+	margin-bottom: 10px;
+}
+
+#username{
+	text-align: center;
+	font-size: 1.7rem;
+}
+
+@media screen and (max-width: 420px) {
+	#username{ width: 55% !important; }
+}
+
+@media screen and (min-width: 421px) and (max-width: 600px) {
+	#username{ width: 45% !important; }
+}
+
+@media screen and (min-width: 601px) and (max-width: 800px) {
+	#username{ width: 40% !important; }
+}
+
+@media screen and (min-width: 801px) {
+	#username{ width: 30% !important; }
+}
+
+#edit-fields .input-field:first-child > label{
+	width: auto;
 	left: 50%;
-	min-height: 100%;
-	min-width: 100%;
-	transform: translate(-50%, -50%);
-}
-
-.fab-align{
-    margin: -35px 5% 0 5%;
-}
-
-.flag {
-	width: 20px;
-}
-
-.text-green{
-	color: #4caf50;
+	margin-left: -45px;
 }
