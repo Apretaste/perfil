@@ -255,7 +255,7 @@ class Service {
         if ($value === null)
             $pieces[] = "$key = null";
         else
-            $pieces[] = "$key='$value'";
+            $pieces[] = "$key = '$value'";
       }
     }
 
