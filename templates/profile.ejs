@@ -296,14 +296,8 @@
 		</div>
 	</div>
 
-	<div class="bottom-space"></div>
-
 	<!-- SAVE BUTTON -->
 	<% if(isMyOwnProfile) { %>
-		<div class="fixed-action-btn">
-			<a class="btn-floating btn-large waves-effect waves-light" href="#!" onclick="submitProfileData()"><i class="material-icons">save</i></a>
-		</div>
-
 		<div class="row">
 			<div class="col s12">
 				<ul class="collection" style="border: none">
@@ -312,11 +306,17 @@
 				</ul>
 			</div>
 		</div>
+		<div class="bottom-space"></div>
+
+		<div class="fixed-action-btn">
+			<a class="btn-floating btn-large waves-effect waves-light" href="#!" onclick="submitProfileData()"><i class="material-icons">save</i></a>
+		</div>
 	<% } else { %>
 		<div class="fixed-action-btn">
 			<a class="btn-floating btn-large waves-effect waves-light fab-align right link-simple" onclick="apretaste.send({command: 'CHAT',data: {userId: '<%= profile.username %>'}});">
 				<i class="material-icons">message</i>
 			</a>
 		</div>
+		<div class="bottom-space"></div>
 	<% } %>
 </div>
