@@ -188,7 +188,7 @@ class Service
 
 			// prepare the database query
 			if (in_array($key, $fields)) {
-				if ($value === null) $pieces[] = "$key = null";
+				if ($value === null || $value === "") $pieces[] = "$key = null";
 				else $pieces[] = "$key = '$value'";
 			}
 		}
