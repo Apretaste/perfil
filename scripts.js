@@ -7,40 +7,23 @@ $(document).ready(function () {
 	if (typeof profile != "undefined" && typeof ownProfile != "undefined") {
 		if (ownProfile) {
 			$("#editar").click(function () {
-				return apretaste.send({
-					"command": "PERFIL EDITAR"
-				});
+				return apretaste.send({"command": "PERFIL EDITAR"});
 			});
 			$("#credito").click(function () {
-				apretaste.send({
-					"command": 'CREDITO'
-				});
+				apretaste.send({"command": 'CREDITO'});
 			});
 			$("#rifa").click(function () {
-				apretaste.send({
-					"command": 'RIFA'
-				});
+				apretaste.send({"command": 'RIFA'});
 			});
 		} else {
 			$("#chat").click(function () {
-				apretaste.send({
-					"command": 'CHAT',
-					data: {
-						"userId": profile.id
-					}
-				});
+				apretaste.send({"command": 'CHAT', data: {"userId": profile.id}});
 			});
 			$("#bloquear").click(function () {
-				apretaste.send({
-					"command": 'PERFIL BLOQUEAR',
-					data: {
-						"username": profile.username
-					}
-				});
+				apretaste.send({"command": 'PERFIL BLOQUEAR', data: {"username": profile.username}});
 			});
 		}
 	} //For origin
-
 
 	if (typeof origin != "undefined") {
 		$('select').formSelect();
@@ -48,9 +31,7 @@ $(document).ready(function () {
 			var selected = $('#origin option:selected').val();
 			return apretaste.send({
 				"command": "PERFIL UPDATE",
-				"data": {
-					"origin": selected
-				},
+				"data": {"origin": selected},
 				"redirect": false,
 				"callback": !$('#picture').length ? {
 					"name": "reloadOrigin",
@@ -61,37 +42,14 @@ $(document).ready(function () {
 		$('#origin option[value="' + origin + '"]').prop("selected", true);
 	} //For profile edit
 
-
 	if (typeof profile != "undefined") {
-		var date = new Date();
-		var initDate = '12/31/' + (date.getFullYear() - 25);
-		if (profile.date_of_birth != "") initDate = new Date(profile.date_of_birth + ' 00:00'); //To create in local timezone
-		else initDate = new Date(initDate);
-		$('.datepicker').datepicker({
-			format: 'd/mm/yyyy',
-			defaultDate: initDate,
-			setDefaultDate: true,
-			selectMonths: true,
-			// Creates a dropdown to control month
-			selectYears: 15,
-			// Creates a dropdown of 15 years to control year,
-			max: true,
-			today: 'Hoy',
-			clear: 'Limpiar',
-			close: 'Aceptar'
-		});
-		profile.date_of_birth = $('#date_of_birth').val();
 		var interests = [];
 		profile.interests.forEach(function (interest) {
-			interests.push({
-				tag: interest
-			});
+			interests.push({tag: interest});
 		});
 		profile.interests = JSON.stringify(interests);
 		$('.chips').chips();
-		$('.chips-initial').chips({
-			data: interests
-		});
+		$('.chips-initial').chips({data: interests});
 	}
 
 	showStateOrProvince();
@@ -108,8 +66,10 @@ $(document).ready(function () {
 });
 
 function submitProfileData() {
-	var names = ['first_name', 'last_name', 'username', 'date_of_birth', 'country', 'province', 'city', 'gender', 'sexual_orientation', 'marital_status', 'religion', 'body_type', 'eyes', 'skin', 'hair', 'highest_school_level', 'occupation', 'origin', 'cellphone'];
-	$('#username').val($('#username').val().replace('@', ''));
+	// array of possible values
+	var names = ['first_name', 'last_name', 'country', 'year_of_birth', 'month_of_birth', 'day_of_birth', 'province', 'city', 'gender', 'sexual_orientation', 'marital_status', 'religion', 'body_type', 'eyes', 'skin', 'hair', 'highest_school_level', 'occupation', 'origin', 'cellphone'];
+
+	// create object to send to the backend
 	var data = new Object();
 	names.forEach(function (prop) {
 		if ($('#' + prop).val() != profile[prop] && $('#' + prop).val() != null) {
@@ -117,25 +77,31 @@ function submitProfileData() {
 		}
 	});
 
+	// add interest to data object
 	if (profile.interests != JSON.stringify(M.Chips.getInstance($('.chips')).chipsData)) {
 		data['interests'] = M.Chips.getInstance($('.chips')).chipsData;
 	}
 
-	$('#username').val('@' + $('#username').val());
+	// add username to data object
+	var cleanUsername = $('#username').val().replace('@', '');
+	if (cleanUsername != profile.username) data.username = cleanUsername;
 
-	if (!$.isEmptyObject(data)) {
-		return apretaste.send({
-			"command": "PERFIL UPDATE",
-			"data": data,
-			"redirect": false,
-			"callback": {
-				"name": "showToast",
-				"data": "Sus cambios han sido guardados"
-			}
-		});
-	} else {
+	// do not send empty petitions
+	if ($.isEmptyObject(data)) {
 		showToast("Usted no ha hecho ningun cambio");
+		return false;
 	}
+
+	// save changes in the database
+	apretaste.send({
+		"command": "PERFIL UPDATE",
+		"data": data,
+		"redirect": false
+	});
+
+	// show success alert
+	showToast("Sus cambios han sido guardados");
+	return true;
 }
 
 String.prototype.firstUpper = function () {
@@ -259,9 +225,7 @@ function reloadOrigin(origin) {
 }
 
 function showToast(text) {
-	M.toast({
-		html: text
-	});
+	M.toast({html: text});
 }
 
 function uploadPicture() {
@@ -341,4 +305,11 @@ if (!Object.keys) {
 			return result;
 		};
 	}();
+}
+
+// get an array with a range of numbers
+function range(start, stop) {
+	var a = [start], b = start;
+	while (b < stop) a.push(++b);
+	return a;
 }

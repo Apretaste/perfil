@@ -155,7 +155,7 @@ class Service
 	public function _update(Request $request, Response $response)
 	{
 		// posible fields to update in the database
-		$fields = ['username','first_name','middle_name','last_name','mother_name','about_me','year_of_birth','date_of_birth','gender','cellphone','eyes','skin','body_type','hair','province','city','highest_school_level','occupation','marital_status','interests','about_me','lang','mail_list','picture','sexual_orientation','religion','origin','country','usstate','img_quality'];
+		$fields = ['username','first_name','middle_name','last_name','mother_name','about_me','year_of_birth','month_of_birth','day_of_birth','gender','cellphone','eyes','skin','body_type','hair','province','city','highest_school_level','occupation','marital_status','interests','about_me','lang','mail_list','picture','sexual_orientation','religion','origin','country','usstate','img_quality'];
 
 		// clean, shorten and lowercase the username, if passed
 		if (!empty($request->input->data->username)) {
@@ -170,9 +170,6 @@ class Service
 		// get the JSON with the bulk
 		$pieces = [];
 		foreach ($request->input->data as $key => $value) {
-			// format date_of_birth ready to be saved
-			if ($key == 'date_of_birth') $value = DateTime::createFromFormat('d/m/Y', $value)->format('Y-m-d');
-
 			// format first_name OR last_name in capital the first letter
 			if ($key == "first_name" || $key == "last_name") $value = ucfirst(strtolower($value));
 
