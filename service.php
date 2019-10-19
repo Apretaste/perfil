@@ -77,7 +77,7 @@ class Service
 		// get the image name and path
 		$wwwroot  = \Phalcon\DI\FactoryDefault::getDefault()->get('path')['root'];
 		$fileName = Utils::generateRandomHash();
-		$filePath = "$wwwroot/public/profile/$fileName.jpg";
+		$filePath = "$wwwroot/shared/img/profile/$fileName.jpg";
 
 		// save the optimized image on the user folder
 		file_put_contents($filePath, base64_decode($picture));
