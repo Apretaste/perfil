@@ -1,0 +1,24 @@
+<div class="row" style="margin-bottom: 70px;">
+    <nav id="colors-nav" class="valign-wrapper white">
+        <%Object.keys(colors).forEach(function (color){%>
+        <div class="col s2 center-align" style="line-height: 1rem;">
+            <div class="color circle" style="background: <%=colors[color]%>;" onclick="changeColor('<%=color%>')"></div><br>
+            <small class="black-text"><%=color%></small>
+        </div>
+        <%})%>
+    </nav>
+
+    <div class="col s12" id="avatar-select">
+        <%Object.keys(avatars).forEach(function (avatar) {%>
+            <% var color = avatars[avatar] == "M" ? "blue-text" : avatars[avatar] == "F" ? "pink-text" : "black-text"; %>
+            <div class="col s6 m4 l3">
+                <div class="center-align mini-card valign-wrapper" onclick="setAvatar('<%=avatar%>')">
+                    <div>
+                        <div class="avatar" style="<%=getAvatar(avatar, "{{APP_SERVICE_PATH}}/images", 50)%> background-color: <%=colors[currentColor]%>;"></div>
+                        <p class="<%=color%> text-medium" style="margin: 0 8px"><%=avatar%></p>
+                    </div>
+                </div>
+            </div>
+        <%})%>
+    </div>
+</div>

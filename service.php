@@ -2,7 +2,7 @@
 
 class Service
 {
-	private $origins = ["Amigo en Cuba","Familia Afuera","Referido","El Paquete","Revolico","Casa de Apps","Facebook","Internet","La Calle","Prensa Independiente","Prensa Cubana","Otro"];
+	private $origins = ["Amigo en Cuba", "Familia Afuera", "Referido", "El Paquete", "Revolico", "Casa de Apps", "Facebook", "Internet", "La Calle", "Prensa Independiente", "Prensa Cubana", "Otro"];
 
 	/**
 	 * Display your profile
@@ -15,8 +15,8 @@ class Service
 		// get the email or the username for the profile
 		$data = $request->input->data;
 		$content = new stdClass();
-	
-		if (!empty($data->username)) {
+
+		if (!empty($data->username) && $data->username != $request->person->username) {
 			$user = Utils::getPerson($data->username);
 
 			// check if the person exist. If not, message the requestor
@@ -27,10 +27,7 @@ class Service
 			}
 
 			$profile = Social::prepareUserProfile($user);
-			$tickets = 0;
-			$ownProfile = FALSE;
-
-			unset($profile->credit, $profile->tickets, $profile->cellphone);
+			$ownProfile = false;
 
 			// check if current user blocked the user to lookup, or is blocked by
 			$blocks = Social::isBlocked($request->person->id, $user->id);
@@ -39,27 +36,47 @@ class Service
 				$content->blocks = $blocks;
 				return $response->setTemplate("blocked.ejs", $content);
 			}
-		}
-		else {
+		} else {
 			$profile = $request->person;
 			$ownProfile = true;
-			// and get the number of tickets for the raffle
-			$tickets = Connection::query("SELECT COUNT(ticket_id) as tickets FROM ticket WHERE raffle_id is NULL AND person_id = '{$request->person->id}'")[0]->tickets;
 		}
 
+		unset($profile->credit, $profile->tickets, $profile->cellphone);
+		Social::getTags($profile);
+
 		// pass profile image to the response
-		$image = [];
-		if ($profile->picture) $image[] = $profile->picture;
+		$images = [];
+		if ($profile->picture) $images[] = $profile->picture;
 
 		// pass variables to the template
 		$content->profile = $profile;
-		$content->tickets = $tickets;
-		$content->isMyOwnProfile = $ownProfile;
-		$content->origins = $this->origins;
+		$content->ownProfile = $ownProfile;
 
 		// create a new Response object and input the template and the content
-		if (!$ownProfile) $response->setCache("day");
-		$response->setTemplate("profile.ejs", $content, $image);
+		if (!$ownProfile) $response->setCache(240);
+		$response->setTemplate("profile.ejs", $content, $this->gemsImages($images));
+	}
+
+	public function _editar(Request $request, Response $response)
+	{
+		$image = $request->person->picture ? [$request->person->picture] : [];
+		$response->setTemplate('edit.ejs', ['profile' => $request->person], $image);
+	}
+
+	public function _niveles(Request $request, Response $response)
+	{
+		$response->setTemplate('levels.ejs', ['experience' => $request->person->experience], $this->gemsImages());
+	}
+
+	public function _avatar(Request $request, Response $response)
+	{
+		$pathToService = Utils::getPathToService($response->serviceName);
+		$images = ["$pathToService/images/avatars.png"];
+
+		$response->setTemplate('avatar_select.ejs', [
+			'currentAvatar' => $request->person->avatar,
+			'currentColor' => $request->person->avatarColor
+		], $images);
 	}
 
 	/**
@@ -75,7 +92,7 @@ class Service
 		$picture = $request->input->data->picture;
 
 		// get the image name and path
-		$wwwroot  = \Phalcon\DI\FactoryDefault::getDefault()->get('path')['root'];
+		$wwwroot = \Phalcon\DI\FactoryDefault::getDefault()->get('path')['root'];
 		$fileName = Utils::generateRandomHash();
 		$filePath = "$wwwroot/public/profile/$fileName.jpg";
 
@@ -106,9 +123,9 @@ class Service
 	/**
 	 * Block an user
 	 *
-	 * @author ricardo@apretaste.com
 	 * @param Request $request
 	 * @param Response $response
+	 * @author ricardo@apretaste.com
 	 */
 	public function _bloquear(Request $request, Response $response)
 	{
@@ -127,9 +144,9 @@ class Service
 	/**
 	 * unlock an user
 	 *
+	 * @param Request
 	 * @author ricardo@apretaste.com
 	 *
-	 * @param Request
 	 */
 	public function _desbloquear(Request $request, Response $response)
 	{
@@ -147,21 +164,21 @@ class Service
 	/**
 	 * Update your profile
 	 *
-	 * @author salvipascual
-	 * @version 1.0
 	 * @param Request $request
 	 * @param Response $response
+	 * @author salvipascual
+	 * @version 1.0
 	 */
 	public function _update(Request $request, Response $response)
 	{
 		// posible fields to update in the database
-		$fields = ['username','first_name','middle_name','last_name','mother_name','about_me','year_of_birth','month_of_birth','day_of_birth','gender','cellphone','eyes','skin','body_type','hair','province','city','highest_school_level','occupation','marital_status','interests','about_me','lang','mail_list','picture','sexual_orientation','religion','origin','country','usstate','img_quality'];
+		$fields = ['username', 'first_name', 'middle_name', 'last_name', 'mother_name', 'about_me', 'avatar', 'avatarColor', 'year_of_birth', 'month_of_birth', 'day_of_birth', 'gender', 'cellphone', 'eyes', 'skin', 'body_type', 'hair', 'province', 'city', 'highest_school_level', 'occupation', 'marital_status', 'interests', 'about_me', 'lang', 'mail_list', 'picture', 'sexual_orientation', 'religion', 'origin', 'country', 'usstate', 'img_quality'];
 
 		// clean, shorten and lowercase the username, if passed
 		if (!empty($request->input->data->username)) {
 			$username = preg_replace("/[^a-zA-Z0-9]+/", "", $request->input->data->username);
 			$request->input->data->username = strtolower(substr($username, 0, 15));
-			if(Utils::getPerson($username)){
+			if (Utils::getPerson($username)) {
 				Utils::addNotification($request->person->id, "Lo sentimos, el username @$username ya esta siendo usado");
 				unset($request->input->data->username);
 			}
@@ -192,5 +209,13 @@ class Service
 
 		// save changes on the database
 		if (!empty($pieces)) Connection::query("UPDATE person SET " . implode(",", $pieces) . " WHERE id={$request->person->id}");
+	}
+
+	private function gemsImages(Array $images = [])
+	{
+		$gems = ['Zafiro', 'Topacio', 'Rubi', 'Opalo', 'Esmeralda', 'Diamante'];
+		$path = Utils::getPathToService('perfil') . '/images/';
+		foreach ($gems as $gem) $images[] = $path . $gem . '.png';
+		return $images;
 	}
 }

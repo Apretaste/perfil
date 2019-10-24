@@ -1,152 +1,107 @@
 "use strict";
 
-$(document).ready(function () {
-	//For main profile
-	$('.materialboxed').materialbox();
+// Variables
 
-	if (typeof profile != "undefined" && typeof ownProfile != "undefined") {
-		if (ownProfile) {
-			$("#editar").click(function () {
-				return apretaste.send({"command": "PERFIL EDITAR"});
-			});
-			$("#credito").click(function () {
-				apretaste.send({"command": 'CREDITO'});
-			});
-			$("#rifa").click(function () {
-				apretaste.send({"command": 'RIFA'});
-			});
-		} else {
-			$("#chat").click(function () {
-				apretaste.send({"command": 'CHAT', data: {"userId": profile.id}});
-			});
-			$("#bloquear").click(function () {
-				apretaste.send({"command": 'PERFIL BLOQUEAR', data: {"username": profile.username}});
-			});
-		}
-	} //For origin
-
-	if (typeof origin != "undefined") {
-		$('select').formSelect();
-		$('#origin').change(function (event) {
-			var selected = $('#origin option:selected').val();
-			return apretaste.send({
-				"command": "PERFIL UPDATE",
-				"data": {"origin": selected},
-				"redirect": false,
-				"callback": !$('#picture').length ? {
-					"name": "reloadOrigin",
-					"data": selected
-				} : false
-			});
-		});
-		$('#origin option[value="' + origin + '"]').prop("selected", true);
-	} //For profile edit
-
-	if (typeof profile != "undefined") {
-		var interests = [];
-		profile.interests.forEach(function (interest) {
-			interests.push({tag: interest});
-		});
-		profile.interests = JSON.stringify(interests);
-		$('.chips').chips();
-		$('.chips-initial').chips({data: interests});
-	}
-
-	showStateOrProvince();
-
-	$(window).resize(function () {
-		return resizeImg();
-	});
-
-	var resizeInterval = setInterval(function () {
-		// check until the img has the correct size
-		resizeImg();
-		if ($('#profile-rounded-img').css('background-size') != 'auto') clearTimeout(resizeInterval);
-	}, 1);
-});
-
-function submitProfileData() {
-	// array of possible values
-	var names = ['first_name', 'last_name', 'country', 'year_of_birth', 'month_of_birth', 'day_of_birth', 'province', 'city', 'gender', 'sexual_orientation', 'marital_status', 'religion', 'body_type', 'eyes', 'skin', 'hair', 'highest_school_level', 'occupation', 'origin', 'cellphone'];
-
-	// create object to send to the backend
-	var data = new Object();
-	names.forEach(function (prop) {
-		if ($('#' + prop).val() != profile[prop] && $('#' + prop).val() != null) {
-			data[prop] = $('#' + prop).val();
-		}
-	});
-
-	// add interest to data object
-	if (profile.interests != JSON.stringify(M.Chips.getInstance($('.chips')).chipsData)) {
-		data['interests'] = M.Chips.getInstance($('.chips')).chipsData;
-	}
-
-	// add username to data object
-	var cleanUsername = $('#username').val().replace('@', '');
-	if (cleanUsername != profile.username) data.username = cleanUsername;
-
-	// do not send empty petitions
-	if ($.isEmptyObject(data)) {
-		showToast("Usted no ha hecho ningun cambio");
-		return false;
-	}
-
-	// save changes in the database
-	apretaste.send({
-		"command": "PERFIL UPDATE",
-		"data": data,
-		"redirect": false
-	});
-
-	// show success alert
-	showToast("Sus cambios han sido guardados");
-	return true;
-}
-
-String.prototype.firstUpper = function () {
-	return this.charAt(0).toUpperCase() + this.substr(1).toLowerCase();
+var colors = {
+	'Azul': '#99F9FF',
+	'Verde': '#9ADB05',
+	'Rojo': '#FF415B',
+	'Morado': '#58235E',
+	'Naranja': '#F38200',
+	'Amarillo': '#FFE600'
 };
 
-function getCountries() {
-	return [{
-		code: 'cu',
-		name: 'Cuba'
-	}, {
-		code: 'us',
-		name: 'Estados Unidos'
-	}, {
-		code: 'es',
-		name: 'Espana'
-	}, {
-		code: 'it',
-		name: 'Italia'
-	}, {
-		code: 'mx',
-		name: 'Mexico'
-	}, {
-		code: 'br',
-		name: 'Brasil'
-	}, {
-		code: 'ec',
-		name: 'Ecuador'
-	}, {
-		code: 'ca',
-		name: 'Canada'
-	}, {
-		code: 'vz',
-		name: 'Venezuela'
-	}, {
-		code: 'al',
-		name: 'Alemania'
-	}, {
-		code: 'co',
-		name: 'Colombia'
-	}, {
-		code: 'OTRO',
-		name: 'Otro'
-	}];
-}
+var selectedColor;
+
+var avatars = {
+	'Rockera': 'F',
+	'Tablista': 'F',
+	'Rapero': 'M',
+	'Guapo': 'M',
+	'Bandido': 'M',
+	'Encapuchado': 'M',
+	'Rapear': 'M',
+	'Inconformista': 'M',
+	'Coqueta': 'F',
+	'Punk': 'M',
+	'Metalero': 'M',
+	'Rudo': 'M',
+	'Señor': 'M',
+	'Nerd': 'M',
+	'Hombre': 'M',
+	'Cresta': 'M',
+	'Emo': 'M',
+	'Fabulosa': 'F',
+	'Mago': 'M',
+	'Jefe': 'M',
+	'Sensei': 'M',
+	'Rubia': 'F',
+	'Dulce': 'F',
+	'Belleza': 'F',
+	'Músico': 'M',
+	'Rap': 'M',
+	'Artista': 'M',
+	'Fuerte': 'M',
+	'Punkie': 'M',
+	'Vaquera': 'F',
+	'Modelo': 'F',
+	'Independiente': 'F',
+	'Extraña': 'F',
+	'Hippie': 'M',
+	'Chica Emo': 'F',
+	'Jugadora': 'F',
+	'Sencilla': 'F',
+	'Geek': 'F',
+	'Deportiva': 'F',
+	'Moderna': 'F',
+	'Surfista': 'M',
+	'Señorita': 'F',
+	'Rock': 'F',
+	'Genia': 'F',
+	'Gótica': 'F',
+	'Sencillo': 'M',
+	'Hawaiano': 'M',
+	'Ganadero': 'M',
+	'Gótico': 'M'
+};
+
+var countries = [{
+	code: 'cu',
+	name: 'Cuba'
+}, {
+	code: 'us',
+	name: 'Estados Unidos'
+}, {
+	code: 'es',
+	name: 'Espana'
+}, {
+	code: 'it',
+	name: 'Italia'
+}, {
+	code: 'mx',
+	name: 'Mexico'
+}, {
+	code: 'br',
+	name: 'Brasil'
+}, {
+	code: 'ec',
+	name: 'Ecuador'
+}, {
+	code: 'ca',
+	name: 'Canada'
+}, {
+	code: 'vz',
+	name: 'Venezuela'
+}, {
+	code: 'al',
+	name: 'Alemania'
+}, {
+	code: 'co',
+	name: 'Colombia'
+}, {
+	code: 'OTRO',
+	name: 'Otro'
+}];
 
 var province = {
 	'PINAR_DEL_RIO': 'Pinar del Río',
@@ -166,6 +121,156 @@ var province = {
 	'GUANTANAMO': 'Guantánamo',
 	'ISLA_DE_LA_JUVENTUD': 'Isla de la Juventud'
 };
+
+var levels = [
+	{
+		name: "Zafiro",
+		img: 'Zafiro',
+		color: '#0842b7',
+		titleColor: '#0055ff',
+		experience: 0,
+		maxExperience: 99,
+		benefits: [
+			'Sin beneficios'
+		]
+	},
+	{
+		name: "Topacio",
+		img: 'Topacio',
+		color: '#db055d',
+		titleColor: '#ff046b',
+		experience: 100,
+		maxExperience: 299,
+		benefits: [
+			'Posibilidad de transferir crédito', 'Doble créditos al canjear un cupón'
+		]
+	},
+
+	{
+		name: "Rubí",
+		img: 'Rubi',
+		color: '#db055d',
+		titleColor: '#e20a0a',
+		experience: 300,
+		maxExperience: 499,
+		benefits: [
+			'Beneficios anteriores', '5 tickets gratis para la rifa mensual', 'Doble crédito al completar retos'
+		]
+	},
+	{
+		name: "Ópalo",
+		img: 'Opalo',
+		color: '#ff6c0a',
+		titleColor: '#ff8800',
+		experience: 500,
+		maxExperience: 699,
+		benefits: [
+			'Beneficios anteriores', 'Acceso a nuevos servicios primero', 'Doble créditos al invitar a tus amig@s'
+		]
+	},
+	{
+		name: "Esmeralda",
+		img: 'Esmeralda',
+		color: '#07880b',
+		titleColor: '#07880b',
+		experience: 700,
+		maxExperience: 999,
+		benefits: [
+			'Beneficios anteriores', '10% de descuento en todas las compras', 'Doble créditos al terminar encuestas'
+		]
+	},
+	{
+		name: "Diamante",
+		img: 'Diamante',
+		color: '#0080b9',
+		titleColor: '#00b0fe',
+		experience: 1000,
+		maxExperience: 1000,
+		benefits: [
+			'Beneficios anteriores', 'Acceso al "Club Diamante"', '§1 de crédito gratis al mes'
+		]
+	},
+];
+
+// Doc Ready Function
+
+$(document).ready(function () {
+	$('.tabs').tabs();
+	$('select').formSelect();
+
+	$(window).resize(function () {
+		return resizeImg();
+	});
+
+	var resizeInterval = setInterval(function () {
+		// check until the img has the correct size
+		resizeImg();
+		if ($('#profile-rounded-img').css('background-size') != 'auto') clearTimeout(resizeInterval);
+	}, 1);
+
+	if (typeof profile != "undefined") {
+		var interests = [];
+		profile.interests.forEach(function (interest) {
+			interests.push({tag: interest});
+		});
+		profile.interests = JSON.stringify(interests);
+		$('.chips').chips();
+		$('.chips-initial').chips({data: interests});
+	}
+
+	showStateOrProvince();
+});
+
+// Main Functions
+
+function resizeImg() {
+	if (typeof profile == "undefined") return;
+	$('.profile-img').css('height', '');
+
+	var img = $('#profile-rounded-img');
+	var size = $(window).height() / 4; // picture must be 1/4 of the screen
+
+	img.height(size);
+	img.width(size);
+
+	if (profile.picture) {
+		var src = img.css('background-image');
+		src = src.search('url') == 0 ? src.replace('url("', '').replace('")', '') : src;
+		var bg = new Image();
+		bg.src = src;
+
+		if (bg.height >= bg.width) {
+			var scale = bg.height / bg.width;
+			img.css('background-size', size + 'px ' + size * scale + 'px');
+		} else {
+			var scale = bg.width / bg.height;
+			img.css('background-size', size * scale + 'px ' + size + 'px');
+		}
+	}
+
+	img.css('top', -4 - $(window).height() / 8 + 'px'); // align the picture with the div
+
+	$('#edit-fields, .profile-info').css('margin-top', 5 - $(window).height() / 6.5 + 'px'); // move the row before to the top to fill the empty space
+
+	$('#img-pre').height(img.height() * 0.7); // set the height of the colored div after the photo
+}
+
+function getAvatar(avatar, serviceImgPath, size) {
+	var index = Object.keys(avatars).indexOf(avatar);
+	var fullsize = size * 7;
+	var x = index % 7 * size;
+	var y = Math.floor(index / 7) * size;
+	return "background-image: url(" + serviceImgPath + "/avatars.png);" + "background-size: " + fullsize + "px " + fullsize + "px;" + "background-position: -" + x + "px -" + y + "px;";
+}
+
+function genderColor(gender) {
+	return profile.gender == "M" ? "dodgerblue" : profile.gender == "F" ? "#e61966" : "black-text";
+}
+
+function changeColor(color) {
+	selectedColor = color;
+	$('.mini-card div.avatar').css('background-color', colors[color]);
+}
 
 function showStateOrProvince() {
 	var country = $('#country').val();
@@ -190,46 +295,75 @@ function showStateOrProvince() {
 	}
 }
 
-function resizeImg() {
-	if (typeof profile == "undefined") return;
-	$('.profile-img').css('height', '');
+function getUserLevel(experience){
+	var userLevel;
+	levels.forEach(function (level) {
+		if(experience >= level.experience) userLevel = level;
+	});
 
-	var img = $('#profile-rounded-img');
-	var size = $(window).height() / 4; // picture must be 1/4 of the screen
+	userLevel.percent = userLevel.maxExperience !== 0 ? ((experience - userLevel.experience) / (userLevel.maxExperience - userLevel.experience)) * 100 : 0;
 
-	img.height(size);
-	img.width(size);
-	var src = img.css('background-image');
-	src = src.search('url') == 0 ? src.replace('url("', '').replace('")', '') : src;
-	var bg = new Image();
-	bg.src = src;
-
-	if (bg.height >= bg.width) {
-		var scale = bg.height / bg.width;
-		img.css('background-size', size + 'px ' + size * scale + 'px');
-	} else {
-		var scale = bg.width / bg.height;
-		img.css('background-size', size * scale + 'px ' + size + 'px');
-	}
-
-	img.css('top', -4 - $(window).height() / 8 + 'px'); // align the picture with the div
-
-	$('#edit-fields').css('margin-top', 5 - $(window).height() / 8 + 'px'); // move the row before to the top to fill the empty space
-
-	$('#img-pre').height(img.height() * 0.8); // set the height of the colored div after the photo
+	return userLevel;
 }
 
-function reloadOrigin(origin) {
-	$("#actual").html(origin);
-	showToast('Respuesta guardada');
+function uploadPicture() {
+	loadFileToBase64();
 }
 
 function showToast(text) {
 	M.toast({html: text});
 }
 
-function uploadPicture() {
-	loadFileToBase64();
+// Request Functions
+
+function submitProfileData() {
+	// array of possible values
+	var names = ['first_name', 'last_name', 'country', 'year_of_birth', 'month_of_birth', 'day_of_birth', 'province', 'city', 'gender', 'sexual_orientation', 'marital_status', 'religion', 'body_type', 'eyes', 'skin', 'hair', 'highest_school_level', 'occupation', 'cellphone'];
+
+	// create object to send to the backend
+	var data = new Object();
+	names.forEach(function (prop) {
+		if ($('#' + prop).val() != profile[prop] && $('#' + prop).val() != null && $('#' + prop).val() != "") {
+			data[prop] = $('#' + prop).val();
+		}
+	});
+
+	// add interest to data object
+	if (profile.interests != JSON.stringify(M.Chips.getInstance($('.chips')).chipsData)) {
+		data['interests'] = M.Chips.getInstance($('.chips')).chipsData;
+	}
+
+	// add username to data object
+	var cleanUsername = $('#username').val().replace('@', '');
+	if (cleanUsername != profile.username) data.username = cleanUsername;
+
+	// do not send empty petitions
+	if ($.isEmptyObject(data)) {
+		showToast("Usted no ha hecho ningún cambio");
+		return false;
+	}
+
+	// save changes in the database
+	apretaste.send({
+		"command": "PERFIL UPDATE",
+		"data": data,
+		"redirect": false
+	});
+
+	// show success alert
+	showToast("Sus cambios han sido guardados");
+	return true;
+}
+
+function setAvatar(avatar) {
+	if (typeof selectedColor == "undefined") selectedColor = myUser.avatarColor;
+	apretaste.send({
+		'command': 'PERFIL UPDATE',
+		'data': {
+			'avatar': avatar,
+			'avatarColor': selectedColor
+		}
+	});
 }
 
 function sendFile(base64File) {
@@ -246,6 +380,8 @@ function sendFile(base64File) {
 	});
 }
 
+// Callback Functions
+
 function updatePicture(file) {
 	// display the picture on the img
 	$('#profile-rounded-img').css('background-image', "url(data:image/jpg;base64," + file + ')');
@@ -254,7 +390,20 @@ function updatePicture(file) {
 	showToast('Su foto ha sido cambiada correctamente');
 }
 
-// POLYFILL
+// Prototype Functions
+
+String.prototype.firstUpper = function () {
+	return this.charAt(0).toUpperCase() + this.substr(1).toLowerCase();
+};
+
+// Polyfill Functions
+
+// get an array with a range of numbers
+function range(start, stop) {
+	var a = [start], b = start;
+	while (b < stop) a.push(++b);
+	return a;
+}
 
 function _typeof(obj) {
 	if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
@@ -305,11 +454,4 @@ if (!Object.keys) {
 			return result;
 		};
 	}();
-}
-
-// get an array with a range of numbers
-function range(start, stop) {
-	var a = [start], b = start;
-	while (b < stop) a.push(++b);
-	return a;
 }

@@ -6,19 +6,95 @@
 	border: 4px solid white;
 }
 
-#picture-upload-btn{
-	position: absolute;
-	bottom: 5px;
-	right: 0px;
+.top-bar{
+	margin-bottom: 0;
+	position: relative;
+	box-shadow: 0 1px 5px 0 #444;
+}
+
+.profile-info h3 { margin-bottom: 5px }
+.profile-info h4 { margin-top: 0 }
+
+.desc-table td{
+	padding: 0 5px;
+}
+
+.desc-table tr{
+	border: none;
+}
+
+.desc-table td:first-child{
+	width: 24px;
+	padding-left: 0;
+}
+
+.bottom-space {
+	margin-bottom: 45px;
 }
 
 #edit-fields{
-	margin-bottom: 10px;
+	margin-bottom: 12px;
 }
 
 #username{
 	text-align: center;
 	font-size: 1.7rem;
+}
+
+.gem{
+	width: 50px;
+	height: 50px;
+}
+
+.gems-list{
+	border: none;
+}
+
+.gems-list > li{
+	margin: 12px 2px 2px 2px !important;
+	box-shadow: 0 0 3px 0 lightgrey;
+	border-radius: 10px;
+}
+
+#pic-btn{
+	position: absolute;
+	bottom: 5px;
+	right: 0px;
+}
+
+.color{
+	width: 30px;
+	height: 30px;
+	display: inline-block;
+}
+
+.mini-card{
+	height: 170px;
+	border-radius: 10%;
+	box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
+	padding: 8px;
+	position: relative;
+}
+
+.mini-card div.avatar{
+	width: 50px;
+	height: 50px;
+	display: inline-block;
+	border-radius: 50%;
+	position: relative;
+}
+
+.mini-card > div{
+	width: 100%;
+}
+
+.col.s6:nth-child(odd) > .mini-card{
+	margin: 17px 8px 17px 13px;
+
+}
+
+.col.s6:nth-child(even) > .mini-card{
+	margin: 17px 13px 17px 8px;
 }
 
 @media screen and (max-width: 420px) {
@@ -39,10 +115,6 @@
 
 #edit-fields .input-field:first-child > label{
 	width: auto;
-	left: 50%;
-	margin-left: -45px;
-}
-
-.bottom-space {
-	margin-bottom: 60px;
+	left: calc(50% - 25px);
+	top: 5px;
 }
