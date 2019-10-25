@@ -341,12 +341,12 @@ function submitProfileData() {
 }
 
 function setAvatar(avatar) {
-	if (typeof selectedColor == "undefined") selectedColor = myUser.avatarColor;
+	if (typeof selectedColor == "undefined") selectedColor = currentColor;
 	apretaste.send({
 		'command': 'PERFIL UPDATE',
 		'data': {
 			'avatar': avatar,
-			'color': selectedColor
+			'avatarColor': selectedColor
 		},
 		'redirect' : false,
 		'callback': {
