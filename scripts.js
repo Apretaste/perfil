@@ -346,8 +346,18 @@ function setAvatar(avatar) {
 		'command': 'PERFIL UPDATE',
 		'data': {
 			'avatar': avatar,
-			'avatarColor': selectedColor
+			'color': selectedColor
+		},
+		'redirect' : false,
+		'callback': {
+			'name': 'setAvatarCallback'
 		}
+	});
+}
+
+function setAvatarCallback() {
+	apretaste.send({
+		'command': 'PERFIL EDITAR'
 	});
 }
 
