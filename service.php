@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <?php
 
 class Service
@@ -53,6 +52,9 @@ class Service
 		$content->profile = $profile;
 		$content->ownProfile = $ownProfile;
 
+		$pathToService = Utils::getPathToService($response->serviceName);
+		$images = ["$pathToService/images/avatars.png"];
+
 		// create a new Response object and input the template and the content
 		if (!$ownProfile) $response->setCache(240);
 		$response->setTemplate("profile.ejs", $content, $this->gemsImages($images));
@@ -60,8 +62,10 @@ class Service
 
 	public function _editar(Request $request, Response $response)
 	{
-		$image = $request->person->picture ? [$request->person->picture] : [];
-		$response->setTemplate('edit.ejs', ['profile' => $request->person], $image);
+		$pathToService = Utils::getPathToService($response->serviceName);
+		$images = ["$pathToService/images/avatars.png"];
+
+		$response->setTemplate('edit.ejs', ['profile' => $request->person], $images);
 	}
 
 	public function _niveles(Request $request, Response $response)

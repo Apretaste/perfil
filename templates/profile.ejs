@@ -3,8 +3,8 @@
         <ul class="tabs tabs-fixed-width green apretaste">
             <li class="tab col s4"><a href="#" class="active white-text">Perfil</a></li>
             <li class="tab col s4"><a href="#" class="white-text" onclick="apretaste.send({command: 'PERFIL NIVELES'})">Niveles</a>
-            <li class="tab col s4"><a href="#" class="white-text"
-                                      onclick="apretaste.send({command: 'PERFIL IMAGENES'})">Imagenes</a></li>
+            <!--li class="tab col s4"><a href="#" class="white-text"
+                                      onclick="apretaste.send({command: 'PERFIL IMAGENES'})">Imagenes</a></li-->
         </ul>
     </div>
 </div>
@@ -12,15 +12,9 @@
 <div id="img-pre" class="green apretaste"></div>
 
 <!-- PICTURE -->
-<% if(profile.picture){ %>
-    <div id="profile-rounded-img" class="circle"
-         style="background-image: url(<%= "{{APP_IMAGE_PATH}}" + profile.picture %>);">
-    </div>
-<% }else{ %>
-    <div id="profile-rounded-img" class="circle"
-         style="<%= getAvatar(profile.avatar, "{{APP_SERVICE_PATH}}/images", ($(window).height() / 4) + 8) %> background-color: <%= colors[profile.avatarColor] %>;">
-    </div>
-<% } %>
+<div id="profile-rounded-img" class="circle"
+     style="<%= getAvatar(profile.avatar, "{{APP_SERVICE_PATH}}/images", ($(window).height() / 4) + 8) %> background-color: <%= colors[profile.avatarColor] %>;">
+</div>
 
 <div class="row profile-info">
     <div class="col s12">

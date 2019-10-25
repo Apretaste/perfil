@@ -1,17 +1,11 @@
 <div id="img-pre" class="green apretaste"></div>
 
 <!-- PICTURE -->
-<% if(profile.picture){ %>
-    <div id="profile-rounded-img" class="circle"
-         style="background-image: url(<%= "{{APP_IMAGE_PATH}}" + profile.picture %>);">
-        <a class="btn-floating white" id="pic-btn" onclick="apretaste.send({'command':'PERFIL AVATAR'})"><i class="material-icons grey-text text-darken-4">edit</i></a>
-    </div>
-<% }else{ %>
-    <div id="profile-rounded-img" class="circle"
-         style="<%= getAvatar(profile.avatar, "{{APP_SERVICE_PATH}}/images", ($(window).height() / 4) + 8) %> background-color: <%= colors[profile.avatarColor] %>;">
-        <a class="btn-floating white" id="pic-btn" onclick="apretaste.send({'command':'PERFIL AVATAR'})"><i class="material-icons grey-text text-darken-4">edit</i></a>
-    </div>
-<% } %>
+<div id="profile-rounded-img" class="circle"
+     style="<%= getAvatar(profile.avatar, "{{APP_SERVICE_PATH}}/images", ($(window).height() / 4) + 8) %> background-color: <%= colors[profile.avatarColor] %>;">
+    <a class="btn-floating white" id="pic-btn" onclick="apretaste.send({'command':'PERFIL AVATAR'})"><i
+                class="material-icons grey-text text-darken-4">edit</i></a>
+</div>
 
 <div class="row">
     <div class="row" id="edit-fields">
@@ -250,7 +244,10 @@
             <select id="province" class="validate">
                 <option value=""></option>
                 <% Object.keys(province).forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.province){ %> selected <% } %>>
+                    <option value="<%= val %>"
+                    <% if(val == profile.province){ %> selected
+                            <% } %>
+                    >
                         <%= province[val] %>
                     </option>
                 <% }); %>

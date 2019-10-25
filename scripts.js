@@ -233,21 +233,6 @@ function resizeImg() {
 	img.height(size);
 	img.width(size);
 
-	if (profile.picture) {
-		var src = img.css('background-image');
-		src = src.search('url') == 0 ? src.replace('url("', '').replace('")', '') : src;
-		var bg = new Image();
-		bg.src = src;
-
-		if (bg.height >= bg.width) {
-			var scale = bg.height / bg.width;
-			img.css('background-size', size + 'px ' + size * scale + 'px');
-		} else {
-			var scale = bg.width / bg.height;
-			img.css('background-size', size * scale + 'px ' + size + 'px');
-		}
-	}
-
 	img.css('top', -4 - $(window).height() / 8 + 'px'); // align the picture with the div
 
 	$('#edit-fields, .profile-info').css('margin-top', 5 - $(window).height() / 6.5 + 'px'); // move the row before to the top to fill the empty space
