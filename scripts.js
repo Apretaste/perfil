@@ -303,7 +303,7 @@ function showToast(text) {
 
 function submitProfileData() {
 	// array of possible values
-	var names = ['first_name', 'last_name', 'country', 'year_of_birth', 'month_of_birth', 'day_of_birth', 'province', 'city', 'gender', 'sexual_orientation', 'marital_status', 'religion', 'body_type', 'eyes', 'skin', 'hair', 'highest_school_level', 'occupation', 'cellphone'];
+	var names = ['first_name', 'last_name', 'about_me', 'country', 'year_of_birth', 'month_of_birth', 'day_of_birth', 'province', 'city', 'gender', 'sexual_orientation', 'marital_status', 'religion', 'body_type', 'eyes', 'skin', 'hair', 'highest_school_level', 'occupation', 'cellphone'];
 
 	// create object to send to the backend
 	var data = new Object();
@@ -357,7 +357,7 @@ function setAvatar(avatar) {
 
 function setAvatarCallback() {
 	apretaste.send({
-		'command': 'PERFIL EDITAR'
+		'command': 'PERFIL'
 	});
 }
 

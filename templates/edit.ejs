@@ -244,12 +244,7 @@
             <select id="province" class="validate">
                 <option value=""></option>
                 <% Object.keys(province).forEach(function(val) { %>
-                    <option value="<%= val %>"
-                    <% if(val == profile.province){ %> selected
-                            <% } %>
-                    >
-                        <%= province[val] %>
-                    </option>
+                    <option value="<%= val %>" <% if(val == profile.province){ %> selected <% } %>> <%= province[val] %> </option>
                 <% }); %>
             </select>
             <label for="province">Provincia</label>
