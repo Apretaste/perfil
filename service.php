@@ -135,6 +135,8 @@ class Service
 		$content->origins = $this->origins;
 
 		$response->setTemplate('origin.ejs', $content);
+
+		Challenges::complete("where-found-apretaste", $request->person->id);
 	}
 
 	/**
