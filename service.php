@@ -119,6 +119,8 @@ class Service
 		if (isset($request->person->completion) && $request->person->completion > 70) {
 			Challenges::complete('complete-profile', $request->person->id);
 		}
+
+		Challenges::complete("update-profile-picture", $request->person->id);
 	}
 
 	/**
