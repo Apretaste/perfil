@@ -277,6 +277,11 @@ class Service
 		if (!empty($pieces)) {
 			Connection::query("UPDATE person SET " . implode(",", $pieces) . " WHERE id={$request->person->id}");
 		}
+
+		// add the experience if profile is completed
+		if(Social::getProfileCompletion($request->person) > 90) {
+			Level::setExperience('FINISH_PROFILE_FIRST', $request->person->id);
+		}
 	}
 
 	/**
