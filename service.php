@@ -46,7 +46,9 @@ class Service
 
 		// pass profile image to the response
 		$images = [];
-		if ($profile->picture) $images[] = $profile->picture;
+		if ($profile->picture) {
+			$images[] = $profile->picture;
+		}
 
 		// pass variables to the template
 		$content->profile = $profile;
@@ -60,6 +62,12 @@ class Service
 		$response->setTemplate("profile.ejs", $content, $this->gemsImages($images));
 	}
 
+	/**
+	 * Edit your profile
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 */
 	public function _editar(Request $request, Response $response)
 	{
 		$pathToService = Utils::getPathToService($response->serviceName);
@@ -68,11 +76,42 @@ class Service
 		$response->setTemplate('edit.ejs', ['profile' => $request->person], $images);
 	}
 
+	/**
+	 * Get the list of levels
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 */
 	public function _niveles(Request $request, Response $response)
 	{
 		$response->setTemplate('levels.ejs', ['experience' => $request->person->experience], $this->gemsImages());
 	}
 
+	/**
+	 * Get ways of gaining experience
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 */
+	public function _experiencia(Request $request, Response $response)
+	{
+		// get the experience leve
+		$experience = Connection::query("
+			SELECT description, value
+			FROM person_experience_rules 
+			ORDER BY value");
+
+		// send data to the view
+		$response->setCache();
+		$response->setTemplate('experience.ejs', ['experience'=>$experience]);
+	}
+
+	/**
+	 * Edit your avatar
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 */
 	public function _avatar(Request $request, Response $response)
 	{
 		$pathToService = Utils::getPathToService($response->serviceName);
@@ -87,13 +126,17 @@ class Service
 	/**
 	 * Subservice FOTO
 	 *
-	 * @param Request $request
+	 * @param Request  $request
 	 * @param Response $response
+	 *
+	 * @throws \Exception
 	 */
 	public function _foto(Request $request, Response $response)
 	{
 		// do not allow empty files
-		if (!isset($request->input->data->picture)) return;
+		if (!isset($request->input->data->picture)) {
+			return;
+		}
 		$picture = $request->input->data->picture;
 
 		// get the image name and path
@@ -107,6 +150,12 @@ class Service
 
 		// save changes on the database
 		Connection::query("UPDATE person SET picture='$fileName' WHERE id={$request->person->id}");
+
+		if (isset($request->person->completion) && $request->person->completion > 70) {
+			Challenges::complete('complete-profile', $request->person->id);
+		}
+
+		Challenges::complete("update-profile-picture", $request->person->id);
 	}
 
 	/**
@@ -123,6 +172,8 @@ class Service
 		$content->origins = $this->origins;
 
 		$response->setTemplate('origin.ejs', $content);
+
+		Challenges::complete("where-found-apretaste", $request->person->id);
 	}
 
 	/**
@@ -139,8 +190,11 @@ class Service
 
 		if ($person) {
 			$r = Connection::query("SELECT * FROM relations WHERE user1='$fromId' AND user2='$person->id'");
-			if (isset($r[0])) Connection::query("UPDATE relations SET confirmed=1 WHERE user1='$fromId' AND user2='$person->id' AND `type`='blocked'");
-			else Connection::query("INSERT INTO `relations`(user1,user2,`type`,confirmed) VALUES ('$fromId','$person->id','blocked',1)");
+			if (isset($r[0])) {
+				Connection::query("UPDATE relations SET confirmed=1 WHERE user1='$fromId' AND user2='$person->id' AND `type`='blocked'");
+			} else {
+				Connection::query("INSERT INTO `relations`(user1,user2,`type`,confirmed) VALUES ('$fromId','$person->id','blocked',1)");
+			}
 		}
 
 		$this->_main($request, $response);
@@ -193,12 +247,16 @@ class Service
 		$pieces = [];
 		foreach ($request->input->data as $key => $value) {
 			// format first_name OR last_name in capital the first letter
-			if ($key == "first_name" || $key == "last_name") $value = ucfirst(strtolower($value));
+			if ($key == "first_name" || $key == "last_name") {
+				$value = ucfirst(strtolower($value));
+			}
 
 			// format interests as a CVS to be saved
 			if ($key == 'interests') {
 				$interests = [];
-				foreach ($value as $piece) $interests[] = $piece->tag;
+				foreach ($value as $piece) {
+					$interests[] = $piece->tag;
+				}
 				$value = implode(',', $interests);
 			}
 
@@ -207,20 +265,39 @@ class Service
 
 			// prepare the database query
 			if (in_array($key, $fields)) {
-				if ($value === null || $value === "") $pieces[] = "$key = null";
-				else $pieces[] = "$key = '$value'";
+				if ($value === null || $value === "") {
+					$pieces[] = "$key = null";
+				} else {
+					$pieces[] = "$key = '$value'";
+				}
 			}
 		}
 
 		// save changes on the database
-		if (!empty($pieces)) Connection::query("UPDATE person SET " . implode(",", $pieces) . " WHERE id={$request->person->id}");
+		if (!empty($pieces)) {
+			Connection::query("UPDATE person SET " . implode(",", $pieces) . " WHERE id={$request->person->id}");
+		}
+
+		// add the experience if profile is completed
+		if(Social::getProfileCompletion($request->person) > 80) {
+			Level::setExperience('FINISH_PROFILE_FIRST', $request->person->id);
+		}
 	}
 
-	private function gemsImages(Array $images = [])
+	/**
+	 * Get the images for the gems
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 * @version 1.0
+	 */
+	private function gemsImages(array $images = [])
 	{
 		$gems = ['Zafiro', 'Topacio', 'Rubi', 'Opalo', 'Esmeralda', 'Diamante'];
 		$path = Utils::getPathToService('perfil') . '/images/';
-		foreach ($gems as $gem) $images[] = $path . $gem . '.png';
+		foreach ($gems as $gem) {
+			$images[] = $path . $gem . '.png';
+		}
 		return $images;
 	}
 }
