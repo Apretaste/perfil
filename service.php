@@ -1,5 +1,7 @@
 <?php
 
+use Apretaste\Model\Person;
+
 class Service
 {
 	private $origins = ["Amigo en Cuba", "Familia Afuera", "Referido", "El Paquete", "Revolico", "Casa de Apps", "Facebook", "Internet", "La Calle", "Prensa Independiente", "Prensa Cubana", "Otro"];
@@ -7,8 +9,11 @@ class Service
 	/**
 	 * Display your profile
 	 *
-	 * @param Request $request
+	 * @param Request  $request
 	 * @param Response $response
+	 *
+	 * @return \Response|void
+	 * @throws \Exception
 	 */
 	public function _main(Request $request, Response $response)
 	{
@@ -58,7 +63,9 @@ class Service
 		$images = ["$pathToService/images/avatars.png"];
 
 		// create a new Response object and input the template and the content
-		if (!$ownProfile) $response->setCache(240);
+		if (!$ownProfile) {
+			$response->setCache(240);
+		}
 		$response->setTemplate("profile.ejs", $content, $this->gemsImages($images));
 	}
 
@@ -161,8 +168,10 @@ class Service
 	/**
 	 * Show the form of where you hear about the app
 	 *
-	 * @param Request $request
+	 * @param Request  $request
 	 * @param Response $response
+	 *
+	 * @throws \Exception
 	 */
 	public function _origen(Request $request, Response $response)
 	{
@@ -179,8 +188,10 @@ class Service
 	/**
 	 * Block an user
 	 *
-	 * @param Request $request
+	 * @param Request  $request
 	 * @param Response $response
+	 *
+	 * @throws \Exception
 	 * @author ricardo@apretaste.com
 	 */
 	public function _bloquear(Request $request, Response $response)
@@ -204,8 +215,10 @@ class Service
 	 * unlock an user
 	 *
 	 * @param Request
-	 * @author ricardo@apretaste.com
+	 * @param \Response $response
 	 *
+	 * @throws \Exception
+	 * @author ricardo@apretaste.com
 	 */
 	public function _desbloquear(Request $request, Response $response)
 	{
@@ -223,9 +236,11 @@ class Service
 	/**
 	 * Update your profile
 	 *
-	 * @param Request $request
+	 * @param Request  $request
 	 * @param Response $response
-	 * @author salvipascual
+	 *
+	 * @throws \Exception
+	 * @author  salvipascual
 	 * @version 1.0
 	 */
 	public function _update(Request $request, Response $response)
@@ -283,7 +298,7 @@ class Service
 		}
 
 		// add the experience if profile is completed
-		if(Social::getProfileCompletion($request->person) > 80) {
+		if (Social::getProfileCompletion(Person::getProfile($request->person->id)) > 80) {
 			Level::setExperience('FINISH_PROFILE_FIRST', $request->person->id);
 		}
 	}
