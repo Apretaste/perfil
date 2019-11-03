@@ -272,7 +272,7 @@ class Service
 				}
 
 				if ($key == 'avatar') {
-					Challenges::complete('update-profile-picture', $this->request->person);
+					Challenges::complete('update-profile-picture', $request->person->id);
 				}
 			}
 		}
