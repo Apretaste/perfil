@@ -298,7 +298,7 @@ class Service
 		}
 
 		// add the experience if profile is completed
-		if (Person::getProfile($request->person->id)->completion > 80) {
+		if (Social::prepareUserProfile($request->person->id)->completion > 80) {
 			Challenges::complete('complete-profile', $request->person->id);
 			Level::setExperience('FINISH_PROFILE_FIRST', $request->person->id);
 		}
