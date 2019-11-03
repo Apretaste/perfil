@@ -58,12 +58,16 @@ class Service
 		$images = ["$pathToService/images/avatars.png"];
 
 		// create a new Response object and input the template and the content
-		if (!$ownProfile) {
-			$response->setCache(240);
-		}
+		if (!$ownProfile) $response->setCache(240);
 		$response->setTemplate("profile.ejs", $content, $this->gemsImages($images));
 	}
 
+	/**
+	 * Edit your profile
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 */
 	public function _editar(Request $request, Response $response)
 	{
 		$pathToService = Utils::getPathToService($response->serviceName);
@@ -72,11 +76,42 @@ class Service
 		$response->setTemplate('edit.ejs', ['profile' => $request->person], $images);
 	}
 
+	/**
+	 * Get the list of levels
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 */
 	public function _niveles(Request $request, Response $response)
 	{
 		$response->setTemplate('levels.ejs', ['experience' => $request->person->experience], $this->gemsImages());
 	}
 
+	/**
+	 * Get ways of gaining experience
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 */
+	public function _experiencia(Request $request, Response $response)
+	{
+		// get the experience leve
+		$experience = Connection::query("
+			SELECT description, value
+			FROM person_experience_rules 
+			ORDER BY value");
+
+		// send data to the view
+		$response->setCache();
+		$response->setTemplate('experience.ejs', ['experience'=>$experience]);
+	}
+
+	/**
+	 * Edit your avatar
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 */
 	public function _avatar(Request $request, Response $response)
 	{
 		$pathToService = Utils::getPathToService($response->serviceName);
@@ -246,8 +281,20 @@ class Service
 		if (!empty($pieces)) {
 			Connection::query("UPDATE person SET " . implode(",", $pieces) . " WHERE id={$request->person->id}");
 		}
+
+		// add the experience if profile is completed
+		if(Social::getProfileCompletion($request->person) > 80) {
+			Level::setExperience('FINISH_PROFILE_FIRST', $request->person->id);
+		}
 	}
 
+	/**
+	 * Get the images for the gems
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 * @version 1.0
+	 */
 	private function gemsImages(array $images = [])
 	{
 		$gems = ['Zafiro', 'Topacio', 'Rubi', 'Opalo', 'Esmeralda', 'Diamante'];
