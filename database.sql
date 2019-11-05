@@ -49,3 +49,5 @@ INSERT INTO `person_experience_rules` (`code`, `value`, `description`) VALUES
 ('START_CHAT_FIRST', 2, 'Chatear con un usuario por primera vez'),
 ('USE_APP_ALL_WEEK', 10, 'Usar la app 7 días consecutivos'),
 ('FINISH_PROFILE_FIRST', 10, 'Llenar tu perfil por primera vez');
+
+ALTER TABLE `person_experience_rules` ADD `active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `description`;
