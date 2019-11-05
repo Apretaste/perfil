@@ -105,7 +105,8 @@ class Service
 		// get the experience leve
 		$experience = Connection::query("
 			SELECT description, value
-			FROM person_experience_rules 
+			FROM person_experience_rules
+			WHERE active = 1
 			ORDER BY value");
 
 		// send data to the view
