@@ -11,7 +11,6 @@ class Service
 	 *
 	 * @param Request  $request
 	 * @param Response $response
-	 *
 	 * @return \Response|void
 	 * @throws \Exception
 	 */
@@ -22,24 +21,45 @@ class Service
 		$content = new stdClass();
 
 		if (!empty($data->username) && $data->username != $request->person->username) {
+			// get the data of the person requested
 			$user = Utils::getPerson($data->username);
+
+			// run powers for amulet SHADOWMODE
+			if(Amulets::isActive(Amulets::SHADOWMODE, $user->id)) {
+				return $response->setTemplate("message.ejs", [
+					"header" => "Shadow-Mode",
+					"icon" => "visibility_off",
+					"text" => "La magia oscura de un amuleto rodea este perfil y te impide verlo. Por mucho que intentes romperlo, el hechizo del druida es poderoso."
+				]);
+			}
 
 			// check if the person exist. If not, message the requestor
 			if (!$user) {
-				$content->username = $data->username;
-				$response->setTemplate("not_found.ejs", $content);
-				return;
+				return $response->setTemplate("message.ejs", [
+					"header" => "El perfil no existe",
+					"icon" => "sentiment_very_dissatisfied",
+					"text" => "Lo sentimos, pero el perfil que usted busca no pudo ser encontrado. Puede que el nombre de usuario halla cambiado o la persona halla salido de la app."
+				]);
 			}
 
+			// prepare the profile for the person requested
 			$profile = Social::prepareUserProfile($user);
 			$ownProfile = false;
 
 			// check if current user blocked the user to lookup, or is blocked by
 			$blocks = Social::isBlocked($request->person->id, $user->id);
 			if ($blocks->blocked || $blocks->blockedByMe) {
-				$content->username = $user->username;
-				$content->blocks = $blocks;
-				return $response->setTemplate("blocked.ejs", $content);
+				return $response->setTemplate("message.ejs", [
+					"header" => "Perfil bloqueado",
+					"icon" => "sentiment_very_dissatisfied",
+					"text" => "Esta persona le ha bloqueado, o usted ha bloqueado a esta persona, por lo tanto no puede revisar su perfil."
+				]);
+			}
+
+			// run powers for amulet DETECTIVE
+			if(Amulets::isActive(Amulets::DETECTIVE, $profile->id)) {
+				$msg = "Los poderes del amuleto del Druida te avisan: @{$request->person->username} está revisando tu perfil";
+				Utils::addNotification($profile->id, $msg, '{command:"PERFIL", data:{username:"@{$request->person->username}"}}', 'pageview');
 			}
 		} else {
 			$profile = $request->person;
