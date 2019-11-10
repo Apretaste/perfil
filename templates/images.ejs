@@ -1,0 +1,36 @@
+<div class="row green apretaste top-bar">
+    <div class="col s12">
+        <ul class="tabs tabs-fixed-width green apretaste">
+            <li class="tab col s4"><a href="#" class="white-text"
+                                      onclick="apretaste.send({command: 'PERFIL', data: {'id': idPerson}})">Perfil</a>
+            </li>
+            <li class="tab col s4"><a href="#" class="white-text" onclick="apretaste.send({command: 'PERFIL NIVELES'})">Niveles</a>
+            <li class="tab col s4"><a href="#" class="active white-text">Imagenes</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 1rem">
+    <% images.forEach(function (image) { %>
+        <div class="col s6 m3 l2 image"
+             onclick="apretaste.send({'command': 'PERFIL VER', 'data': {'id': '<%= image.id %>'}})">
+            <% if(image.default == 1){ %>
+                <div class="default">
+                    <i class="material-icons">star</i>
+                </div>
+            <% } %>
+            <img src="{{APP_IMAGE_PATH}}/<%= image.file %>" class="responsive-img" width="100%"
+                 style="border-radius: 8px">
+        </div>
+    <% }) %>
+</div>
+
+<% if(ownProfile){ %>
+    <input id="picturefield" type="file" class="hide"/>
+
+    <div class="fixed-action-btn">
+        <a class="btn-floating btn-large waves-effect waves-light" href="#!"
+           onclick="uploadPicture()"><i
+                    class="material-icons">cloud_upload</i></a>
+    </div>
+<% } %>

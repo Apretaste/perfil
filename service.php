@@ -1,6 +1,6 @@
 <?php
 
-use Apretaste\Model\Person;
+use Apretaste\Core;
 
 class Service
 {
@@ -9,7 +9,7 @@ class Service
 	/**
 	 * Display your profile
 	 *
-	 * @param Request  $request
+	 * @param Request $request
 	 * @param Response $response
 	 * @return \Response|void
 	 * @throws \Exception
@@ -25,7 +25,7 @@ class Service
 			$user = Utils::getPerson($data->username);
 
 			// run powers for amulet SHADOWMODE
-			if(Amulets::isActive(Amulets::SHADOWMODE, $user->id)) {
+			if (Amulets::isActive(Amulets::SHADOWMODE, $user->id)) {
 				return $response->setTemplate("message.ejs", [
 					"header" => "Shadow-Mode",
 					"icon" => "visibility_off",
@@ -57,7 +57,7 @@ class Service
 			}
 
 			// run powers for amulet DETECTIVE
-			if(Amulets::isActive(Amulets::DETECTIVE, $profile->id)) {
+			if (Amulets::isActive(Amulets::DETECTIVE, $profile->id)) {
 				$msg = "Los poderes del amuleto del Druida te avisan: @{$request->person->username} está revisando tu perfil";
 				Utils::addNotification($profile->id, $msg, '{command:"PERFIL", data:{username:"@{$request->person->username}"}}', 'pageview');
 			}
@@ -68,12 +68,6 @@ class Service
 
 		unset($profile->credit, $profile->tickets, $profile->cellphone);
 		Social::getTags($profile);
-
-		// pass profile image to the response
-		$images = [];
-		if ($profile->picture) {
-			$images[] = $profile->picture;
-		}
 
 		// pass variables to the template
 		$content->profile = $profile;
@@ -131,7 +125,7 @@ class Service
 
 		// send data to the view
 		$response->setCache();
-		$response->setTemplate('experience.ejs', ['experience'=>$experience]);
+		$response->setTemplate('experience.ejs', ['experience' => $experience]);
 	}
 
 	/**
@@ -152,9 +146,49 @@ class Service
 	}
 
 	/**
+	 * Edit your images
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 * @throws Exception
+	 */
+	public function _imagenes(Request $request, Response $response)
+	{
+		$id = $request->input->data->id ?? $request->person->id;
+		$ownProfile = $request->person->id == $id;
+
+		$imagesList = q("SELECT id, file, `default` FROM person_images WHERE id_person = '$id' AND active=1");
+
+		$images = [];
+		foreach ($imagesList as $image) {
+			$image->file = Utils::generateThumbnail($image->file);
+			$images[] = $image->file;
+		}
+
+		$response->setTemplate('images.ejs', ['images' => $imagesList, 'ownProfile' => $ownProfile, "idPerson" => $id], $images);
+	}
+
+	public function _ver(Request $request, Response $response)
+	{
+		$id = $request->input->data->id;
+		$image = q("SELECT * FROM person_images WHERE id='$id'")[0];
+		$image->file = Core::getRoot() . "/shared/img/profile/{$image->file}.jpg";
+		$ownProfile = $image->id_person == $request->person->id;
+		$response->setTemplate('displayImage.ejs', ['image' => $image, 'ownProfile' => $ownProfile], [$image->file]);
+	}
+
+	public function _borrar(Request $request, Response $response)
+	{
+		$id = $request->input->data->id;
+		$default = q("SELECT `default` FROM person_images WHERE id='$id'")[0]->default == "1";
+		q("UPDATE person_images SET active=0 WHERE id='$id' AND id_person='{$request->person->id}'");
+		if ($default) q("UPDATE person SET picture = NULL WHERE id='{$request->person->id}'");
+	}
+
+	/**
 	 * Subservice FOTO
 	 *
-	 * @param Request  $request
+	 * @param Request $request
 	 * @param Response $response
 	 *
 	 * @throws \Exception
@@ -162,22 +196,37 @@ class Service
 	public function _foto(Request $request, Response $response)
 	{
 		// do not allow empty files
-		if (!isset($request->input->data->picture)) {
-			return;
-		}
-		$picture = $request->input->data->picture;
+		if (isset($request->input->data->picture)) {
+			$picture = $request->input->data->picture;
+			$updatePicture = $request->input->data->updatePicture ?? false;
 
-		// get the image name and path
-		$wwwroot = \Phalcon\DI\FactoryDefault::getDefault()->get('path')['root'];
-		$fileName = Utils::generateRandomHash();
-		$filePath = "$wwwroot/shared/img/profile/$fileName.jpg";
+			// get the image name and path
+			$fileName = Utils::generateRandomHash();
+			$filePath = Core::getRoot() . "/shared/img/profile/$fileName.jpg";
 
-		// save the optimized image on the user folder
-		file_put_contents($filePath, base64_decode($picture));
-		Utils::optimizeImage($filePath);
+			// save the optimized image on the user folder
+			file_put_contents($filePath, base64_decode($picture));
+			Utils::optimizeImage($filePath);
 
-		// save changes on the database
-		Connection::query("UPDATE person SET picture='$fileName' WHERE id={$request->person->id}");
+			// save changes on the database
+			Connection::query("INSERT INTO person_images(id_person, file) VALUES('{$request->person->id}', '$fileName')");
+			if ($updatePicture) {
+				q("
+					UPDATE person SET picture='$fileName' WHERE id='{$request->person->id}';
+					UPDATE person_images SET `default`=0 WHERE id_person='{$request->person->id}';
+					UPDATE person_images SET `default`=1 WHERE file='$fileName';
+					");
+			}
+		} else if (isset($request->input->data->id)) {
+			$id = $request->input->data->id;
+			$image = q("SELECT file FROM person_images WHERE id='$id' AND id_person='{$request->person->id}'")[0]->file ?? false;
+			if ($image) q("
+							UPDATE person SET picture='$image' WHERE id='{$request->person->id}';
+							UPDATE person_images SET `default`=0 WHERE id_person='{$request->person->id}';
+							UPDATE person_images SET `default`=1 WHERE id='$id';
+							");
+
+		} else return;
 
 		if (isset($request->person->completion) && $request->person->completion > 70) {
 			Challenges::complete('complete-profile', $request->person->id);
@@ -189,7 +238,7 @@ class Service
 	/**
 	 * Show the form of where you hear about the app
 	 *
-	 * @param Request  $request
+	 * @param Request $request
 	 * @param Response $response
 	 *
 	 * @throws \Exception
@@ -209,7 +258,7 @@ class Service
 	/**
 	 * Block an user
 	 *
-	 * @param Request  $request
+	 * @param Request $request
 	 * @param Response $response
 	 *
 	 * @throws \Exception
@@ -257,7 +306,7 @@ class Service
 	/**
 	 * Update your profile
 	 *
-	 * @param Request  $request
+	 * @param Request $request
 	 * @param Response $response
 	 *
 	 * @throws \Exception

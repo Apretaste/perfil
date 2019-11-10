@@ -118,3 +118,28 @@
 	left: calc(50% - 25px);
 	top: 5px;
 }
+
+p{ word-break: break-word }
+
+.deleteButton, .default{
+	position: absolute;
+	right: 2px;
+	top: -8px;
+	background: white;
+	border-radius: 50%;
+	height: 28px;
+	width: 28px;
+}
+
+.deleteButton > i, .default > i{
+	top: 5px;
+	font-size: 20px;
+	position: relative;
+	font-weight: 900;
+	left: 4px;
+}
+
+.image{
+	margin-bottom: 1rem;
+	position: relative;
+}

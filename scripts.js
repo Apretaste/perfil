@@ -73,7 +73,7 @@ var countries = [{
 	name: 'Estados Unidos'
 }, {
 	code: 'es',
-	name: 'Espana'
+	name: 'España'
 }, {
 	code: 'it',
 	name: 'Italia'
@@ -197,10 +197,13 @@ var levels = [
 $(document).ready(function () {
 	$('.tabs').tabs();
 	$('select').formSelect();
+	$('.modal').modal();
 
-	$(window).resize(function () {
+	$('#about_me, #city').characterCounter();
+
+	/*$(window).resize(function () {
 		return resizeImg();
-	});
+	});*/
 
 	var resizeInterval = setInterval(function () {
 		// check until the img has the correct size
@@ -280,10 +283,10 @@ function showStateOrProvince() {
 	}
 }
 
-function getUserLevel(experience){
+function getUserLevel(experience) {
 	var userLevel;
 	levels.forEach(function (level) {
-		if(experience >= level.experience) userLevel = level;
+		if (experience >= level.experience) userLevel = level;
 	});
 
 	userLevel.percent = userLevel.maxExperience !== 0 ? ((experience - userLevel.experience) / (userLevel.maxExperience - userLevel.experience)) * 100 : 0;
@@ -348,11 +351,33 @@ function setAvatar(avatar) {
 			'avatar': avatar,
 			'avatarColor': selectedColor
 		},
-		'redirect' : false,
+		'redirect': false,
 		'callback': {
 			'name': 'setAvatarCallback'
 		}
 	});
+}
+
+function deleteImage() {
+	apretaste.send({
+		'command': 'PERFIL BORRAR',
+		'data': {'id': image.id},
+		'redirect': false,
+		'callback': {'name': 'deleteImageCallback'}
+	});
+}
+
+function selectDefaultImage() {
+	apretaste.send({
+		'command': 'PERFIL FOTO',
+		'data': {'id': image.id},
+		'redirect': false,
+		'callback': {'name': 'showToast', 'data': 'Imagen principal cambiada'}
+	});
+}
+
+function deleteImageCallback() {
+	apretaste.send({'command': 'PERFIL IMAGENES'});
 }
 
 function setAvatarCallback() {
