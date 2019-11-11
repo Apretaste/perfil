@@ -80,6 +80,8 @@ class Service
 		if (!$ownProfile) {
 			$response->setCache(240);
 		}
+
+		Core::log(json_encode($content), "debug");
 		$response->setTemplate("profile.ejs", $content, $this->gemsImages($images));
 	}
 
