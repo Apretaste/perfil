@@ -81,7 +81,7 @@ class Service
 			$response->setCache(240);
 		}
 
-		Core::log(json_encode($content), "debug");
+		//Core::log(json_encode($content), "debug");
 		$response->setTemplate("profile.ejs", $content, $this->gemsImages($images));
 	}
 
