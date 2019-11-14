@@ -242,7 +242,6 @@ class Service
 	 *
 	 * @param Request $request
 	 * @param Response $response
-	 *
 	 * @throws \Exception
 	 */
 	public function _origen(Request $request, Response $response)
@@ -252,9 +251,11 @@ class Service
 		$content->origin = $request->person->origin;
 		$content->origins = $this->origins;
 
-		$response->setTemplate('origin.ejs', $content);
-
+		// complete challenge
 		Challenges::complete("where-found-apretaste", $request->person->id);
+
+		// send data to the view
+		$response->setTemplate('origin.ejs', $content);
 	}
 
 	/**
@@ -262,7 +263,6 @@ class Service
 	 *
 	 * @param Request $request
 	 * @param Response $response
-	 *
 	 * @throws \Exception
 	 * @author ricardo@apretaste.com
 	 */
