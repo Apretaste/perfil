@@ -171,7 +171,7 @@ class Service
 	public function _ver(Request $request, Response $response)
 	{
 		$id = $request->input->data->id;
-		$image = q("SELECT * FROM person_images WHERE id='$id'")[0];
+		$image = $id != "last" ? q("SELECT * FROM person_images WHERE id='$id'")[0] : q("SELECT * FROM person_images WHERE id_person='{$request->person->id}' ORDER BY id DESC LIMIT 1")[0];
 		$image->file = Core::getRoot() . "/shared/img/profile/{$image->file}.jpg";
 		$ownProfile = $image->id_person == $request->person->id;
 		$response->setTemplate('displayImage.ejs', ['image' => $image, 'ownProfile' => $ownProfile], [$image->file]);

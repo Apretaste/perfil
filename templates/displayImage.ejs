@@ -6,23 +6,31 @@
             </li>
             <li class="tab col s4"><a href="#" class="white-text" onclick="apretaste.send({command: 'PERFIL NIVELES'})">Niveles</a>
             <li class="tab col s4"><a href="#" class="active white-text"
-                                      onclick="apretaste.send({command: 'PERFIL IMAGENES', data: {'id': image.id_person}})" )>Imagenes</a></li>
+                                      onclick="apretaste.send({command: 'PERFIL IMAGENES', data: {'id': image.id_person}})"
+                                      )>Imagenes</a></li>
         </ul>
     </div>
 </div>
 
-<div class=" row">
+<div class=" row" style="margin-top: 0.75rem">
     <div class="col s12" style="position: relative">
-        <img src="{{APP_IMAGE_PATH}}/<%= image.file %>" class="responsive-img" style="border-radius: 8px">
+        <div class="center-align" style="margin-bottom: 0.75rem">
+            <img src="{{APP_IMAGE_PATH}}/<%= image.file %>" class="responsive-img center-align" style="border-radius: 8px">
+        </div>
         <% if(ownProfile) { %>
-            <div class="deleteButton modal-trigger" href="#deleteModal">
-                <i class="material-icons">close</i>
-            </div>
             <% if(image.default != 1){ %>
-                <a onclick="selectDefaultImage()">Seleccionar como imagen principal</a>
+                <a onclick="selectDefaultImage()" class="waves-effect waves-light btn-small">Hacer principal</a>
             <% } %>
+            <a class="waves-effect waves-light btn-small modal-trigger red" href="#deleteModal">Eliminar</a>
         <% } %>
     </div>
+</div>
+
+<div class="fixed-action-btn">
+    <a class="btn-floating btn-large waves-effect waves-light"
+       onclick="apretaste.send({command: 'PERFIL IMAGENES', data: {'id': image.id_person}})"
+       )><i
+                class="material-icons">arrow_back</i></a>
 </div>
 
 <div id="deleteModal" class="modal">
