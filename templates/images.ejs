@@ -10,7 +10,7 @@
     </div>
 </div>
 
-<div class="row" style="margin-top: 1rem">
+<div class="row"  id="gallery" style="margin-top: 1rem">
     <% images.forEach(function (image) { %>
         <div class="col s6 m3 l2 image"
              onclick="apretaste.send({'command': 'PERFIL VER', 'data': {'id': '<%= image.id %>'}})">
@@ -23,6 +23,10 @@
                  style="border-radius: 8px">
         </div>
     <% }) %>
+
+    <%if(images.length == 0){%>
+        <p class="col s12">Usted aún no ha subido imágenes a su galería. Su galería es pública y otros usuarios podrán verla.</p>
+    <%}%>
 </div>
 
 <% if(ownProfile){ %>

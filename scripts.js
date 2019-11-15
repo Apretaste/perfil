@@ -198,12 +198,7 @@ $(document).ready(function () {
 	$('.tabs').tabs();
 	$('select').formSelect();
 	$('.modal').modal();
-
 	$('#about_me, #city').characterCounter();
-
-	/*$(window).resize(function () {
-		return resizeImg();
-	});*/
 
 	var resizeInterval = setInterval(function () {
 		// check until the img has the correct size
@@ -400,14 +395,34 @@ function sendFile(base64File) {
 	});
 }
 
+// save changes to the origin
+function changeOrigin() {
+	var origin = $('#origin').val();
+
+	apretaste.send({
+		"command": "PERFIL UPDATE",
+		"data": {"origin": origin},
+		"redirect": false
+	});
+
+	showToast('¡Gracias por opinar!');
+}
+
 // Callback Functions
 
 function updatePicture(file) {
-	// display the picture on the img
-	$('#profile-rounded-img').css('background-image', "url(data:image/jpg;base64," + file + ')');
-	resizeImg(); // show confirmation text
+	// add the picture to the gallery
+	var imgElement =
+	"<div class=\"col s6 m3 l2 image\"" +
+	"	onclick=\"apretaste.send({'command': 'PERFIL VER', 'data': {'id': 'last'}})\">" +
+	"	<img src=\"data:image/jpg;base64," + file + "\" class=\"responsive-img\" width=\"100%\"" +
+	"	style=\"border-radius: 8px\">" +
+	"</div>"
 
-	showToast('Su foto ha sido cambiada correctamente');
+	if(images.length == 0) $('#gallery > p').remove();
+	$('#gallery').append(imgElement);
+
+	showToast('Imagen agregada a la galeria');
 }
 
 // Prototype Functions

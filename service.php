@@ -173,7 +173,7 @@ class Service
 	public function _ver(Request $request, Response $response)
 	{
 		$id = $request->input->data->id;
-		$image = q("SELECT * FROM person_images WHERE id='$id'")[0];
+		$image = $id != "last" ? q("SELECT * FROM person_images WHERE id='$id'")[0] : q("SELECT * FROM person_images WHERE id_person='{$request->person->id}' ORDER BY id DESC LIMIT 1")[0];
 		$image->file = Core::getRoot() . "/shared/img/profile/{$image->file}.jpg";
 		$ownProfile = $image->id_person == $request->person->id;
 		$response->setTemplate('displayImage.ejs', ['image' => $image, 'ownProfile' => $ownProfile], [$image->file]);
@@ -242,7 +242,6 @@ class Service
 	 *
 	 * @param Request $request
 	 * @param Response $response
-	 *
 	 * @throws \Exception
 	 */
 	public function _origen(Request $request, Response $response)
@@ -252,9 +251,11 @@ class Service
 		$content->origin = $request->person->origin;
 		$content->origins = $this->origins;
 
-		$response->setTemplate('origin.ejs', $content);
-
+		// complete challenge
 		Challenges::complete("where-found-apretaste", $request->person->id);
+
+		// send data to the view
+		$response->setTemplate('origin.ejs', $content);
 	}
 
 	/**
@@ -262,7 +263,6 @@ class Service
 	 *
 	 * @param Request $request
 	 * @param Response $response
-	 *
 	 * @throws \Exception
 	 * @author ricardo@apretaste.com
 	 */
