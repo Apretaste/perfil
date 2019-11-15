@@ -366,7 +366,7 @@ class Service
 
 		// save changes on the database
 		if (!empty($pieces)) {
-			Connection::query("UPDATE person SET " . implode(",", $pieces) . " WHERE id={$request->person->id}");
+			Connection::query("UPDATE person SET " . implode(",", $pieces) . " WHERE id={$request->person->id}", true, "utf8mb4");
 		}
 
 		// add the experience if profile is completed
