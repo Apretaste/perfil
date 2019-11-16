@@ -143,3 +143,8 @@ p{ word-break: break-word }
 	margin-bottom: 1rem;
 	position: relative;
 }
+
+.image img{
+	max-height: 162px;
+	object-fit: cover;
+}
