@@ -1,21 +1,23 @@
 <div class="row">
 	<div class="col s12">
-		<h1>¿Donde escucho sobre la app?</h1>
-
+		<h1>¿Donde escuchó sobre la app?</h1>
 		<p>Gracias por dejarnos saber donde escuchó sobre la app para seguir acercando nuestro servicios a más personas.</p>
-
-		<%if (origin != ""){ %>
-			<p>Usted nos dijo que vió la app en: <b id="actual"><%= origin %></b>. ¿Desea cambiar su respuesta?</p>
-		<% } %>
 
 		<div class="input-field">
 			<select id='origin'>
 				<option value="" disabled selected>Escoja su opción</option>
-				<% origins.forEach(function(origin){ %>
-					<option value="<%= origin %>"><%= origin %></option>
+				<% origins.forEach(function(item){ %>
+					<% var selected = (origin == item) ? 'selected="selected"' : ''; %>
+					<option value="<%= item %>" <%= selected %>><%= item %></option>
 				<% }) %>
 			</select>
-			<label>Cuéntenos</label>
 		</div>
 	</div>
+</div>
+
+<!-- SAVE BUTTON -->
+<div class="bottom-space"></div>
+
+<div class="fixed-action-btn">
+	<a class="btn-floating btn-large waves-effect waves-light" href="#!" onclick="changeOrigin()"><i class="material-icons">save</i></a>
 </div>

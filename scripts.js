@@ -198,12 +198,7 @@ $(document).ready(function () {
 	$('.tabs').tabs();
 	$('select').formSelect();
 	$('.modal').modal();
-
 	$('#about_me, #city').characterCounter();
-
-	/*$(window).resize(function () {
-		return resizeImg();
-	});*/
 
 	var resizeInterval = setInterval(function () {
 		// check until the img has the correct size
@@ -403,6 +398,19 @@ function sendFile(base64File) {
 			"data": base64File
 		}
 	});
+}
+
+// save changes to the origin
+function changeOrigin() {
+	var origin = $('#origin').val();
+
+	apretaste.send({
+		"command": "PERFIL UPDATE",
+		"data": {"origin": origin},
+		"redirect": false
+	});
+
+	showToast('¡Gracias por opinar!');
 }
 
 // Callback Functions
