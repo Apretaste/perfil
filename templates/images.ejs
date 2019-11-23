@@ -2,15 +2,17 @@
     <div class="col s12">
         <ul class="tabs tabs-fixed-width green apretaste">
             <li class="tab col s4"><a href="#" class="white-text"
-                                      onclick="apretaste.send({command: 'PERFIL', data: {'id': idPerson}})">Perfil</a>
+                                      onclick="apretaste.send({command: 'PERFIL', data: {'username': idPerson}})">Perfil</a>
             </li>
+            <% if(ownProfile){ %>
             <li class="tab col s4"><a href="#" class="white-text" onclick="apretaste.send({command: 'PERFIL NIVELES'})">Niveles</a>
+                <% } %>
             <li class="tab col s4"><a href="#" class="active white-text">Imagenes</a></li>
         </ul>
     </div>
 </div>
 
-<div class="row"  id="gallery" style="margin-top: 1rem">
+<div class="row" id="gallery" style="margin-top: 1rem">
     <% images.forEach(function (image) { %>
         <div class="col s6 m3 l2 image"
              onclick="apretaste.send({'command': 'PERFIL VER', 'data': {'id': '<%= image.id %>'}})">
@@ -24,9 +26,13 @@
         </div>
     <% }) %>
 
-    <%if(images.length == 0){%>
-        <p class="col s12">Usted aún no ha subido imágenes a su galería. Su galería es pública y otros usuarios podrán verla.</p>
-    <%}%>
+    <% if(images.length == 0){ %>
+        <div class="col s12 center-align">
+            <h1>¡Oops!</h1>
+            <i class="large material-icons">sentiment_very_dissatisfied</i>
+            <p style="margin:10px 0;">La galería de imágenes se encuentra vacía.</p>
+        </div>
+    <% } %>
 </div>
 
 <% if(ownProfile){ %>

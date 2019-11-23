@@ -424,7 +424,7 @@ function updatePicture(file) {
 	"	style=\"border-radius: 8px\">" +
 	"</div>"
 
-	if(images.length == 0) $('#gallery > p').remove();
+	if(images.length == 0) $('#gallery > div.col.s12').remove();
 	$('#gallery').append(imgElement);
 
 	showToast('Imagen agregada a la galeria');

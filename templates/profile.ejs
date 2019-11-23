@@ -2,7 +2,9 @@
     <div class="col s12">
         <ul class="tabs tabs-fixed-width green apretaste">
             <li class="tab col s4"><a href="#" class="active white-text">Perfil</a></li>
+            <% if(ownProfile){ %>
             <li class="tab col s4"><a href="#" class="white-text" onclick="apretaste.send({command: 'PERFIL NIVELES'})">Niveles</a>
+                <% } %>
             <li class="tab col s4"><a href="#" class="white-text"
                                       onclick="apretaste.send({command: 'PERFIL IMAGENES', 'data': {'id': profile.id}})">Imagenes</a>
             </li>
@@ -22,6 +24,13 @@
         <div class="center-align">
             <h3 class="black-text <%= !profile.first_name ? 'hide' : '' %>"><%= profile.first_name + ' ' + profile.last_name %></h3>
             <h4 style="color: <%= genderColor(profile.gender) %>">@<%= profile.username %></h4>
+            <% if(profile.first_name){ %>
+                <style>
+                    .profile-info h4 {
+                        margin-top: 0
+                    }
+                </style>
+            <% } %>
         </div>
 
     </div>
@@ -43,18 +52,27 @@
         <p style="margin: 1em 5px"><%= profile.about_me %></p>
 
         <table class="desc-table">
-            <tr>
-                <td><i class="material-icons grey-text text-darken-2">person</i></td>
-                <td><%= profile.profile_tags %></td>
-            </tr>
-            <tr>
-                <td><i class="material-icons grey-text text-darken-2">business_center</i></td>
-                <td><%= profile.profession_tags %></td>
-            </tr>
-            <tr>
-                <td><i class="material-icons grey-text text-darken-2">place</i></td>
-                <td><%= profile.location_tags %></td>
-            </tr>
+            <% if(profile.profile_tags){ %>
+                <tr>
+                    <td><i class="material-icons grey-text text-darken-2">person</i></td>
+                    <td><%= profile.profile_tags %>.</td>
+                </tr>
+            <% } %>
+
+            <% if(profile.profession_tags){ %>
+                <tr>
+                    <td><i class="material-icons grey-text text-darken-2">business_center</i></td>
+                    <td><%= profile.profession_tags %>.</td>
+                </tr>
+            <% } %>
+
+            <% if(profile.location_tags){ %>
+                <tr>
+                    <td><i class="material-icons grey-text text-darken-2">place</i></td>
+                    <td><%= profile.location_tags %>.</td>
+                </tr>
+            <% } %>
+
         </table>
     </div>
 </div>

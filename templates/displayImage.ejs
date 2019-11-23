@@ -2,9 +2,11 @@
     <div class="col s12">
         <ul class="tabs tabs-fixed-width green apretaste">
             <li class="tab col s4"><a href="#" class="white-text"
-                                      onclick="apretaste.send({command: 'PERFIL', data: {'id': image.id_person}})">Perfil</a>
+                                      onclick="apretaste.send({command: 'PERFIL', data: {'username': image.id_person}})">Perfil</a>
             </li>
+            <% if(ownProfile){ %>
             <li class="tab col s4"><a href="#" class="white-text" onclick="apretaste.send({command: 'PERFIL NIVELES'})">Niveles</a>
+                <% } %>
             <li class="tab col s4"><a href="#" class="active white-text"
                                       onclick="apretaste.send({command: 'PERFIL IMAGENES', data: {'id': image.id_person}})"
                                       )>Imagenes</a></li>
@@ -15,7 +17,8 @@
 <div class=" row" style="margin-top: 0.75rem">
     <div class="col s12" style="position: relative">
         <div class="center-align" style="margin-bottom: 0.75rem">
-            <img src="{{APP_IMAGE_PATH}}/<%= image.file %>" class="responsive-img center-align" style="border-radius: 8px">
+            <img src="{{APP_IMAGE_PATH}}/<%= image.file %>" class="responsive-img center-align"
+                 style="border-radius: 8px">
         </div>
         <% if(ownProfile) { %>
             <% if(image.default != 1){ %>

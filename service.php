@@ -44,7 +44,7 @@ class Service
 
 			// prepare the profile for the person requested
 			$profile = Social::prepareUserProfile($user);
-			$ownProfile = false;
+			$ownProfile = $profile->id === $request->person->id;
 
 			// check if current user blocked the user to lookup, or is blocked by
 			$blocks = Social::isBlocked($request->person->id, $user->id);
