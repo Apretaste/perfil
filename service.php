@@ -23,6 +23,13 @@ class Service
 		if (!empty($data->username) && $data->username != $request->person->username) {
 			// get the data of the person requested
 			$user = Utils::getPerson($data->username);
+			$profile = Social::prepareUserProfile($user);
+
+			// run powers for amulet DETECTIVE
+			if (Amulets::isActive(Amulets::DETECTIVE, $profile->id)) {
+				$msg = "Los poderes del amuleto del Druida te avisan: @{$request->person->username} está revisando tu perfil";
+				Utils::addNotification($profile->id, $msg, '{command:"PERFIL", data:{username:"@{$request->person->username}"}}', 'pageview');
+			}
 
 			// run powers for amulet SHADOWMODE
 			if (Amulets::isActive(Amulets::SHADOWMODE, $user->id)) {
@@ -43,7 +50,7 @@ class Service
 			}
 
 			// prepare the profile for the person requested
-			$profile = Social::prepareUserProfile($user);
+
 			$ownProfile = $profile->id === $request->person->id;
 
 			// check if current user blocked the user to lookup, or is blocked by
@@ -56,11 +63,6 @@ class Service
 				]);
 			}
 
-			// run powers for amulet DETECTIVE
-			if (Amulets::isActive(Amulets::DETECTIVE, $profile->id)) {
-				$msg = "Los poderes del amuleto del Druida te avisan: @{$request->person->username} está revisando tu perfil";
-				Utils::addNotification($profile->id, $msg, '{command:"PERFIL", data:{username:"@{$request->person->username}"}}', 'pageview');
-			}
 		} else {
 			$profile = $request->person;
 			$ownProfile = true;
