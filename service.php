@@ -125,7 +125,7 @@ class Service
 			SELECT description, value
 			FROM person_experience_rules
 			WHERE active = 1
-			ORDER BY value");
+			ORDER BY value", true, 'utf8mb4');
 
 		// send data to the view
 		$response->setCache();
