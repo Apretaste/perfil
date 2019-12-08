@@ -185,9 +185,9 @@ class Service
 	{
 		$id = $request->input->data->id;
 		$default = q("SELECT `default` FROM person_images WHERE id='$id'")[0]->default == "1";
-		$sql = "UPDATE person_images SET active=0 WHERE id='$id' AND id_person='{$request->person->id}'";
-		Connection::query($sql);
+		Connection::query("UPDATE person_images SET active=0 WHERE id='$id' AND id_person='{$request->person->id}'");
 		if ($default) Connection::query("UPDATE person SET picture = NULL WHERE id='{$request->person->id}'");
+		unset($request->input->data->id);
 		$this->_imagenes($request, $response);
 	}
 
