@@ -357,8 +357,8 @@ function deleteImage() {
 	apretaste.send({
 		'command': 'PERFIL BORRAR',
 		'data': {'id': image.id},
-		'redirect': false,
-		'callback': {'name': 'deleteImageCallback'}
+		'redirect': true/*,
+		'callback': {'name': 'deleteImageCallback'}*/
 	});
 }
 
@@ -371,9 +371,10 @@ function selectDefaultImage() {
 	});
 }
 
+/*
 function deleteImageCallback() {
 	apretaste.send({'command': 'PERFIL IMAGENES'});
-}
+}*/
 
 function setAvatarCallback() {
 	apretaste.send({

@@ -186,9 +186,9 @@ class Service
 		$id = $request->input->data->id;
 		$default = q("SELECT `default` FROM person_images WHERE id='$id'")[0]->default == "1";
 		$sql = "UPDATE person_images SET active=0 WHERE id='$id' AND id_person='{$request->person->id}'";
-		Core::log("Perfil::borrar $sql", "perfil");
-		q($sql);
-		if ($default) q("UPDATE person SET picture = NULL WHERE id='{$request->person->id}'");
+		Connection::query($sql);
+		if ($default) Connection::query("UPDATE person SET picture = NULL WHERE id='{$request->person->id}'");
+		$this->_imagenes($request, $response);
 	}
 
 	/**
