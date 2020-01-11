@@ -5,7 +5,9 @@ use Apretaste\Level;
 use Apretaste\Person;
 use Apretaste\Request;
 use Apretaste\Response;
+use Framework\Alert;
 use Framework\Database;
+use Framework\Utils;
 
 class Service
 {
@@ -16,7 +18,7 @@ class Service
 	 *
 	 * @param Request $request
 	 * @param Response $response
-	 * @throws \Framework\Alert
+	 * @throws Alert
 	 */
 	public function _editar(Request $request, Response $response)
 	{
@@ -31,7 +33,7 @@ class Service
 	 *
 	 * @param Request $request
 	 * @param Response $response
-	 * @throws \Framework\Alert
+	 * @throws Alert
 	 */
 	public function _niveles(Request $request, Response $response)
 	{
@@ -41,8 +43,7 @@ class Service
 	/**
 	 * Get the images for the gems
 	 *
-	 * @param Request $request
-	 * @param Response $response
+	 * @param array $images
 	 * @return array
 	 * @version 1.0
 	 */
@@ -61,7 +62,7 @@ class Service
 	 *
 	 * @param Request $request
 	 * @param Response $response
-	 * @throws \Framework\Alert
+	 * @throws Alert
 	 */
 	public function _experiencia(Request $request, Response $response)
 	{
@@ -70,7 +71,7 @@ class Service
 			SELECT description, value
 			FROM person_experience_rules
 			WHERE active = 1
-			ORDER BY value", true, 'utf8mb4');
+			ORDER BY value");
 
 		// send data to the view
 		$response->setCache();
@@ -82,7 +83,7 @@ class Service
 	 *
 	 * @param Request $request
 	 * @param Response $response
-	 * @throws \Framework\Alert
+	 * @throws Alert
 	 */
 	public function _avatar(Request $request, Response $response)
 	{
@@ -143,7 +144,7 @@ class Service
 	 * @param Request $request
 	 * @param Response $response
 	 *
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function _foto(Request $request, Response $response)
 	{
@@ -153,12 +154,12 @@ class Service
 			$updatePicture = $request->input->data->updatePicture ?? false;
 
 			// get the image name and path
-			$fileName = Utils::generateRandomHash();
+			$fileName = Utils::randomHash();
 			$filePath = IMG_PATH . "/profile/$fileName.jpg";
 
 			// save the optimized image on the user folder
 			file_put_contents($filePath, base64_decode($picture));
-			Utils::optimizeImage($filePath);
+			// Utils::optimizeImage($filePath); // TODO no optimize?
 
 			// save changes on the database
 			Database::query("INSERT INTO person_images(id_person, file) VALUES('{$request->person->id}', '$fileName')");
@@ -192,7 +193,7 @@ class Service
 	 *
 	 * @param Request $request
 	 * @param Response $response
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function _origen(Request $request, Response $response)
 	{
@@ -213,7 +214,7 @@ class Service
 	 *
 	 * @param Request $request
 	 * @param Response $response
-	 * @throws \Exception
+	 * @throws Exception
 	 * @author ricardo@apretaste.com
 	 */
 	public function _bloquear(Request $request, Response $response)
@@ -320,7 +321,7 @@ class Service
 	 * @param Request
 	 * @param Response $response
 	 *
-	 * @throws \Exception
+	 * @throws Exception
 	 * @author ricardo@apretaste.com
 	 */
 	public function _desbloquear(Request $request, Response $response)
