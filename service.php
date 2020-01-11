@@ -1,18 +1,245 @@
 <?php
 
-use Apretaste\Core;
+use Apretaste\Challenges;
+use Apretaste\Level;
+use Apretaste\Person;
+use Apretaste\Request;
+use Apretaste\Response;
+use Framework\Database;
 
 class Service
 {
 	private $origins = ["Amigo en Cuba", "Familia Afuera", "Referido", "El Paquete", "Revolico", "Casa de Apps", "Facebook", "Internet", "La Calle", "Prensa Independiente", "Prensa Cubana", "Otro"];
 
 	/**
+	 * Edit your profile
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 * @throws \Framework\Alert
+	 */
+	public function _editar(Request $request, Response $response)
+	{
+		$pathToService = SERVICE_PATH . $response->service;
+		$images = ["$pathToService/images/avatars.png"];
+
+		$response->setTemplate('edit.ejs', ['profile' => $request->person], $images);
+	}
+
+	/**
+	 * Get the list of levels
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 * @throws \Framework\Alert
+	 */
+	public function _niveles(Request $request, Response $response)
+	{
+		$response->setTemplate('levels.ejs', ['experience' => $request->person->experience], $this->gemsImages());
+	}
+
+	/**
+	 * Get the images for the gems
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 * @return array
+	 * @version 1.0
+	 */
+	private function gemsImages(array $images = [])
+	{
+		$gems = ['Zafiro', 'Topacio', 'Rubi', 'Opalo', 'Esmeralda', 'Diamante'];
+		$path = SERVICE_PATH . "perfil/images/";
+		foreach ($gems as $gem) {
+			$images[] = $path . $gem . '.png';
+		}
+		return $images;
+	}
+
+	/**
+	 * Get ways of gaining experience
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 * @throws \Framework\Alert
+	 */
+	public function _experiencia(Request $request, Response $response)
+	{
+		// get the experience leve
+		$experience = Database::query("
+			SELECT description, value
+			FROM person_experience_rules
+			WHERE active = 1
+			ORDER BY value", true, 'utf8mb4');
+
+		// send data to the view
+		$response->setCache();
+		$response->setTemplate('experience.ejs', ['experience' => $experience]);
+	}
+
+	/**
+	 * Edit your avatar
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 * @throws \Framework\Alert
+	 */
+	public function _avatar(Request $request, Response $response)
+	{
+		$pathToService = SERVICE_PATH . $response->service;
+		$images = ["$pathToService/images/avatars.png"];
+
+		$response->setTemplate('avatar_select.ejs', [
+			'currentAvatar' => $request->person->avatar,
+			'currentColor' => $request->person->avatarColor
+		], $images);
+	}
+
+	public function _ver(Request $request, Response $response)
+	{
+		$id = $request->input->data->id;
+		$image = $id != "last" ? Database::query("SELECT * FROM person_images WHERE id='$id'")[0] : Database::query("SELECT * FROM person_images WHERE id_person='{$request->person->id}' ORDER BY id DESC LIMIT 1")[0];
+		$image->file = IMG_PATH . "/profile/{$image->file}.jpg";
+		$ownProfile = $image->id_person == $request->person->id;
+		$response->setTemplate('displayImage.ejs', ['image' => $image, 'ownProfile' => $ownProfile], [$image->file]);
+	}
+
+	public function _borrar(Request $request, Response $response)
+	{
+		$id = $request->input->data->id;
+		$default = Database::query("SELECT `default` FROM person_images WHERE id='$id'")[0]->default == "1";
+		Database::query("UPDATE person_images SET active=0 WHERE id='$id' AND id_person='{$request->person->id}'");
+		if ($default) Database::query("UPDATE person SET picture = NULL WHERE id='{$request->person->id}'");
+		unset($request->input->data->id);
+		$this->_imagenes($request, $response);
+	}
+
+	/**
+	 * Edit your images
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 * @throws Exception
+	 */
+	public function _imagenes(Request $request, Response $response)
+	{
+		$id = $request->input->data->id ?? $request->person->id;
+		$ownProfile = $request->person->id == $id;
+
+		$imagesList = Database::query("SELECT id, file, `default` FROM person_images WHERE id_person = '$id' AND active=1");
+
+		$images = [];
+		foreach ($imagesList as $image) {
+			$image->file = Utils::generateThumbnail($image->file);
+			$images[] = $image->file;
+		}
+
+		$response->setTemplate('images.ejs', ['images' => $imagesList, 'ownProfile' => $ownProfile, "idPerson" => $id], $images);
+	}
+
+	/**
+	 * Subservice FOTO
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 *
+	 * @throws \Exception
+	 */
+	public function _foto(Request $request, Response $response)
+	{
+		// do not allow empty files
+		if (isset($request->input->data->picture)) {
+			$picture = $request->input->data->picture;
+			$updatePicture = $request->input->data->updatePicture ?? false;
+
+			// get the image name and path
+			$fileName = Utils::generateRandomHash();
+			$filePath = IMG_PATH . "/profile/$fileName.jpg";
+
+			// save the optimized image on the user folder
+			file_put_contents($filePath, base64_decode($picture));
+			Utils::optimizeImage($filePath);
+
+			// save changes on the database
+			Database::query("INSERT INTO person_images(id_person, file) VALUES('{$request->person->id}', '$fileName')");
+			if ($updatePicture) {
+				Database::query("
+					UPDATE person SET picture='$fileName' WHERE id='{$request->person->id}';
+					UPDATE person_images SET `default`=0 WHERE id_person='{$request->person->id}';
+					UPDATE person_images SET `default`=1 WHERE file='$fileName';
+					");
+			}
+		} else if (isset($request->input->data->id)) {
+			$id = $request->input->data->id;
+			$image = Database::query("SELECT file FROM person_images WHERE id='$id' AND id_person='{$request->person->id}'")[0]->file ?? false;
+			if ($image) Database::query("
+							UPDATE person SET picture='$image' WHERE id='{$request->person->id}';
+							UPDATE person_images SET `default`=0 WHERE id_person='{$request->person->id}';
+							UPDATE person_images SET `default`=1 WHERE id='$id';
+							");
+
+		} else return;
+
+		if (isset($request->person->completion) && $request->person->completion > 70) {
+			Challenges::complete('complete-profile', $request->person->id);
+		}
+
+		Challenges::complete("update-profile-picture", $request->person->id);
+	}
+
+	/**
+	 * Show the form of where you hear about the app
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 * @throws \Exception
+	 */
+	public function _origen(Request $request, Response $response)
+	{
+		// get the person to add origin
+		$content = new stdClass();
+		$content->origin = $request->person->origin;
+		$content->origins = $this->origins;
+
+		// complete challenge
+		Challenges::complete("where-found-apretaste", $request->person->id);
+
+		// send data to the view
+		$response->setTemplate('origin.ejs', $content);
+	}
+
+	/**
+	 * Block an user
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 * @throws \Exception
+	 * @author ricardo@apretaste.com
+	 */
+	public function _bloquear(Request $request, Response $response)
+	{
+		$person = Utils::getPerson($request->input->data->username);
+		$fromId = $request->person->id;
+
+		if ($person) {
+			$r = Database::query("SELECT * FROM relations WHERE user1='$fromId' AND user2='$person->id'");
+			if (isset($r[0])) {
+				Database::query("UPDATE relations SET confirmed=1 WHERE user1='$fromId' AND user2='$person->id' AND `type`='blocked'");
+			} else {
+				Database::query("INSERT INTO `relations`(user1,user2,`type`,confirmed) VALUES ('$fromId','$person->id','blocked',1)");
+			}
+		}
+
+		$this->_main($request, $response);
+	}
+
+	/**
 	 * Display your profile
 	 *
 	 * @param Request $request
 	 * @param Response $response
-	 * @return \Response|void
-	 * @throws \Exception
+	 * @return Response|void
+	 * @throws Exception
 	 */
 	public function _main(Request $request, Response $response)
 	{
@@ -69,13 +296,13 @@ class Service
 		}
 
 		unset($profile->credit, $profile->tickets, $profile->cellphone);
-		Social::getTags($profile);
+		Person::setProfileTags($profile);
 
 		// pass variables to the template
 		$content->profile = $profile;
 		$content->ownProfile = $ownProfile;
 
-		$pathToService = Utils::getPathToService($response->serviceName);
+		$pathToService = SERVICE_PATH . $response->service;
 		$images = ["$pathToService/images/avatars.png"];
 
 		// create a new Response object and input the template and the content
@@ -88,210 +315,10 @@ class Service
 	}
 
 	/**
-	 * Edit your profile
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _editar(Request $request, Response $response)
-	{
-		$pathToService = Utils::getPathToService($response->serviceName);
-		$images = ["$pathToService/images/avatars.png"];
-
-		$response->setTemplate('edit.ejs', ['profile' => $request->person], $images);
-	}
-
-	/**
-	 * Get the list of levels
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _niveles(Request $request, Response $response)
-	{
-		$response->setTemplate('levels.ejs', ['experience' => $request->person->experience], $this->gemsImages());
-	}
-
-	/**
-	 * Get ways of gaining experience
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _experiencia(Request $request, Response $response)
-	{
-		// get the experience leve
-		$experience = Connection::query("
-			SELECT description, value
-			FROM person_experience_rules
-			WHERE active = 1
-			ORDER BY value", true, 'utf8mb4');
-
-		// send data to the view
-		$response->setCache();
-		$response->setTemplate('experience.ejs', ['experience' => $experience]);
-	}
-
-	/**
-	 * Edit your avatar
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 */
-	public function _avatar(Request $request, Response $response)
-	{
-		$pathToService = Utils::getPathToService($response->serviceName);
-		$images = ["$pathToService/images/avatars.png"];
-
-		$response->setTemplate('avatar_select.ejs', [
-			'currentAvatar' => $request->person->avatar,
-			'currentColor' => $request->person->avatarColor
-		], $images);
-	}
-
-	/**
-	 * Edit your images
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 * @throws Exception
-	 */
-	public function _imagenes(Request $request, Response $response)
-	{
-		$id = $request->input->data->id ?? $request->person->id;
-		$ownProfile = $request->person->id == $id;
-
-		$imagesList = q("SELECT id, file, `default` FROM person_images WHERE id_person = '$id' AND active=1");
-
-		$images = [];
-		foreach ($imagesList as $image) {
-			$image->file = Utils::generateThumbnail($image->file);
-			$images[] = $image->file;
-		}
-
-		$response->setTemplate('images.ejs', ['images' => $imagesList, 'ownProfile' => $ownProfile, "idPerson" => $id], $images);
-	}
-
-	public function _ver(Request $request, Response $response)
-	{
-		$id = $request->input->data->id;
-		$image = $id != "last" ? q("SELECT * FROM person_images WHERE id='$id'")[0] : q("SELECT * FROM person_images WHERE id_person='{$request->person->id}' ORDER BY id DESC LIMIT 1")[0];
-		$image->file = Core::getRoot() . "/shared/img/profile/{$image->file}.jpg";
-		$ownProfile = $image->id_person == $request->person->id;
-		$response->setTemplate('displayImage.ejs', ['image' => $image, 'ownProfile' => $ownProfile], [$image->file]);
-	}
-
-	public function _borrar(Request $request, Response $response)
-	{
-		$id = $request->input->data->id;
-		$default = q("SELECT `default` FROM person_images WHERE id='$id'")[0]->default == "1";
-		Connection::query("UPDATE person_images SET active=0 WHERE id='$id' AND id_person='{$request->person->id}'");
-		if ($default) Connection::query("UPDATE person SET picture = NULL WHERE id='{$request->person->id}'");
-		unset($request->input->data->id);
-		$this->_imagenes($request, $response);
-	}
-
-	/**
-	 * Subservice FOTO
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 *
-	 * @throws \Exception
-	 */
-	public function _foto(Request $request, Response $response)
-	{
-		// do not allow empty files
-		if (isset($request->input->data->picture)) {
-			$picture = $request->input->data->picture;
-			$updatePicture = $request->input->data->updatePicture ?? false;
-
-			// get the image name and path
-			$fileName = Utils::generateRandomHash();
-			$filePath = Core::getRoot() . "/shared/img/profile/$fileName.jpg";
-
-			// save the optimized image on the user folder
-			file_put_contents($filePath, base64_decode($picture));
-			Utils::optimizeImage($filePath);
-
-			// save changes on the database
-			Connection::query("INSERT INTO person_images(id_person, file) VALUES('{$request->person->id}', '$fileName')");
-			if ($updatePicture) {
-				q("
-					UPDATE person SET picture='$fileName' WHERE id='{$request->person->id}';
-					UPDATE person_images SET `default`=0 WHERE id_person='{$request->person->id}';
-					UPDATE person_images SET `default`=1 WHERE file='$fileName';
-					");
-			}
-		} else if (isset($request->input->data->id)) {
-			$id = $request->input->data->id;
-			$image = q("SELECT file FROM person_images WHERE id='$id' AND id_person='{$request->person->id}'")[0]->file ?? false;
-			if ($image) q("
-							UPDATE person SET picture='$image' WHERE id='{$request->person->id}';
-							UPDATE person_images SET `default`=0 WHERE id_person='{$request->person->id}';
-							UPDATE person_images SET `default`=1 WHERE id='$id';
-							");
-
-		} else return;
-
-		if (isset($request->person->completion) && $request->person->completion > 70) {
-			Challenges::complete('complete-profile', $request->person->id);
-		}
-
-		Challenges::complete("update-profile-picture", $request->person->id);
-	}
-
-	/**
-	 * Show the form of where you hear about the app
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 * @throws \Exception
-	 */
-	public function _origen(Request $request, Response $response)
-	{
-		// get the person to add origin
-		$content = new stdClass();
-		$content->origin = $request->person->origin;
-		$content->origins = $this->origins;
-
-		// complete challenge
-		Challenges::complete("where-found-apretaste", $request->person->id);
-
-		// send data to the view
-		$response->setTemplate('origin.ejs', $content);
-	}
-
-	/**
-	 * Block an user
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 * @throws \Exception
-	 * @author ricardo@apretaste.com
-	 */
-	public function _bloquear(Request $request, Response $response)
-	{
-		$person = Utils::getPerson($request->input->data->username);
-		$fromId = $request->person->id;
-
-		if ($person) {
-			$r = Connection::query("SELECT * FROM relations WHERE user1='$fromId' AND user2='$person->id'");
-			if (isset($r[0])) {
-				Connection::query("UPDATE relations SET confirmed=1 WHERE user1='$fromId' AND user2='$person->id' AND `type`='blocked'");
-			} else {
-				Connection::query("INSERT INTO `relations`(user1,user2,`type`,confirmed) VALUES ('$fromId','$person->id','blocked',1)");
-			}
-		}
-
-		$this->_main($request, $response);
-	}
-
-	/**
 	 * unlock an user
 	 *
 	 * @param Request
-	 * @param \Response $response
+	 * @param Response $response
 	 *
 	 * @throws \Exception
 	 * @author ricardo@apretaste.com
@@ -301,7 +328,7 @@ class Service
 		$person = Utils::getPerson($request->input->data->username);
 		$fromId = $request->person->id;
 		if ($person) {
-			Connection::query("
+			Database::query("
 				UPDATE relations SET confirmed=0
 				WHERE user1='$fromId'
 				AND user2='$person->id' AND `type`='blocked'");
@@ -315,8 +342,8 @@ class Service
 	 * @param Request $request
 	 * @param Response $response
 	 *
-	 * @throws \Exception
-	 * @author  salvipascual
+	 * @throws Exception
+	 * @author salvipascual
 	 * @version 1.0
 	 */
 	public function _update(Request $request, Response $response)
@@ -352,7 +379,7 @@ class Service
 			}
 
 			// escape dangerous chars in the value passed
-			$value = Connection::escape($value);
+			$value = Database::escape($value);
 
 			// prepare the database query
 			if (in_array($key, $fields)) {
@@ -370,7 +397,7 @@ class Service
 
 		// save changes on the database
 		if (!empty($pieces)) {
-			Connection::query("UPDATE person SET " . implode(",", $pieces) . " WHERE id={$request->person->id}", true, "utf8mb4");
+			Database::query("UPDATE person SET " . implode(",", $pieces) . " WHERE id={$request->person->id}");
 		}
 
 		// add the experience if profile is completed
@@ -378,22 +405,5 @@ class Service
 			Challenges::complete('complete-profile', $request->person->id);
 			Level::setExperience('FINISH_PROFILE_FIRST', $request->person->id);
 		}
-	}
-
-	/**
-	 * Get the images for the gems
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 * @version 1.0
-	 */
-	private function gemsImages(array $images = [])
-	{
-		$gems = ['Zafiro', 'Topacio', 'Rubi', 'Opalo', 'Esmeralda', 'Diamante'];
-		$path = Utils::getPathToService('perfil') . '/images/';
-		foreach ($gems as $gem) {
-			$images[] = $path . $gem . '.png';
-		}
-		return $images;
 	}
 }
