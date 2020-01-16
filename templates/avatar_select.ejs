@@ -1,12 +1,12 @@
 <div class="row" style="margin-bottom: 70px;">
     <nav id="colors-nav" class="valign-wrapper white">
         <% Object.keys(colors).forEach(function (color){ %>
-        <div class="col s2 center-align" style="line-height: 1rem;">
-            <div class="color circle" style="background: <%= colors[color] %>;"
-                 onclick="changeColor('<%= color %>')"></div>
-            <br>
-            <small class="black-text"><%= color %></small>
-        </div>
+            <div class="col s2 center-align" style="line-height: 1rem;">
+                <div class="color circle" style="background: <%= colors[color] %>;"
+                     onclick="changeColor('<%= color %>')"></div>
+                <br>
+                <small class="black-text"><%= color %></small>
+            </div>
         <% }) %>
     </nav>
 
