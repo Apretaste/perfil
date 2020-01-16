@@ -5,6 +5,7 @@ use Apretaste\Core;
 class Service
 {
 	private $origins = ["Amigo en Cuba", "Familia Afuera", "Referido", "El Paquete", "Revolico", "Casa de Apps", "Facebook", "Internet", "La Calle", "Prensa Independiente", "Prensa Cubana", "Otro"];
+	private $avatars = ["apretin", "apretina", "artista", "bandido", "belleza", "chica", "coqueta", "cresta", "deportiva", "dulce", "emo", "encapuchado", "extranna", "fabulosa", "fuerte", "ganadero", "geek", "genia", "gotica", "gotico", "guapo", "hawaiano", "hippie", "hombre", "inconformista", "independiente", "jefe", "jugadora", "mago", "metalero", "modelo", "moderna", "musico", "nerd", "punk", "punkie", "rap", "rapear", "rapero", "rock", "rockera", "rubia", "rudo", "sencilla", "sencillo", "sennor", "sennorita", "sensei", "surfista", "tablista", "vaquera"];
 
 	/**
 	 * Display your profile
@@ -76,7 +77,9 @@ class Service
 		$content->ownProfile = $ownProfile;
 
 		$pathToService = Utils::getPathToService($response->serviceName);
-		$images = ["$pathToService/images/avatars.png"];
+		if (!empty($profile->avatar)) {
+			$images = ["$pathToService/images/{$profile->avatar}.png"];
+		} else $images = ["$pathToService/images/apretin.png"];
 
 		// create a new Response object and input the template and the content
 		if (!$ownProfile) {
@@ -96,7 +99,9 @@ class Service
 	public function _editar(Request $request, Response $response)
 	{
 		$pathToService = Utils::getPathToService($response->serviceName);
-		$images = ["$pathToService/images/avatars.png"];
+		if (!empty($request->person->avatar)) {
+			$images = ["$pathToService/images/{$request->person->avatar}.png"];
+		} else $images = ["$pathToService/images/apretin.png"];
 
 		$response->setTemplate('edit.ejs', ['profile' => $request->person], $images);
 	}
@@ -141,7 +146,8 @@ class Service
 	public function _avatar(Request $request, Response $response)
 	{
 		$pathToService = Utils::getPathToService($response->serviceName);
-		$images = ["$pathToService/images/avatars.png"];
+		$images = [];
+		foreach ($this->avatars as $avatar) $images[] = "$pathToService/images/$avatar.png";
 
 		$response->setTemplate('avatar_select.ejs', [
 			'currentAvatar' => $request->person->avatar,

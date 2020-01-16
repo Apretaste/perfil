@@ -3,66 +3,68 @@
 // Variables
 
 var colors = {
-	'Azul': '#99F9FF',
-	'Verde': '#9ADB05',
-	'Rojo': '#FF415B',
-	'Morado': '#58235E',
-	'Naranja': '#F38200',
-	'Amarillo': '#FFE600'
+	'azul': '#99F9FF',
+	'verde': '#9ADB05',
+	'rojo': '#FF415B',
+	'morado': '#58235E',
+	'naranja': '#F38200',
+	'amarillo': '#FFE600'
 };
 
 var selectedColor;
 
 var avatars = {
-	'Rockera': 'F',
-	'Tablista': 'F',
-	'Rapero': 'M',
-	'Guapo': 'M',
-	'Bandido': 'M',
-	'Encapuchado': 'M',
-	'Rapear': 'M',
-	'Inconformista': 'M',
-	'Coqueta': 'F',
-	'Punk': 'M',
-	'Metalero': 'M',
-	'Rudo': 'M',
-	'Señor': 'M',
-	'Nerd': 'M',
-	'Hombre': 'M',
-	'Cresta': 'M',
-	'Emo': 'M',
-	'Fabulosa': 'F',
-	'Mago': 'M',
-	'Jefe': 'M',
-	'Sensei': 'M',
-	'Rubia': 'F',
-	'Dulce': 'F',
-	'Belleza': 'F',
-	'Músico': 'M',
-	'Rap': 'M',
-	'Artista': 'M',
-	'Fuerte': 'M',
-	'Punkie': 'M',
-	'Vaquera': 'F',
-	'Modelo': 'F',
-	'Independiente': 'F',
-	'Extraña': 'F',
-	'Hippie': 'M',
-	'Chica Emo': 'F',
-	'Jugadora': 'F',
-	'Sencilla': 'F',
-	'Geek': 'F',
-	'Deportiva': 'F',
-	'Moderna': 'F',
-	'Surfista': 'M',
-	'Señorita': 'F',
-	'Rock': 'F',
-	'Genia': 'F',
-	'Gótica': 'F',
-	'Sencillo': 'M',
-	'Hawaiano': 'M',
-	'Ganadero': 'M',
-	'Gótico': 'M'
+	apretin: {caption: "Apretín", gender: 'M'},
+	apretina: {caption: "Apretina", gender: 'F'},
+	artista: {caption: "Artista", gender: 'M'},
+	bandido: {caption: "Bandido", gender: 'M'},
+	belleza: {caption: "Belleza", gender: 'F'},
+	chica: {caption: "Chica", gender: 'F'},
+	coqueta: {caption: "Coqueta", gender: 'F'},
+	cresta: {caption: "Cresta", gender: 'M'},
+	deportiva: {caption: "Deportiva", gender: 'F'},
+	dulce: {caption: "Dulce", gender: 'F'},
+	emo: {caption: "Emo", gender: 'M'},
+	encapuchado: {caption: "Encapuchado", gender: 'M'},
+	extranna: {caption: "Extraña", gender: 'F'},
+	fabulosa: {caption: "Fabulosa", gender: 'F'},
+	fuerte: {caption: "Fuerte", gender: 'M'},
+	ganadero: {caption: "Ganadero", gender: 'M'},
+	geek: {caption: "Geek", gender: 'F'},
+	genia: {caption: "Genia", gender: 'F'},
+	gotica: {caption: "Gótica", gender: 'F'},
+	gotico: {caption: "Gótico", gender: 'M'},
+	guapo: {caption: "Guapo", gender: 'M'},
+	hawaiano: {caption: "Hawaiano", gender: 'M'},
+	hippie: {caption: "Hippie", gender: 'M'},
+	hombre: {caption: "Hombre", gender: 'M'},
+	inconformista: {caption: "Inconformista", gender: 'M'},
+	independiente: {caption: "Independiente", gender: 'F'},
+	jefe: {caption: "Jefe", gender: 'M'},
+	jugadora: {caption: "Jugadora", gender: 'F'},
+	mago: {caption: "Mago", gender: 'M'},
+	metalero: {caption: "Metalero", gender: 'M'},
+	modelo: {caption: "Modelo", gender: 'F'},
+	moderna: {caption: "Moderna", gender: 'F'},
+	musico: {caption: "Músico", gender: 'M'},
+	nerd: {caption: "Nerd", gender: 'M'},
+	punk: {caption: "Punk", gender: 'M'},
+	punkie: {caption: "Punkie", gender: 'M'},
+	rap: {caption: "Rap", gender: 'M'},
+	rapear: {caption: "Rapear", gender: 'M'},
+	rapero: {caption: "Rapero", gender: 'M'},
+	rock: {caption: "Rock", gender: 'M'},
+	rockera: {caption: "Rockera", gender: 'F'},
+	rubia: {caption: "Rubia", gender: 'F'},
+	rudo: {caption: "Rudo", gender: 'M'},
+	sencilla: {caption: "Sencilla", gender: 'F'},
+	sencillo: {caption: "Sencillo", gender: 'M'},
+	sennor: {caption: "Señor", gender: 'M'},
+	sennorita: {caption: "Señorita", gender: 'F'},
+	sensei: {caption: "Sensei", gender: 'M'},
+	surfista: {caption: "Surfista", gender: 'M'},
+	tablista: {caption: "Tablista", gender: 'F'},
+	vaquera: {caption: "Vaquera", gender: 'F'}
 };
 
 var countries = [{
@@ -238,12 +240,8 @@ function resizeImg() {
 	$('#img-pre').height(img.height() * 0.7); // set the height of the colored div after the photo
 }
 
-function getAvatar(avatar, serviceImgPath, size) {
-	var index = Object.keys(avatars).indexOf(avatar);
-	var fullsize = size * 7;
-	var x = index % 7 * size;
-	var y = Math.floor(index / 7) * size;
-	return "background-image: url(" + serviceImgPath + "/avatars.png);" + "background-size: " + fullsize + "px " + fullsize + "px;" + "background-position: -" + x + "px -" + y + "px;";
+function getAvatar(avatar, serviceImgPath) {
+	return "background-image: url(" + serviceImgPath + "/" + avatar + ".png);";
 }
 
 function genderColor(gender) {
@@ -383,7 +381,7 @@ function setAvatarCallback() {
 }
 
 function sendFile(base64File) {
-	if(base64File.length > 2584000){
+	if (base64File.length > 2584000) {
 		showToast("Imagen demasiado pesada");
 		return;
 	}
@@ -419,13 +417,13 @@ function changeOrigin() {
 function updatePicture(file) {
 	// add the picture to the gallery
 	var imgElement =
-	"<div class=\"col s6 m3 l2 image\"" +
-	"	onclick=\"apretaste.send({'command': 'PERFIL VER', 'data': {'id': 'last'}})\">" +
-	"	<img src=\"data:image/jpg;base64," + file + "\" class=\"responsive-img\" width=\"100%\"" +
-	"	style=\"border-radius: 8px\">" +
-	"</div>"
+		"<div class=\"col s6 m3 l2 image\"" +
+		"	onclick=\"apretaste.send({'command': 'PERFIL VER', 'data': {'id': 'last'}})\">" +
+		"	<img src=\"data:image/jpg;base64," + file + "\" class=\"responsive-img\" width=\"100%\"" +
+		"	style=\"border-radius: 8px\">" +
+		"</div>"
 
-	if(images.length == 0) $('#gallery > div.col.s12').remove();
+	if (images.length == 0) $('#gallery > div.col.s12').remove();
 	$('#gallery').append(imgElement);
 
 	showToast('Imagen agregada a la galeria');
