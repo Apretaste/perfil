@@ -79,7 +79,7 @@ class Service
 		$pathToService = Utils::getPathToService($response->serviceName);
 		if (!empty($profile->avatar)) {
 			$images = ["$pathToService/images/{$profile->avatar}.png"];
-		} else $images = ["$pathToService/images/apretin.png"];
+		} else $images = ["$pathToService/images/hombre.png"];
 
 		// create a new Response object and input the template and the content
 		if (!$ownProfile) {
@@ -101,7 +101,7 @@ class Service
 		$pathToService = Utils::getPathToService($response->serviceName);
 		if (!empty($request->person->avatar)) {
 			$images = ["$pathToService/images/{$request->person->avatar}.png"];
-		} else $images = ["$pathToService/images/apretin.png"];
+		} else $images = ["$pathToService/images/hombre.png"];
 
 		$response->setTemplate('edit.ejs', ['profile' => $request->person], $images);
 	}
