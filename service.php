@@ -215,6 +215,7 @@ class Service
 		foreach ($imagesList as $image) {
 			$image->file = Images::generateThumbnail($image->file);
 			$images[] = $image->file;
+			$image->file = basename($image->file);
 		}
 
 		$response->setTemplate('images.ejs', ['images' => $imagesList, 'ownProfile' => $ownProfile, "idPerson" => $id], $images);
