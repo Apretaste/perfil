@@ -14,10 +14,9 @@
 
 <div id="img-pre" class="green apretaste"></div>
 
-<!-- PICTURE -->
-<div id="profile-rounded-img" class="circle"
-     style="<%= getAvatar(profile.avatar, "{{APP_SERVICE_PATH}}/images", ($(window).height() / 4) + 8) %> background-color: <%= colors[profile.avatarColor] %>;">
-</div>
+<!-- AVATAR -->
+<div class="person-avatar circle" id="profile-avatar" face="<%= profile.avatar %>" color="<%= profile.avatarColor %>"
+     size="<%= ($(window).height() / 4) + 8 %>"></div>
 
 <div class="row profile-info">
     <div class="col s12">

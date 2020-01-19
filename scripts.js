@@ -2,68 +2,7 @@
 
 // Variables
 
-var colors = {
-	'Azul': '#99F9FF',
-	'Verde': '#9ADB05',
-	'Rojo': '#FF415B',
-	'Morado': '#58235E',
-	'Naranja': '#F38200',
-	'Amarillo': '#FFE600'
-};
-
 var selectedColor;
-
-var avatars = {
-	'Rockera': 'F',
-	'Tablista': 'F',
-	'Rapero': 'M',
-	'Guapo': 'M',
-	'Bandido': 'M',
-	'Encapuchado': 'M',
-	'Rapear': 'M',
-	'Inconformista': 'M',
-	'Coqueta': 'F',
-	'Punk': 'M',
-	'Metalero': 'M',
-	'Rudo': 'M',
-	'Señor': 'M',
-	'Nerd': 'M',
-	'Hombre': 'M',
-	'Cresta': 'M',
-	'Emo': 'M',
-	'Fabulosa': 'F',
-	'Mago': 'M',
-	'Jefe': 'M',
-	'Sensei': 'M',
-	'Rubia': 'F',
-	'Dulce': 'F',
-	'Belleza': 'F',
-	'Músico': 'M',
-	'Rap': 'M',
-	'Artista': 'M',
-	'Fuerte': 'M',
-	'Punkie': 'M',
-	'Vaquera': 'F',
-	'Modelo': 'F',
-	'Independiente': 'F',
-	'Extraña': 'F',
-	'Hippie': 'M',
-	'Chica Emo': 'F',
-	'Jugadora': 'F',
-	'Sencilla': 'F',
-	'Geek': 'F',
-	'Deportiva': 'F',
-	'Moderna': 'F',
-	'Surfista': 'M',
-	'Señorita': 'F',
-	'Rock': 'F',
-	'Genia': 'F',
-	'Gótica': 'F',
-	'Sencillo': 'M',
-	'Hawaiano': 'M',
-	'Ganadero': 'M',
-	'Gótico': 'M'
-};
 
 var countries = [{
 	code: 'cu',
@@ -203,7 +142,7 @@ $(document).ready(function () {
 	var resizeInterval = setInterval(function () {
 		// check until the img has the correct size
 		resizeImg();
-		if ($('#profile-rounded-img').css('background-size') != 'auto') clearTimeout(resizeInterval);
+		if ($('.mini-card .person-avatar').css('background-size') != 'auto') clearTimeout(resizeInterval);
 	}, 1);
 
 	if (typeof profile != "undefined") {
@@ -225,7 +164,7 @@ function resizeImg() {
 	if (typeof profile == "undefined") return;
 	$('.profile-img').css('height', '');
 
-	var img = $('#profile-rounded-img');
+	var img = $('#profile-avatar');
 	var size = $(window).height() / 4; // picture must be 1/4 of the screen
 
 	img.height(size);
@@ -238,12 +177,8 @@ function resizeImg() {
 	$('#img-pre').height(img.height() * 0.7); // set the height of the colored div after the photo
 }
 
-function getAvatar(avatar, serviceImgPath, size) {
-	var index = Object.keys(avatars).indexOf(avatar);
-	var fullsize = size * 7;
-	var x = index % 7 * size;
-	var y = Math.floor(index / 7) * size;
-	return "background-image: url(" + serviceImgPath + "/avatars.png);" + "background-size: " + fullsize + "px " + fullsize + "px;" + "background-position: -" + x + "px -" + y + "px;";
+function getAvatar(avatar, resPath, size) {
+	return "background-image: url(" + resPath + "/images/avatars/" + avatar + ".png);";
 }
 
 function genderColor(gender) {
@@ -252,7 +187,7 @@ function genderColor(gender) {
 
 function changeColor(color) {
 	selectedColor = color;
-	$('.mini-card div.avatar').css('background-color', colors[color]);
+	$('.mini-card .person-avatar').css('background-color', avatarColors[color]);
 }
 
 function showStateOrProvince() {
@@ -383,7 +318,7 @@ function setAvatarCallback() {
 }
 
 function sendFile(base64File) {
-	if(base64File.length > 2584000){
+	if (base64File.length > 2584000) {
 		showToast("Imagen demasiado pesada");
 		return;
 	}
@@ -419,13 +354,13 @@ function changeOrigin() {
 function updatePicture(file) {
 	// add the picture to the gallery
 	var imgElement =
-	"<div class=\"col s6 m3 l2 image\"" +
-	"	onclick=\"apretaste.send({'command': 'PERFIL VER', 'data': {'id': 'last'}})\">" +
-	"	<img src=\"data:image/jpg;base64," + file + "\" class=\"responsive-img\" width=\"100%\"" +
-	"	style=\"border-radius: 8px\">" +
-	"</div>"
+		"<div class=\"col s6 m3 l2 image\"" +
+		"	onclick=\"apretaste.send({'command': 'PERFIL VER', 'data': {'id': 'last'}})\">" +
+		"	<img src=\"data:image/jpg;base64," + file + "\" class=\"responsive-img\" width=\"100%\"" +
+		"	style=\"border-radius: 8px\">" +
+		"</div>"
 
-	if(images.length == 0) $('#gallery > div.col.s12').remove();
+	if (images.length == 0) $('#gallery > div.col.s12').remove();
 	$('#gallery').append(imgElement);
 
 	showToast('Imagen agregada a la galeria');

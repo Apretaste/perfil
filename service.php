@@ -1,17 +1,94 @@
 <?php
 
+use Apretaste\Amulets;
 use Apretaste\Challenges;
+use Apretaste\Chats;
 use Apretaste\Level;
+use Apretaste\Notifications;
 use Apretaste\Person;
 use Apretaste\Request;
 use Apretaste\Response;
 use Framework\Alert;
 use Framework\Database;
+use Framework\Images;
 use Framework\Utils;
 
 class Service
 {
-	private $origins = ["Amigo en Cuba", "Familia Afuera", "Referido", "El Paquete", "Revolico", "Casa de Apps", "Facebook", "Internet", "La Calle", "Prensa Independiente", "Prensa Cubana", "Otro"];
+	private $origins = ["Amigo en Cuba", "Familia Afuera", "Referido", "El Paquete", "Revolico", "Bajanda", "Casa de Apps", "Facebook", "Internet", "La Calle", "Prensa Independiente", "Prensa Cubana", "Otro"];
+
+	/**
+	 * Display your profile
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 * @return Response|void
+	 * @throws Exception
+	 */
+	public function _main(Request $request, Response $response)
+	{
+		// get the email or the username for the profile
+		$data = $request->input->data;
+		$content = new stdClass();
+
+		if (!empty($data->username) && $data->username != $request->person->username) {
+			// get the data of the person requested
+			$profile = Person::find($data->username);
+
+			// run powers for amulet DETECTIVE
+			if (Amulets::isActive(Amulets::DETECTIVE, $profile->id)) {
+				$msg = "Los poderes del amuleto del Druida te avisan: @{$request->person->username} está revisando tu perfil";
+				Notifications::alert($profile->id, $msg, 'pageview', '{command:"PERFIL", data:{username:"@{$request->person->username}"}}');
+			}
+
+			// run powers for amulet SHADOWMODE
+			if (Amulets::isActive(Amulets::SHADOWMODE, $profile->id)) {
+				return $response->setTemplate("message.ejs", [
+					"header" => "Shadow-Mode",
+					"icon" => "visibility_off",
+					"text" => "La magia oscura de un amuleto rodea este perfil y te impide verlo. Por mucho que intentes romperlo, el hechizo del druida es poderoso."
+				]);
+			}
+
+			// check if the person exist. If not, message the requestor
+			if (!$profile) {
+				return $response->setTemplate("message.ejs", [
+					"header" => "El perfil no existe",
+					"icon" => "sentiment_very_dissatisfied",
+					"text" => "Lo sentimos, pero el perfil que usted busca no pudo ser encontrado. Puede que el nombre de usuario halla cambiado o la persona halla salido de la app."
+				]);
+			}
+
+			// prepare the profile for the person requested
+			$ownProfile = $profile->id === $request->person->id;
+
+			// check if current user blocked the user to lookup, or is blocked by
+			$blocks = Chats::isBlocked($request->person->id, $profile->id);
+			if ($blocks->blocked || $blocks->blockedByMe) {
+				return $response->setTemplate("message.ejs", [
+					"header" => "Perfil bloqueado",
+					"icon" => "sentiment_very_dissatisfied",
+					"text" => "Esta persona le ha bloqueado, o usted ha bloqueado a esta persona, por lo tanto no puede revisar su perfil."
+				]);
+			}
+
+		} else {
+			$profile = $request->person;
+			$ownProfile = true;
+		}
+
+		unset($profile->credit, $profile->tickets, $profile->cellphone);
+		Person::setProfileTags($profile);
+
+		// pass variables to the template
+		$content->profile = $profile;
+		$content->ownProfile = $ownProfile;
+
+		// create a new Response object and input the template and the content
+		if (!$ownProfile) $response->setCache(10);
+
+		$response->setTemplate("profile.ejs", $content, $this->gemsImages());
+	}
 
 	/**
 	 * Edit your profile
@@ -22,10 +99,7 @@ class Service
 	 */
 	public function _editar(Request $request, Response $response)
 	{
-		$pathToService = SERVICE_PATH . $response->service;
-		$images = ["$pathToService/images/avatars.png"];
-
-		$response->setTemplate('edit.ejs', ['profile' => $request->person], $images);
+		$response->setTemplate('edit.ejs', ['profile' => $request->person]);
 	}
 
 	/**
@@ -87,15 +161,17 @@ class Service
 	 */
 	public function _avatar(Request $request, Response $response)
 	{
-		$pathToService = SERVICE_PATH . $response->service;
-		$images = ["$pathToService/images/avatars.png"];
-
 		$response->setTemplate('avatar_select.ejs', [
 			'currentAvatar' => $request->person->avatar,
 			'currentColor' => $request->person->avatarColor
-		], $images);
+		]);
 	}
 
+	/**
+	 * @param Request $request
+	 * @param Response $response
+	 * @throws Alert
+	 */
 	public function _ver(Request $request, Response $response)
 	{
 		$id = $request->input->data->id;
@@ -105,6 +181,12 @@ class Service
 		$response->setTemplate('displayImage.ejs', ['image' => $image, 'ownProfile' => $ownProfile], [$image->file]);
 	}
 
+	/**
+	 * @param Request $request
+	 * @param Response $response
+	 * @throws Alert
+	 * @throws Exception
+	 */
 	public function _borrar(Request $request, Response $response)
 	{
 		$id = $request->input->data->id;
@@ -131,7 +213,7 @@ class Service
 
 		$images = [];
 		foreach ($imagesList as $image) {
-			$image->file = Utils::generateThumbnail($image->file);
+			$image->file = Images::generateThumbnail($image->file);
 			$images[] = $image->file;
 		}
 
@@ -159,7 +241,7 @@ class Service
 
 			// save the optimized image on the user folder
 			file_put_contents($filePath, base64_decode($picture));
-			// Utils::optimizeImage($filePath); // TODO no optimize?
+			Images::optimizeImage($filePath);
 
 			// save changes on the database
 			Database::query("INSERT INTO person_images(id_person, file) VALUES('{$request->person->id}', '$fileName')");
@@ -219,7 +301,7 @@ class Service
 	 */
 	public function _bloquear(Request $request, Response $response)
 	{
-		$person = Utils::getPerson($request->input->data->username);
+		$person = Person::find($request->input->data->username);
 		$fromId = $request->person->id;
 
 		if ($person) {
@@ -235,87 +317,6 @@ class Service
 	}
 
 	/**
-	 * Display your profile
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 * @return Response|void
-	 * @throws Exception
-	 */
-	public function _main(Request $request, Response $response)
-	{
-		// get the email or the username for the profile
-		$data = $request->input->data;
-		$content = new stdClass();
-
-		if (!empty($data->username) && $data->username != $request->person->username) {
-			// get the data of the person requested
-			$user = Utils::getPerson($data->username);
-			$profile = Social::prepareUserProfile($user);
-
-			// run powers for amulet DETECTIVE
-			if (Amulets::isActive(Amulets::DETECTIVE, $profile->id)) {
-				$msg = "Los poderes del amuleto del Druida te avisan: @{$request->person->username} está revisando tu perfil";
-				Utils::addNotification($profile->id, $msg, '{command:"PERFIL", data:{username:"@{$request->person->username}"}}', 'pageview');
-			}
-
-			// run powers for amulet SHADOWMODE
-			if (Amulets::isActive(Amulets::SHADOWMODE, $user->id)) {
-				return $response->setTemplate("message.ejs", [
-					"header" => "Shadow-Mode",
-					"icon" => "visibility_off",
-					"text" => "La magia oscura de un amuleto rodea este perfil y te impide verlo. Por mucho que intentes romperlo, el hechizo del druida es poderoso."
-				]);
-			}
-
-			// check if the person exist. If not, message the requestor
-			if (!$user) {
-				return $response->setTemplate("message.ejs", [
-					"header" => "El perfil no existe",
-					"icon" => "sentiment_very_dissatisfied",
-					"text" => "Lo sentimos, pero el perfil que usted busca no pudo ser encontrado. Puede que el nombre de usuario halla cambiado o la persona halla salido de la app."
-				]);
-			}
-
-			// prepare the profile for the person requested
-
-			$ownProfile = $profile->id === $request->person->id;
-
-			// check if current user blocked the user to lookup, or is blocked by
-			$blocks = Social::isBlocked($request->person->id, $user->id);
-			if ($blocks->blocked || $blocks->blockedByMe) {
-				return $response->setTemplate("message.ejs", [
-					"header" => "Perfil bloqueado",
-					"icon" => "sentiment_very_dissatisfied",
-					"text" => "Esta persona le ha bloqueado, o usted ha bloqueado a esta persona, por lo tanto no puede revisar su perfil."
-				]);
-			}
-
-		} else {
-			$profile = $request->person;
-			$ownProfile = true;
-		}
-
-		unset($profile->credit, $profile->tickets, $profile->cellphone);
-		Person::setProfileTags($profile);
-
-		// pass variables to the template
-		$content->profile = $profile;
-		$content->ownProfile = $ownProfile;
-
-		$pathToService = SERVICE_PATH . $response->service;
-		$images = ["$pathToService/images/avatars.png"];
-
-		// create a new Response object and input the template and the content
-		if (!$ownProfile) {
-			$response->setCache(240);
-		}
-
-		//Core::log(json_encode($content), "debug");
-		$response->setTemplate("profile.ejs", $content, $this->gemsImages($images));
-	}
-
-	/**
 	 * unlock an user
 	 *
 	 * @param Request
@@ -326,7 +327,7 @@ class Service
 	 */
 	public function _desbloquear(Request $request, Response $response)
 	{
-		$person = Utils::getPerson($request->input->data->username);
+		$person = Person::find($request->input->data->username);
 		$fromId = $request->person->id;
 		if ($person) {
 			Database::query("
@@ -356,8 +357,8 @@ class Service
 		if (!empty($request->input->data->username)) {
 			$username = preg_replace("/[^a-zA-Z0-9]+/", "", $request->input->data->username);
 			$request->input->data->username = strtolower(substr($username, 0, 15));
-			if (Utils::getPerson($username)) {
-				Utils::addNotification($request->person->id, "Lo sentimos, el username @$username ya esta siendo usado");
+			if (Person::find($username)) {
+				Notifications::alert($request->person->id, "Lo sentimos, el username @$username ya esta siendo usado");
 				unset($request->input->data->username);
 			}
 		}

@@ -1,28 +1,31 @@
-#profile-rounded-img{
+#profile-avatar {
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
 	position: relative;
 	margin: auto;
 	border: 4px solid white;
+	background-size: contain;
 }
 
-.top-bar{
+.top-bar {
 	margin-bottom: 0;
 	position: relative;
 	box-shadow: 0 1px 5px 0 #444;
 }
 
-.profile-info h3 { margin-bottom: 5px }
+.profile-info h3 {
+	margin-bottom: 5px
+}
 
-.desc-table td{
+.desc-table td {
 	padding: 0 5px;
 }
 
-.desc-table tr{
+.desc-table tr {
 	border: none;
 }
 
-.desc-table td:first-child{
+.desc-table td:first-child {
 	width: 24px;
 	padding-left: 0;
 }
@@ -31,51 +34,51 @@
 	margin-bottom: 60px;
 }
 
-#edit-fields{
+#edit-fields {
 	margin-bottom: 12px;
 }
 
-#username{
+#username {
 	text-align: center;
 	font-size: 1.7rem;
 }
 
-.gem{
+.gem {
 	width: 50px;
 	height: 50px;
 }
 
-.gems-list{
+.gems-list {
 	border: none;
 }
 
-.gems-list > li{
+.gems-list > li {
 	margin: 12px 2px 2px 2px !important;
 	box-shadow: 0 0 3px 0 lightgrey;
 	border-radius: 10px;
 }
 
-#pic-btn{
+#pic-btn {
 	position: absolute;
 	bottom: 5px;
 	right: 0px;
 }
 
-.color{
+.color {
 	width: 30px;
 	height: 30px;
 	display: inline-block;
 }
 
-.mini-card{
+.mini-card {
 	height: 170px;
 	border-radius: 10%;
-	box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
+	box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
 	padding: 8px;
 	position: relative;
 }
 
-.mini-card div.avatar{
+.mini-card div.person-avatar {
 	width: 50px;
 	height: 50px;
 	display: inline-block;
@@ -83,44 +86,54 @@
 	position: relative;
 }
 
-.mini-card > div{
+.mini-card > div {
 	width: 100%;
 }
 
-.col.s6:nth-child(odd) > .mini-card{
+.col.s6:nth-child(odd) > .mini-card {
 	margin: 17px 8px 17px 13px;
 
 }
 
-.col.s6:nth-child(even) > .mini-card{
+.col.s6:nth-child(even) > .mini-card {
 	margin: 17px 13px 17px 8px;
 }
 
 @media screen and (max-width: 420px) {
-	#username{ width: 55% !important; }
+	#username {
+		width: 55% !important;
+	}
 }
 
 @media screen and (min-width: 421px) and (max-width: 600px) {
-	#username{ width: 45% !important; }
+	#username {
+		width: 45% !important;
+	}
 }
 
 @media screen and (min-width: 601px) and (max-width: 800px) {
-	#username{ width: 40% !important; }
+	#username {
+		width: 40% !important;
+	}
 }
 
 @media screen and (min-width: 801px) {
-	#username{ width: 30% !important; }
+	#username {
+		width: 30% !important;
+	}
 }
 
-#edit-fields .input-field:first-child > label{
+#edit-fields .input-field:first-child > label {
 	width: auto;
 	left: calc(50% - 25px);
 	top: 5px;
 }
 
-p{ word-break: break-word }
+p {
+	word-break: break-word
+}
 
-.deleteButton, .default{
+.deleteButton, .default {
 	position: absolute;
 	right: 2px;
 	top: -8px;
@@ -130,7 +143,7 @@ p{ word-break: break-word }
 	width: 28px;
 }
 
-.deleteButton > i, .default > i{
+.deleteButton > i, .default > i {
 	top: 5px;
 	font-size: 20px;
 	position: relative;
@@ -138,12 +151,12 @@ p{ word-break: break-word }
 	left: 4px;
 }
 
-.image{
+.image {
 	margin-bottom: 1rem;
 	position: relative;
 }
 
-.image img{
+.image img {
 	max-height: 162px;
 	object-fit: cover;
 }
