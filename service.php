@@ -115,23 +115,6 @@ class Service
 	}
 
 	/**
-	 * Get the images for the gems
-	 *
-	 * @param array $images
-	 * @return array
-	 * @version 1.0
-	 */
-	private function gemsImages(array $images = [])
-	{
-		$gems = ['Zafiro', 'Topacio', 'Rubi', 'Opalo', 'Esmeralda', 'Diamante'];
-		$path = SERVICE_PATH . "perfil/images/";
-		foreach ($gems as $gem) {
-			$images[] = $path . $gem . '.png';
-		}
-		return $images;
-	}
-
-	/**
 	 * Get ways of gaining experience
 	 *
 	 * @param Request $request
@@ -352,7 +335,7 @@ class Service
 	public function _update(Request $request, Response $response)
 	{
 		// posible fields to update in the database
-		$fields = ['username', 'first_name', 'middle_name', 'last_name', 'mother_name', 'about_me', 'avatar', 'avatarColor', 'year_of_birth', 'month_of_birth', 'day_of_birth', 'gender', 'cellphone', 'eyes', 'skin', 'body_type', 'hair', 'province', 'city', 'highest_school_level', 'occupation', 'marital_status', 'interests', 'about_me', 'lang', 'mail_list', 'picture', 'sexual_orientation', 'religion', 'origin', 'country', 'usstate', 'img_quality'];
+		$fields = ['username', 'first_name', 'middle_name', 'last_name', 'mother_name', 'about_me', 'avatar', 'avatarColor', 'year_of_birth', 'month_of_birth', 'day_of_birth', 'gender', 'cellphone', 'eyes', 'skin', 'body_type', 'hair', 'province', 'city', 'highest_school_level', 'occupation', 'marital_status', 'interests', 'about_me', 'mail_list', 'picture', 'sexual_orientation', 'religion', 'origin', 'show_images', 'country', 'usstate'];
 
 		// clean, shorten and lowercase the username, if passed
 		if (!empty($request->input->data->username)) {
@@ -408,5 +391,22 @@ class Service
 			Challenges::complete('complete-profile', $request->person->id);
 			Level::setExperience('FINISH_PROFILE_FIRST', $request->person->id);
 		}
+	}
+
+	/**
+	 * Get the images for the gems
+	 *
+	 * @param array $images
+	 * @return array
+	 * @version 1.0
+	 */
+	private function gemsImages(array $images = [])
+	{
+		$gems = ['Zafiro', 'Topacio', 'Rubi', 'Opalo', 'Esmeralda', 'Diamante'];
+		$path = SERVICE_PATH . "perfil/images/";
+		foreach ($gems as $gem) {
+			$images[] = $path . $gem . '.png';
+		}
+		return $images;
 	}
 }
