@@ -11,7 +11,7 @@
 <div class="row" style="margin-top: 1rem">
 	<% var userLevel = getUserLevel(experience) %>
 	<div class="col s2 m1 center-align">
-		<img src="{{APP_SERVICE_PATH}}/images/<%= userLevel.img %>.png" class="gem">
+		<img src="{{APP_SERVICE_PATH}}/images/<%= userLevel.img %>" class="gem">
 	</div>
 
 	<div class="col s10 m11" style="height: 55px">
@@ -29,7 +29,7 @@
 		<ul class="collection gems-list">
 			<% levels.forEach(function (level) { %>
 				<li class="collection-item avatar">
-					<img src="{{APP_SERVICE_PATH}}/images/<%= level.img %>.png" class="circle">
+					<img src="{{APP_SERVICE_PATH}}/images/<%= level.img %>" class="circle">
 					<span style="color: <%= level.titleColor %>"><%= level.name %> </span><span>(<b>⚡</b><%= level.experience %> o más):</span>
 					<% level.benefits.forEach(function (benefit) { %>
 						<br><span>• <%= benefit %>.</span>

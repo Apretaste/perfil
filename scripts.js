@@ -64,7 +64,7 @@ var province = {
 var levels = [
 	{
 		name: "Zafiro",
-		img: 'Zafiro',
+		img: 'level-zafiro.png',
 		color: '#0842b7',
 		titleColor: '#0055ff',
 		experience: 0,
@@ -75,7 +75,7 @@ var levels = [
 	},
 	{
 		name: "Topacio",
-		img: 'Topacio',
+		img: 'level-topacio.png',
 		color: '#db055d',
 		titleColor: '#ff046b',
 		experience: 100,
@@ -87,7 +87,7 @@ var levels = [
 
 	{
 		name: "Rubí",
-		img: 'Rubi',
+		img: 'level-rubi.png',
 		color: '#db055d',
 		titleColor: '#e20a0a',
 		experience: 300,
@@ -98,7 +98,7 @@ var levels = [
 	},
 	{
 		name: "Ópalo",
-		img: 'Opalo',
+		img: 'level-opalo.png',
 		color: '#ff6c0a',
 		titleColor: '#ff8800',
 		experience: 500,
@@ -109,7 +109,7 @@ var levels = [
 	},
 	{
 		name: "Esmeralda",
-		img: 'Esmeralda',
+		img: 'level-esmeralda.png',
 		color: '#07880b',
 		titleColor: '#07880b',
 		experience: 700,
@@ -120,7 +120,7 @@ var levels = [
 	},
 	{
 		name: "Diamante",
-		img: 'Diamante',
+		img: 'level-diamante.png',
 		color: '#0080b9',
 		titleColor: '#00b0fe',
 		experience: 1000,

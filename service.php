@@ -84,10 +84,14 @@ class Service
 		$content->profile = $profile;
 		$content->ownProfile = $ownProfile;
 
-		// create a new Response object and input the template and the content
-		if (!$ownProfile) $response->setCache(10);
+		// get the gem image
+		$images = SERVICE_PATH . 'perfil/images/' . 'level-' . strtolower($request->person->level) . '.png';
 
-		$response->setTemplate("profile.ejs", $content, $this->gemsImages());
+		// cache if seeing someone else's profile
+		if (!$ownProfile) $response->setCache();
+
+		// send data to the template
+		$response->setTemplate("profile.ejs", $content, [$images]);
 	}
 
 	/**
@@ -111,7 +115,14 @@ class Service
 	 */
 	public function _niveles(Request $request, Response $response)
 	{
-		$response->setTemplate('levels.ejs', ['experience' => $request->person->experience], $this->gemsImages());
+		// get gem images
+		$images = [];
+		foreach (['zafiro', 'topacio', 'rubi', 'opalo', 'esmeralda', 'diamante'] as $gem) {
+			$images[] = SERVICE_PATH . 'perfil/images/' . 'level-' . $gem . '.png';
+		}
+
+		// send response to the view
+		$response->setTemplate('levels.ejs', ['experience' => $request->person->experience], $images);
 	}
 
 	/**
@@ -391,22 +402,5 @@ class Service
 			Challenges::complete('complete-profile', $request->person->id);
 			Level::setExperience('FINISH_PROFILE_FIRST', $request->person->id);
 		}
-	}
-
-	/**
-	 * Get the images for the gems
-	 *
-	 * @param array $images
-	 * @return array
-	 * @version 1.0
-	 */
-	private function gemsImages(array $images = [])
-	{
-		$gems = ['Zafiro', 'Topacio', 'Rubi', 'Opalo', 'Esmeralda', 'Diamante'];
-		$path = SERVICE_PATH . "perfil/images/";
-		foreach ($gems as $gem) {
-			$images[] = $path . $gem . '.png';
-		}
-		return $images;
 	}
 }
