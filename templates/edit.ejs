@@ -27,13 +27,13 @@
         <!-- NAME -->
         <div class="input-field col s12 m6" style="margin-top:-0.75rem;">
             <i class="material-icons prefix grey-text text-darken-2">person</i>
-            <input id="first_name" type="text" value="<%= profile.first_name %>" class="validate"/>
+            <input id="first_name" type="text" value="<%= profile.firstName %>" class="validate"/>
             <label for="first_name">Nombre</label>
         </div>
 
         <div class="input-field col s12 m6">
             <i class="material-icons prefix grey-text text-darken-2">person</i>
-            <input id="last_name" type="text" class="validate" value="<%= profile.last_name %>">
+            <input id="last_name" type="text" class="validate" value="<%= profile.lastName %>">
             <label for="last_name">Apellido</label>
         </div>
 
@@ -61,7 +61,7 @@
             <select id="sexual_orientation" class="validate">
                 <option value=""></option>
                 <% orientation.forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.sexual_orientation){ %>selected
+                    <option value="<%= val %>" <% if(val == profile.sexualOrientation){ %>selected
                             <% } %>
                     ><%= val.firstUpper() %></option>
                 <% }); %>
@@ -76,7 +76,7 @@
             <select id="day_of_birth" class="validate">
                 <option value="">Día</option>
                 <% daysArray.forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.day_of_birth){ %>selected
+                    <option value="<%= val %>" <% if(val == profile.dayOfBirth){ %>selected
                             <% } %>
                     ><%= val %></option>
                 <% }); %>
@@ -94,7 +94,7 @@
             <select id="month_of_birth" class="validate">
                 <option value="">Mes</option>
                 <% for (var i = 0; i < monthNbr.length; i++) { %>
-                    <option value="<%= monthNbr[i] %>" <% if(monthNbr[i] == profile.month_of_birth){ %>selected
+                    <option value="<%= monthNbr[i] %>" <% if(monthNbr[i] == profile.monthOfBirth){ %>selected
                             <% } %>
                     ><%= monthName[i] %></option>
                 <% } %>
@@ -112,7 +112,7 @@
             <select id="year_of_birth" class="validate">
                 <option value="">Año</option>
                 <% yearArr.forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.year_of_birth){ %>selected
+                    <option value="<%= val %>" <% if(val == profile.yearOfBirth){ %>selected
                             <% } %>
                     ><%= val %></option>
                 <% }); %>
@@ -127,7 +127,7 @@
             <select id="body_type" class="validate">
                 <option value="" selected></option>
                 <% body_type.forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.body_type){ %>selected
+                    <option value="<%= val %>" <% if(val == profile.bodyType){ %>selected
                             <% } %>
                     ><%= val.firstUpper() %></option>
                 <% }); %>
@@ -195,8 +195,7 @@
             <select id="marital_status" class="validate">
                 <option value=""></option>
                 <% marital_status.forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.marital_status){ %>selected
-                            <% } %>
+                    <option value="<%= val %>" <% if(val == profile.maritalStatus){ %>selected<% } %>
                     ><%= val.firstUpper() %></option>
                 <% }); %>
             </select>
@@ -218,7 +217,7 @@
             <select id="highest_school_level" class="validate">
                 <option value=""></option>
                 <% Object.keys(highest_school_level).forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.highest_school_level){ %>selected
+                    <option value="<%= val %>" <% if(val == profile.highestSchoolLevel){ %>selected
                             <% } %>
                     ><%= highest_school_level[val] %></option>
                 <% }); %>

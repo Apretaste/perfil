@@ -15,7 +15,21 @@ use Framework\Utils;
 
 class Service
 {
-	private $origins = ["Amigo en Cuba", "Familia Afuera", "Referido", "El Paquete", "Revolico", "Bajanda", "Casa de Apps", "Facebook", "Internet", "La Calle", "Prensa Independiente", "Prensa Cubana", "Otro"];
+	private $origins = [
+	  'Amigo en Cuba',
+	  'Familia Afuera',
+	  'Referido',
+	  'El Paquete',
+	  'Revolico',
+	  'Bajanda',
+	  'Casa de Apps',
+	  'Facebook',
+	  'Internet',
+	  'La Calle',
+	  'Prensa Independiente',
+	  'Prensa Cubana',
+	  'Otro'
+	];
 
 	/**
 	 * Display your profile
@@ -43,19 +57,19 @@ class Service
 
 			// run powers for amulet SHADOWMODE
 			if (Amulets::isActive(Amulets::SHADOWMODE, $profile->id)) {
-				return $response->setTemplate("message.ejs", [
-					"header" => "Shadow-Mode",
-					"icon" => "visibility_off",
-					"text" => "La magia oscura de un amuleto rodea este perfil y te impide verlo. Por mucho que intentes romperlo, el hechizo del druida es poderoso."
+				return $response->setTemplate('message.ejs', [
+					'header' => 'Shadow-Mode',
+					'icon' => 'visibility_off',
+					'text' => 'La magia oscura de un amuleto rodea este perfil y te impide verlo. Por mucho que intentes romperlo, el hechizo del druida es poderoso.'
 				]);
 			}
 
 			// check if the person exist. If not, message the requestor
 			if (!$profile) {
-				return $response->setTemplate("message.ejs", [
-					"header" => "El perfil no existe",
-					"icon" => "sentiment_very_dissatisfied",
-					"text" => "Lo sentimos, pero el perfil que usted busca no pudo ser encontrado. Puede que el nombre de usuario halla cambiado o la persona halla salido de la app."
+				return $response->setTemplate('message.ejs', [
+					'header' => 'El perfil no existe',
+					'icon' => 'sentiment_very_dissatisfied',
+					'text' => 'Lo sentimos, pero el perfil que usted busca no pudo ser encontrado. Puede que el nombre de usuario halla cambiado o la persona halla salido de la app.'
 				]);
 			}
 
@@ -65,13 +79,12 @@ class Service
 			// check if current user blocked the user to lookup, or is blocked by
 			$blocks = Chats::isBlocked($request->person->id, $profile->id);
 			if ($blocks->blocked || $blocks->blockedByMe) {
-				return $response->setTemplate("message.ejs", [
-					"header" => "Perfil bloqueado",
-					"icon" => "sentiment_very_dissatisfied",
-					"text" => "Esta persona le ha bloqueado, o usted ha bloqueado a esta persona, por lo tanto no puede revisar su perfil."
+				return $response->setTemplate('message.ejs', [
+					'header' => 'Perfil bloqueado',
+					'icon' => 'sentiment_very_dissatisfied',
+					'text' => 'Esta persona le ha bloqueado, o usted ha bloqueado a esta persona, por lo tanto no puede revisar su perfil.'
 				]);
 			}
-
 		} else {
 			$profile = $request->person;
 			$ownProfile = true;
@@ -88,10 +101,12 @@ class Service
 		$images = SERVICE_PATH . 'perfil/images/' . 'level-' . strtolower($request->person->level) . '.png';
 
 		// cache if seeing someone else's profile
-		if (!$ownProfile) $response->setCache();
+		if (!$ownProfile) {
+			$response->setCache();
+		}
 
 		// send data to the template
-		$response->setTemplate("profile.ejs", $content, [$images]);
+		$response->setTemplate('profile.ejs', $content, [$images]);
 	}
 
 	/**
@@ -135,11 +150,11 @@ class Service
 	public function _experiencia(Request $request, Response $response)
 	{
 		// get the experience leve
-		$experience = Database::query("
+		$experience = Database::query('
 			SELECT description, value
 			FROM person_experience_rules
 			WHERE active = 1
-			ORDER BY value");
+			ORDER BY value');
 
 		// send data to the view
 		$response->setCache();
@@ -169,7 +184,7 @@ class Service
 	public function _ver(Request $request, Response $response)
 	{
 		$id = $request->input->data->id;
-		$image = $id != "last" ? Database::query("SELECT * FROM person_images WHERE id='$id'")[0] : Database::query("SELECT * FROM person_images WHERE id_person='{$request->person->id}' ORDER BY id DESC LIMIT 1")[0];
+		$image = $id !== 'last' ? Database::query("SELECT * FROM person_images WHERE id='$id'")[0] : Database::query("SELECT * FROM person_images WHERE id_person='{$request->person->id}' ORDER BY id DESC LIMIT 1")[0];
 		$image->file = IMG_PATH . "/profile/{$image->file}.jpg";
 		$ownProfile = $image->id_person == $request->person->id;
 		$response->setTemplate('displayImage.ejs', ['image' => $image, 'ownProfile' => $ownProfile], [$image->file]);
@@ -184,9 +199,11 @@ class Service
 	public function _borrar(Request $request, Response $response)
 	{
 		$id = $request->input->data->id;
-		$default = Database::query("SELECT `default` FROM person_images WHERE id='$id'")[0]->default == "1";
+		$default = Database::query("SELECT `default` FROM person_images WHERE id='$id'")[0]->default == '1';
 		Database::query("UPDATE person_images SET active=0 WHERE id='$id' AND id_person='{$request->person->id}'");
-		if ($default) Database::query("UPDATE person SET picture = NULL WHERE id='{$request->person->id}'");
+		if ($default) {
+			Database::query("UPDATE person SET picture = NULL WHERE id='{$request->person->id}'");
+		}
 		unset($request->input->data->id);
 		$this->_imagenes($request, $response);
 	}
@@ -212,7 +229,7 @@ class Service
 			$image->file = basename($image->file);
 		}
 
-		$response->setTemplate('images.ejs', ['images' => $imagesList, 'ownProfile' => $ownProfile, "idPerson" => $id], $images);
+		$response->setTemplate('images.ejs', ['images' => $imagesList, 'ownProfile' => $ownProfile, 'idPerson' => $id], $images);
 	}
 
 	/**
@@ -247,22 +264,25 @@ class Service
 					UPDATE person_images SET `default`=1 WHERE file='$fileName';
 					");
 			}
-		} else if (isset($request->input->data->id)) {
+		} elseif (isset($request->input->data->id)) {
 			$id = $request->input->data->id;
 			$image = Database::query("SELECT file FROM person_images WHERE id='$id' AND id_person='{$request->person->id}'")[0]->file ?? false;
-			if ($image) Database::query("
+			if ($image) {
+				Database::query("
 							UPDATE person SET picture='$image' WHERE id='{$request->person->id}';
 							UPDATE person_images SET `default`=0 WHERE id_person='{$request->person->id}';
 							UPDATE person_images SET `default`=1 WHERE id='$id';
 							");
-
-		} else return;
+			}
+		} else {
+			return;
+		}
 
 		if (isset($request->person->completion) && $request->person->completion > 70) {
 			Challenges::complete('complete-profile', $request->person->id);
 		}
 
-		Challenges::complete("update-profile-picture", $request->person->id);
+		Challenges::complete('update-profile-picture', $request->person->id);
 	}
 
 	/**
@@ -280,7 +300,7 @@ class Service
 		$content->origins = $this->origins;
 
 		// complete challenge
-		Challenges::complete("where-found-apretaste", $request->person->id);
+		Challenges::complete('where-found-apretaste', $request->person->id);
 
 		// send data to the view
 		$response->setTemplate('origin.ejs', $content);
@@ -345,12 +365,12 @@ class Service
 	 */
 	public function _update(Request $request, Response $response)
 	{
-		// posible fields to update in the database
+		// possible fields to update in the database
 		$fields = ['username', 'first_name', 'middle_name', 'last_name', 'mother_name', 'about_me', 'avatar', 'avatarColor', 'year_of_birth', 'month_of_birth', 'day_of_birth', 'gender', 'cellphone', 'eyes', 'skin', 'body_type', 'hair', 'province', 'city', 'highest_school_level', 'occupation', 'marital_status', 'interests', 'about_me', 'mail_list', 'picture', 'sexual_orientation', 'religion', 'origin', 'show_images', 'country', 'usstate'];
 
 		// clean, shorten and lowercase the username, if passed
 		if (!empty($request->input->data->username)) {
-			$username = preg_replace("/[^a-zA-Z0-9]+/", "", $request->input->data->username);
+			$username = preg_replace('/[^a-zA-Z0-9]+/', '', $request->input->data->username);
 			$request->input->data->username = strtolower(substr($username, 0, 15));
 			if (Person::find($username)) {
 				Notifications::alert($request->person->id, "Lo sentimos, el username @$username ya esta siendo usado");
@@ -362,12 +382,12 @@ class Service
 		$pieces = [];
 		foreach ($request->input->data as $key => $value) {
 			// format first_name OR last_name in capital the first letter
-			if ($key == "first_name" || $key == "last_name") {
+			if ($key === 'first_name' || $key === 'last_name') {
 				$value = ucfirst(strtolower($value));
 			}
 
 			// format interests as a CVS to be saved
-			if ($key == 'interests') {
+			if ($key === 'interests') {
 				$interests = [];
 				foreach ($value as $piece) {
 					$interests[] = $piece->tag;
@@ -379,14 +399,14 @@ class Service
 			$value = Database::escape($value);
 
 			// prepare the database query
-			if (in_array($key, $fields)) {
-				if ($value === null || $value === "") {
+			if (in_array($key, $fields, true)) {
+				if ($value === null || $value === '') {
 					$pieces[] = "$key = null";
 				} else {
 					$pieces[] = "$key = '$value'";
 				}
 
-				if ($key == 'avatar') {
+				if ($key === 'avatar') {
 					Challenges::complete('update-profile-picture', $request->person->id);
 				}
 			}
@@ -394,7 +414,7 @@ class Service
 
 		// save changes on the database
 		if (!empty($pieces)) {
-			Database::query("UPDATE person SET " . implode(",", $pieces) . " WHERE id={$request->person->id}");
+			Database::query('UPDATE person SET '.implode(',', $pieces)." WHERE id={$request->person->id}");
 		}
 
 		// add the experience if profile is completed
