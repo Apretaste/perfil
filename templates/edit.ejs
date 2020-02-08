@@ -19,8 +19,7 @@
         <!-- DESCRIPTION -->
         <div class="input-field col s12">
             <i class="material-icons prefix grey-text text-darken-2">account_circle</i>
-            <textarea id="about_me" class="materialize-textarea" data-length="200"
-                      maxlength="200"><%= profile.about_me %></textarea>
+            <textarea id="about_me" class="materialize-textarea" data-length="200" maxlength="200"><%= profile.aboutMe %></textarea>
             <label for="about_me">Cuéntanos algo sobre ti</label>
         </div>
 
@@ -127,8 +126,7 @@
             <select id="body_type" class="validate">
                 <option value="" selected></option>
                 <% body_type.forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.bodyType){ %>selected
-                            <% } %>
+                    <option value="<%= val %>" <% if(val == profile.body){ %>selected<% } %>
                     ><%= val.firstUpper() %></option>
                 <% }); %>
             </select>
@@ -217,7 +215,7 @@
             <select id="highest_school_level" class="validate">
                 <option value=""></option>
                 <% Object.keys(highest_school_level).forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.highestSchoolLevel){ %>selected
+                    <option value="<%= val %>" <% if(val == profile.education){ %>selected
                             <% } %>
                     ><%= highest_school_level[val] %></option>
                 <% }); %>
