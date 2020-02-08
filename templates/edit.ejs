@@ -244,7 +244,7 @@
             <select id="country" class="validate" onchange="showStateOrProvince()">
                 <option value=""></option>
                 <% countries.forEach(function(country) { %>
-                    <option value="<%= country.code %>" <% if(profile.country == country.code){ %>selected
+                    <option value="<%= country.code.toUpperCase() %>" <% if(profile.country.toUpperCase() == country.code.toUpperCase()){ %>selected
                             <% } %>
                     ><%= country.name %></option>
                 <% }); %>
