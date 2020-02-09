@@ -21,9 +21,9 @@
 <div class="row profile-info">
     <div class="col s12">
         <div class="center-align">
-            <h3 class="black-text <%= !profile.first_name ? 'hide' : '' %>"><%= profile.first_name + ' ' + profile.last_name %></h3>
+            <h3 class="black-text <%= !profile.firstName ? 'hide' : '' %>"><%= profile.firstName + ' ' + profile.lastName %></h3>
             <h4 style="color: <%= genderColor(profile.gender) %>">@<%= profile.username %></h4>
-            <% if(profile.first_name){ %>
+            <% if(profile.firstName){ %>
                 <style>
                     .profile-info h4 {
                         margin-top: 0
@@ -48,7 +48,7 @@
     </div>
 
     <div class="col s12">
-        <p style="margin: 1em 5px"><%= profile.about_me %></p>
+        <p style="margin: 1em 5px"><%= profile.aboutMe %></p>
 
         <table class="desc-table">
             <% if(profile.profile_tags){ %>
