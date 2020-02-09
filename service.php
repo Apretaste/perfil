@@ -9,14 +9,13 @@ use Apretaste\Person;
 use Apretaste\Request;
 use Apretaste\Response;
 use Framework\Alert;
+use Framework\Core;
 use Framework\Database;
 use Framework\Images;
 use Framework\Utils;
 
 class Service
 {
-	private $origins = ["Amigo en Cuba", "Familia Afuera", "Referido", "El Paquete", "Revolico", "Bajanda", "Casa de Apps", "Facebook", "Internet", "La Calle", "Prensa Independiente", "Prensa Cubana", "Otro"];
-
 	/**
 	 * Display your profile
 	 *
@@ -277,7 +276,7 @@ class Service
 		// get the person to add origin
 		$content = new stdClass();
 		$content->origin = $request->person->origin;
-		$content->origins = $this->origins;
+		$content->origins = Core::$origins;
 
 		// complete challenge
 		Challenges::complete("where-found-apretaste", $request->person->id);
