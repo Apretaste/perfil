@@ -5,7 +5,7 @@ use Apretaste\Core;
 class Service
 {
 	private $origins = ["AMIGO_EN_CUBA" => "Amigo en Cuba", "FAMILIA_AFUERA" => "Familia Afuera", "REFERIDO" => "Referido", "PAQUETE" => "El Paquete", "REVOLICO" => "Revolico", "BAJANDA" => "Bajanda", "CASA_DE_APPS" => "Casa de Apps", "FACEBOOK" => "Facebook", "INTERNET" => "Internet", "CALLE" => "La Calle", "PRENSA_INDEPENDIENTE" => "Prensa Independiente", "PRENSA_CUBANA" => "Prensa Cubana", "OTRO" => "Otro"];
-	private $avatars = ["apretin", "apretina", "artista", "bandido", "belleza", "chica", "coqueta", "cresta", "deportiva", "dulce", "emo", "encapuchado", "extranna", "fabulosa", "fuerte", "ganadero", "geek", "genia", "gotica", "gotico", "guapo", "hawaiano", "hippie", "hombre", "inconformista", "independiente", "jefe", "jugadora", "mago", "metalero", "modelo", "moderna", "musico", "nerd", "punk", "punkie", "rap", "rapear", "rapero", "rock", "rockera", "rubia", "rudo", "sencilla", "sencillo", "sennor", "sennorita", "sensei", "surfista", "tablista", "vaquera"];
+	private $avatars = ["apretin", "apretina", "artista", "bandido", "belleza", "chica", "coqueta", "cresta", "deportiva", "dulce", "emo", "oculto", "extranna", "fabulosa", "fuerte", "ganadero", "geek", "genia", "gotica", "gotico", "guapo", "hawaiano", "hippie", "hombre", "atento", "libre", "jefe", "jugadora", "mago", "metalero", "modelo", "moderna", "musico", "nerd", "punk", "punkie", "rap", "rapear", "rapero", "rock", "rockera", "rubia", "rudo", "sencilla", "sencillo", "sennor", "sennorita", "sensei", "surfista", "tablista", "vaquera"];
 
 	/**
 	 * Display your profile
