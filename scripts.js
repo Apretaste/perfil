@@ -320,6 +320,7 @@ function setAvatarCallback() {
 function sendFile(base64File) {
 	if (base64File.length > 2584000) {
 		showToast("Imagen demasiado pesada");
+		$('input:file').val(null);
 		return;
 	}
 
