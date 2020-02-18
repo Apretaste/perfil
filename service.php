@@ -200,19 +200,28 @@ class Service
 	 */
 	public function _imagenes(Request $request, Response $response)
 	{
+		// get the ID of the person to check
 		$id = $request->input->data->id ?? $request->person->id;
-		$ownProfile = $request->person->id == $id;
 
-		$imagesList = Database::query("SELECT id, file, `default` FROM person_images WHERE id_person = '$id' AND active=1");
+		// get the list of images for the person
+		$imagesList = Database::query("SELECT id, file, `default` FROM person_images WHERE id_person=$id AND active=1");
 
+		// thumbnail the images
 		$images = [];
 		foreach ($imagesList as $image) {
-			$image->file = Images::generateThumbnail($image->file);
-			$images[] = $image->file;
-			$image->file = basename($image->file);
+			$image->file = $image->file . '.jpg'; // update img for the view
+			$imgPath = IMG_PATH . 'profile/' . $image->file;
+			$images[] = Images::thumbnail($imgPath);
 		}
 
-		$response->setTemplate('images.ejs', ['images' => $imagesList, 'ownProfile' => $ownProfile, "idPerson" => $id], $images);
+		// create the content
+		$content = [
+			'images' => $imagesList, 
+			'ownProfile' => $request->person->id == $id, 
+			'idPerson' => $id];
+
+		// send data to the view
+		$response->setTemplate('images.ejs', $content, $images);
 	}
 
 	/**
@@ -234,9 +243,9 @@ class Service
 			$fileName = Utils::randomHash();
 			$filePath = IMG_PATH . "/profile/$fileName.jpg";
 
-			// save the optimized image on the user folder
+			// save and optimize the image on the user folder
 			file_put_contents($filePath, base64_decode($picture));
-			Images::optimizeImage($filePath);
+			Images::optimize($filePath);
 
 			// save changes on the database
 			Database::query("INSERT INTO person_images(id_person, file) VALUES('{$request->person->id}', '$fileName')");
