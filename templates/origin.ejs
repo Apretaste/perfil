@@ -6,9 +6,9 @@
 		<div class="input-field">
 			<select id='origin'>
 				<option value="" disabled selected>Escoja su opción</option>
-				<% origins.forEach(function(item){ %>
-					<% var selected = (origin == item) ? 'selected="selected"' : ''; %>
-					<option value="<%= item %>" <%= selected %>><%= item %></option>
+				<% Object.keys(origins).forEach(function(key){ %>
+					<% var selected = (origin == key) ? 'selected="selected"' : ''; %>
+					<option value="<%= key %>" <%= selected %>><%= origins[key] %></option>
 				<% }) %>
 			</select>
 		</div>
