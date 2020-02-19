@@ -1,47 +1,40 @@
 <div class="row green apretaste top-bar">
-    <div class="col s12">
-        <ul class="tabs tabs-fixed-width green apretaste">
-            <li class="tab col s4"><a href="#" class="white-text"
-                                      onclick="apretaste.send({command: 'PERFIL', data: {'username': image.id_person}})">Perfil</a>
-            </li>
-            <% if(ownProfile){ %>
-            <li class="tab col s4"><a href="#" class="white-text" onclick="apretaste.send({command: 'PERFIL NIVELES'})">Niveles</a>
-                <% } %>
-            <li class="tab col s4"><a href="#" class="active white-text"
-                                      onclick="apretaste.send({command: 'PERFIL IMAGENES', data: {'id': image.id_person}})"
-                                      )>Imagenes</a></li>
-        </ul>
-    </div>
+	<div class="col s12">
+		<ul class="tabs tabs-fixed-width green apretaste">
+			<li class="tab col s4"><a href="#" class="white-text" onclick="apretaste.send({command: 'PERFIL', data: {'username': idPerson}})">Perfil</a></li>
+			<% if(ownProfile){ %>
+				<li class="tab col s4"><a href="#" class="white-text" onclick="apretaste.send({command: 'PERFIL NIVELES'})">Niveles</a>
+			<% } %>
+			<li class="tab col s4"><a href="#" class="active white-text" onclick="apretaste.send({command: 'PERFIL IMAGENES', data: {'id': idPerson}})")>Imagenes</a></li>
+		</ul>
+	</div>
 </div>
 
 <div class=" row" style="margin-top: 0.75rem">
-    <div class="col s12" style="position: relative">
-        <div class="center-align" style="margin-bottom: 0.75rem">
-            <img src="{{APP_IMAGE_PATH}}/<%= image.file %>" class="responsive-img center-align"
-                 style="border-radius: 8px">
-        </div>
-        <% if(ownProfile) { %>
-            <% if(image.default != 1){ %>
-                <a onclick="selectDefaultImage()" class="waves-effect waves-light btn-small">Hacer principal</a>
-            <% } %>
-            <a class="waves-effect waves-light btn-small modal-trigger red" href="#deleteModal">Eliminar</a>
-        <% } %>
-    </div>
+	<div class="col s12" style="position: relative">
+		<div class="center-align" style="margin-bottom: 0.75rem">
+			<img src="{{APP_IMAGE_PATH}}<%= file %>.jpg" class="responsive-img center-align"
+				 style="border-radius: 8px">
+		</div>
+		<% if(ownProfile) { %>
+			<% if(isDefault != 1){ %>
+				<a onclick="selectDefaultImage()" class="waves-effect waves-light btn-small">Hacer principal</a>
+			<% } %>
+			<a class="waves-effect waves-light btn-small modal-trigger red" href="#deleteModal">Eliminar</a>
+		<% } %>
+	</div>
 </div>
 
 <div class="fixed-action-btn">
-    <a class="btn-floating btn-large waves-effect waves-light"
-       onclick="apretaste.send({command: 'PERFIL IMAGENES', data: {'id': image.id_person}})"
-       )><i
-                class="material-icons">arrow_back</i></a>
+	<a class="btn-floating btn-large waves-effect waves-light" onclick="apretaste.send({command: 'PERFIL IMAGENES', data: {'id': idPerson}})")><i class="material-icons">arrow_back</i></a>
 </div>
 
 <div id="deleteModal" class="modal">
-    <div class="modal-content">
-        <p>¿Está seguro de eliminar esta imagen?</p>
-    </div>
-    <div class="modal-footer">
-        <a class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
-        <a onclick="deleteImage()" class="modal-close waves-effect waves-red red-text btn-flat">Eliminar</a>
-    </div>
+	<div class="modal-content">
+		<p>¿Está seguro de eliminar esta imagen?</p>
+	</div>
+	<div class="modal-footer">
+		<a class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
+		<a onclick="deleteImage()" class="modal-close waves-effect waves-red red-text btn-flat">Eliminar</a>
+	</div>
 </div>

@@ -291,7 +291,7 @@ function setAvatar(avatar) {
 function deleteImage() {
 	apretaste.send({
 		'command': 'PERFIL BORRAR',
-		'data': {'id': image.id},
+		'data': {'id': id},
 		'redirect': true/*,
 		'callback': {'name': 'deleteImageCallback'}*/
 	});
@@ -300,7 +300,7 @@ function deleteImage() {
 function selectDefaultImage() {
 	apretaste.send({
 		'command': 'PERFIL FOTO',
-		'data': {'id': image.id},
+		'data': {'id': id},
 		'redirect': false,
 		'callback': {'name': 'showToast', 'data': 'Imagen principal cambiada'}
 	});

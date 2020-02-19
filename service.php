@@ -162,6 +162,8 @@ class Service
 	}
 
 	/**
+	 * Display an image in the gallery
+	 * 
 	 * @param Request $request
 	 * @param Response $response
 	 * @throws Alert
@@ -169,13 +171,30 @@ class Service
 	public function _ver(Request $request, Response $response)
 	{
 		$id = $request->input->data->id;
-		$image = $id !== 'last' ? Database::query("SELECT * FROM person_images WHERE id='$id'")[0] : Database::query("SELECT * FROM person_images WHERE id_person='{$request->person->id}' ORDER BY id DESC LIMIT 1")[0];
-		$image->file = IMG_PATH . "/profile/{$image->file}.jpg";
-		$ownProfile = $image->id_person == $request->person->id;
-		$response->setTemplate('displayImage.ejs', ['image' => $image, 'ownProfile' => $ownProfile], [$image->file]);
+
+		// get the image to display
+		$image = ($id !== 'last') ? 
+			Database::query("SELECT * FROM person_images WHERE id='$id'")[0] : 
+			Database::query("SELECT * FROM person_images WHERE id_person='{$request->person->id}' ORDER BY id DESC LIMIT 1")[0];
+
+		// get the full path to the image
+		$file = IMG_PATH . "profile/{$image->file}.jpg";
+
+		// create content for the view
+		$content = [
+			"id" => $image->id,
+			"isDefault" => $image->default,
+			"file" => $image->file,
+			"idPerson" => $image->id_person,
+			'ownProfile' => $image->id_person == $request->person->id];
+
+		// send data to the view 
+		$response->setTemplate('displayImage.ejs', $content, [$file]);
 	}
 
 	/**
+	 * Delete an image from the gallery
+	 * 
 	 * @param Request $request
 	 * @param Response $response
 	 * @throws Alert
@@ -184,17 +203,25 @@ class Service
 	public function _borrar(Request $request, Response $response)
 	{
 		$id = $request->input->data->id;
-		$default = Database::query("SELECT `default` FROM person_images WHERE id='$id'")[0]->default == '1';
+
+		// delete the image
 		Database::query("UPDATE person_images SET active=0 WHERE id='$id' AND id_person='{$request->person->id}'");
+
+		// if it is the default image, delete in the person table
+		$default = Database::query("SELECT `default` FROM person_images WHERE id='$id'")[0]->default == '1';
 		if ($default) {
 			Database::query("UPDATE person SET picture = NULL WHERE id='{$request->person->id}'");
 		}
+
+		// delete the file from the HD
 		unset($request->input->data->id);
+
+		// return the response
 		$this->_imagenes($request, $response);
 	}
 
 	/**
-	 * Edit your images
+	 * Show the image gallery
 	 *
 	 * @param Request $request
 	 * @param Response $response
@@ -227,11 +254,10 @@ class Service
 	}
 
 	/**
-	 * Subservice FOTO
+	 * Uploads a new image to the gallery
 	 *
 	 * @param Request $request
 	 * @param Response $response
-	 *
 	 * @throws Exception
 	 */
 	public function _foto(Request $request, Response $response)
@@ -255,18 +281,16 @@ class Service
 				Database::query("
 					UPDATE person SET picture='$fileName' WHERE id='{$request->person->id}';
 					UPDATE person_images SET `default`=0 WHERE id_person='{$request->person->id}';
-					UPDATE person_images SET `default`=1 WHERE file='$fileName';
-					");
+					UPDATE person_images SET `default`=1 WHERE file='$fileName';");
 			}
 		} elseif (isset($request->input->data->id)) {
 			$id = $request->input->data->id;
 			$image = Database::query("SELECT file FROM person_images WHERE id='$id' AND id_person='{$request->person->id}'")[0]->file ?? false;
 			if ($image) {
 				Database::query("
-							UPDATE person SET picture='$image' WHERE id='{$request->person->id}';
-							UPDATE person_images SET `default`=0 WHERE id_person='{$request->person->id}';
-							UPDATE person_images SET `default`=1 WHERE id='$id';
-							");
+					UPDATE person SET picture='$image' WHERE id='{$request->person->id}';
+					UPDATE person_images SET `default`=0 WHERE id_person='{$request->person->id}';
+					UPDATE person_images SET `default`=1 WHERE id='$id';");
 			}
 		} else {
 			return;
