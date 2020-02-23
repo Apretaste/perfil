@@ -156,6 +156,14 @@ $(document).ready(function () {
 	}
 
 	showStateOrProvince();
+
+	if (typeof cellphoneUpdateAllowed != "undefined" && !cellphoneUpdateAllowed) {
+		var cellphone = $('#cellphone');
+		cellphone.attr('disabled', '');
+		cellphone.parent().click(function () {
+			M.Modal.getInstance($('#cantUpdateCellphoneModal')).open();
+		});
+	}
 });
 
 // Main Functions
@@ -239,10 +247,11 @@ function submitProfileData() {
 	var names = ['first_name', 'last_name', 'about_me', 'country', 'year_of_birth', 'month_of_birth', 'day_of_birth', 'province', 'city', 'gender', 'sexual_orientation', 'marital_status', 'religion', 'body_type', 'eyes', 'skin', 'hair', 'highest_school_level', 'occupation', 'cellphone'];
 
 	// create object to send to the backend
-	var data = new Object();
+	var data = {};
 	names.forEach(function (prop) {
 		if ($('#' + prop).val() != profile[prop] && $('#' + prop).val() != null && $('#' + prop).val() != "") {
 			data[prop] = $('#' + prop).val();
+			profile[prop] = $('#' + prop).val();
 		}
 	});
 
