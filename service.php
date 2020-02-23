@@ -98,12 +98,17 @@ class Service
 	 */
 	public function _editar(Request $request, Response $response)
 	{
+		$content = [
+			'profile' => $request->person,
+			'cellphoneUpdateAllowed' => $this->cellphoneUpdatesThisYear($request->person) < 2
+		];
+
 		$pathToService = Utils::getPathToService($response->serviceName);
 		if (!empty($request->person->avatar)) {
 			$images = ["$pathToService/images/{$request->person->avatar}.png"];
 		} else $images = ["$pathToService/images/hombre.png"];
 
-		$response->setTemplate('edit.ejs', ['profile' => $request->person], $images);
+		$response->setTemplate('edit.ejs', $content, $images);
 	}
 
 	/**
@@ -360,6 +365,15 @@ class Service
 			// escape dangerous chars in the value passed
 			$value = Connection::escape($value);
 
+			if ($key === 'cellphone') {
+				$updatesThisYear = $this->cellphoneUpdatesThisYear($request->person);
+				if ($updatesThisYear >= 2) continue;
+				else {
+					if (!$request->person->cellphone) $request->person->cellphone = "NULL";
+					Connection::query("INSERT INTO person_cellphone_update(person_id, previous_cellphone, new_cellphone) VALUES('{$request->person->id}', '{$request->person->cellphone}', '$value')");
+				}
+			}
+
 			// prepare the database query
 			if (in_array($key, $fields)) {
 				if ($value === null || $value === "") {
@@ -401,5 +415,11 @@ class Service
 			$images[] = $path . $gem . '.png';
 		}
 		return $images;
+	}
+
+	private function cellphoneUpdatesThisYear($person): int
+	{
+		$updatesThisYear = Connection::query("SELECT COUNT(id) AS total FROM person_cellphone_update WHERE person_id = '{$person->id}' AND YEAR(NOW())=YEAR(updated)");
+		return (int)$updatesThisYear[0]->total;
 	}
 }
