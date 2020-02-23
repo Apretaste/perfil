@@ -103,7 +103,13 @@ class Service
 	 */
 	public function _editar(Request $request, Response $response)
 	{
-		$response->setTemplate('edit.ejs', ['profile' => $request->person]);
+		$request->person->cellphone = $request->person->phone;
+		$content = [
+			'profile' => $request->person,
+			'cellphoneUpdateAllowed' => $this->cellphoneUpdatesThisYear($request->person) < 2
+		];
+
+		$response->setTemplate('edit.ejs', $content);
 	}
 
 	/**
@@ -163,7 +169,7 @@ class Service
 
 	/**
 	 * Display an image in the gallery
-	 * 
+	 *
 	 * @param Request $request
 	 * @param Response $response
 	 * @throws Alert
@@ -173,8 +179,8 @@ class Service
 		$id = $request->input->data->id;
 
 		// get the image to display
-		$image = ($id !== 'last') ? 
-			Database::query("SELECT * FROM person_images WHERE id='$id'")[0] : 
+		$image = ($id !== 'last') ?
+			Database::query("SELECT * FROM person_images WHERE id='$id'")[0] :
 			Database::query("SELECT * FROM person_images WHERE id_person='{$request->person->id}' ORDER BY id DESC LIMIT 1")[0];
 
 		// get the full path to the image
@@ -194,7 +200,7 @@ class Service
 
 	/**
 	 * Delete an image from the gallery
-	 * 
+	 *
 	 * @param Request $request
 	 * @param Response $response
 	 * @throws Alert
@@ -245,8 +251,8 @@ class Service
 
 		// create the content
 		$content = [
-			'images' => $imagesList, 
-			'ownProfile' => $request->person->id == $id, 
+			'images' => $imagesList,
+			'ownProfile' => $request->person->id == $id,
 			'idPerson' => $id];
 
 		// send data to the view
@@ -416,6 +422,16 @@ class Service
 			// escape dangerous chars in the value passed
 			$value = Database::escape($value);
 
+			// format interests as a CVS to be saved
+			if ($key === 'cellphone') {
+				$updatesThisYear = $this->cellphoneUpdatesThisYear($request->person);
+				if ($request->person->phone == $value || $updatesThisYear >= 2) continue;
+				else {
+					if (!$request->person->phone) $request->person->phone = "NULL";
+					Database::query("INSERT INTO person_cellphone_update(person_id, previous_cellphone, new_cellphone) VALUES('{$request->person->id}', '{$request->person->phone}', '$value')");
+				}
+			}
+
 			// prepare the database query
 			if (in_array($key, $fields, true)) {
 				if ($value === null || $value === '') {
@@ -440,5 +456,11 @@ class Service
 			Challenges::complete('complete-profile', $request->person->id);
 			Level::setExperience('FINISH_PROFILE_FIRST', $request->person->id);
 		}
+	}
+
+	private function cellphoneUpdatesThisYear($person): int
+	{
+		$updatesThisYear = Database::query("SELECT COUNT(id) AS total FROM person_cellphone_update WHERE person_id = '{$person->id}' AND YEAR(NOW())=YEAR(updated)");
+		return (int)$updatesThisYear[0]->total;
 	}
 }

@@ -19,12 +19,13 @@
         <!-- DESCRIPTION -->
         <div class="input-field col s12">
             <i class="material-icons prefix grey-text text-darken-2">account_circle</i>
-            <textarea id="about_me" class="materialize-textarea" data-length="200" maxlength="200"><%= profile.aboutMe %></textarea>
+            <textarea id="about_me" class="materialize-textarea" data-length="200"
+                      maxlength="200"><%= profile.aboutMe %></textarea>
             <label for="about_me">Cuéntanos algo sobre ti</label>
         </div>
 
         <!-- NAME -->
-        <div class="input-field col s12 m6" style="margin-top:-0.75rem;">
+        <div class="input-field col s12 m6">
             <i class="material-icons prefix grey-text text-darken-2">person</i>
             <input id="first_name" type="text" value="<%= profile.firstName %>" class="validate"/>
             <label for="first_name">Nombre</label>
@@ -126,7 +127,8 @@
             <select id="body_type" class="validate">
                 <option value="" selected></option>
                 <% body_type.forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.body){ %>selected<% } %>
+                    <option value="<%= val %>" <% if(val == profile.body){ %>selected
+                            <% } %>
                     ><%= val.firstUpper() %></option>
                 <% }); %>
             </select>
@@ -193,7 +195,8 @@
             <select id="marital_status" class="validate">
                 <option value=""></option>
                 <% marital_status.forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.maritalStatus){ %>selected<% } %>
+                    <option value="<%= val %>" <% if(val == profile.maritalStatus){ %>selected
+                            <% } %>
                     ><%= val.firstUpper() %></option>
                 <% }); %>
             </select>
@@ -244,7 +247,10 @@
             <select id="country" class="validate" onchange="showStateOrProvince()">
                 <option value=""></option>
                 <% countries.forEach(function(country) { %>
-                    <option value="<%= country.code.toUpperCase() %>" <% if(profile.countryCode.toUpperCase() == country.code.toUpperCase()){ %>selected<% } %>><%= country.name %></option>
+                    <option value="<%= country.code.toUpperCase() %>"
+                            <% if(profile.countryCode.toUpperCase() == country.code.toUpperCase()){ %>selected
+                            <% } %>
+                    ><%= country.name %></option>
                 <% }); %>
             </select>
             <label for="country">País</label>
@@ -303,10 +309,10 @@
             <label for="religion">Religión</label>
         </div>
 
-        <% if(typeof profile.cellphone != "undefined"){ %>
+        <% if(typeof profile.phone != "undefined"){ %>
             <div class="input-field col s12 m6">
                 <i class="material-icons prefix grey-text text-darken-2">phone</i>
-                <input value="<%= profile.cellphone %>" id="cellphone" type="tel" maxlength="10" class="validate">
+                <input value="<%= profile.phone %>" id="cellphone" type="tel" maxlength="10" class="validate">
                 <label for="cellphone">Celular</label>
             </div>
         <% } %>
@@ -324,5 +330,15 @@
     <div class="fixed-action-btn">
         <a class="btn-floating btn-large waves-effect waves-light" href="#!" onclick="submitProfileData()"><i
                     class="material-icons">save</i></a>
+    </div>
+</div>
+
+<div id="cantUpdateCellphoneModal" class="modal">
+    <div class="modal-content">
+        <h5>Lo sentimos</h5>
+        <p>Por motivos de segúridad, solo puede cámbiar su número dos veces al año, contacte a soporte para mas información.</p>
+    </div>
+    <div class="modal-footer">
+        <a class="modal-close waves-effect waves-green btn-flat">Aceptar</a>
     </div>
 </div>
