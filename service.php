@@ -425,7 +425,7 @@ class Service
 			// format interests as a CVS to be saved
 			if ($key === 'cellphone') {
 				$updatesThisYear = $this->cellphoneUpdatesThisYear($request->person);
-				if ($updatesThisYear >= 2) continue;
+				if ($request->person->phone == $value || $updatesThisYear >= 2) continue;
 				else {
 					if (!$request->person->phone) $request->person->phone = "NULL";
 					Database::query("INSERT INTO person_cellphone_update(person_id, previous_cellphone, new_cellphone) VALUES('{$request->person->id}', '{$request->person->phone}', '$value')");
