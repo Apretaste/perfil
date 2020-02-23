@@ -367,7 +367,7 @@ class Service
 
 			if ($key === 'cellphone') {
 				$updatesThisYear = $this->cellphoneUpdatesThisYear($request->person);
-				if ($updatesThisYear >= 2) continue;
+				if ($request->person->cellphone == $value || $updatesThisYear >= 2) continue;
 				else {
 					if (!$request->person->cellphone) $request->person->cellphone = "NULL";
 					Connection::query("INSERT INTO person_cellphone_update(person_id, previous_cellphone, new_cellphone) VALUES('{$request->person->id}', '{$request->person->cellphone}', '$value')");
