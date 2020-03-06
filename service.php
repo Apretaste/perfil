@@ -246,7 +246,7 @@ class Service
 		foreach ($imagesList as &$image) {
 			$image->file = $image->file . '.jpg'; // update img for the view
 			$imgPath = IMG_PATH . 'profile/' . $image->file;
-			$image->file = Images::generateThumbnail($imgPath);
+			$image->file = Images::thumbnail($imgPath);
 			$images[] = $image->file;
 			$image->file = basename($image->file);
 		}
@@ -281,7 +281,7 @@ class Service
 
 			// save and optimize the image on the user folder
 			file_put_contents($filePath, base64_decode($picture));
-			Images::optimizeImage($filePath);
+			Images::optimize($filePath);
 
 			// save changes on the database
 			Database::query("INSERT INTO person_images(id_person, file) VALUES('{$request->person->id}', '$fileName')");
