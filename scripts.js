@@ -227,7 +227,11 @@ function getUserLevel(experience) {
 		if (experience >= level.experience) userLevel = level;
 	});
 
-	userLevel.percent = userLevel.maxExperience !== 0 ? ((experience - userLevel.experience) / (userLevel.maxExperience - userLevel.experience)) * 100 : 0;
+	if (experience >= 1000) userLevel.percent = 100;
+	else userLevel.percent =
+		userLevel.maxExperience !== 0
+			? ((experience - userLevel.experience) / (userLevel.maxExperience - userLevel.experience)) * 100
+			: 0;
 
 	return userLevel;
 }
