@@ -245,11 +245,13 @@ class Service
 		// thumbnail the images
 		$images = [];
 		foreach ($imagesList as &$image) {
-			$image->file = $image->file . '.jpg'; // update img for the view
-			$imgPath = IMG_PATH . 'profile/' . $image->file;
-			$image->file = Images::thumbnail($imgPath);
-			$images[] = $image->file;
-			$image->file = basename($image->file);
+			if (isset($image->file)){
+				$image->file .= '.jpg'; // update img for the view
+				$imgPath = IMG_PATH . 'profile/' . $image->file;
+				$image->file = Images::thumbnail($imgPath);
+				$images[] = $image->file;
+				$image->file = basename($image->file);
+			}
 		}
 
 		// create the content
