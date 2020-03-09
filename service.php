@@ -237,9 +237,10 @@ class Service
 	{
 		// get the ID of the person to check
 		$id = $request->input->data->id ?? $request->person->id;
+		$ownProfile = $request->person->id == $id;
 
 		// get the list of images for the person
-		$imagesList = Database::query("SELECT id, file, `default` FROM person_images WHERE id_person=$id AND active=1");
+		$imagesList = $ownProfile ? $request->person->gallery : Database::query("SELECT id, file, `default` FROM person_images WHERE id_person=$id AND active=1");
 
 		// thumbnail the images
 		$images = [];
@@ -252,7 +253,7 @@ class Service
 		// create the content
 		$content = [
 			'images' => $imagesList,
-			'ownProfile' => $request->person->id == $id,
+			'ownProfile' => $ownProfile,
 			'idPerson' => $id];
 
 		// send data to the view
