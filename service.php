@@ -184,7 +184,7 @@ class Service
 			Database::query("SELECT * FROM person_images WHERE id_person='{$request->person->id}' ORDER BY id DESC LIMIT 1")[0];
 
 		// get the full path to the image
-		$file = IMG_PATH . "profile/{$image->file}.jpg";
+		$file = SHARED_PUBLIC_PATH . "profile/{$image->file}.jpg";
 
 		// create content for the view
 		$content = [
@@ -245,7 +245,7 @@ class Service
 		$images = [];
 		foreach ($imagesList as $image) {
 			$image->file = $image->file . '.jpg'; // update img for the view
-			$imgPath = IMG_PATH . 'profile/' . $image->file;
+			$imgPath = SHARED_PUBLIC_PATH . 'profile/' . $image->file;
 			$images[] = Images::thumbnail($imgPath);
 		}
 
@@ -275,7 +275,7 @@ class Service
 
 			// get the image name and path
 			$fileName = Utils::randomHash();
-			$filePath = IMG_PATH . "/profile/$fileName.jpg";
+			$filePath = SHARED_PUBLIC_PATH . "/profile/$fileName.jpg";
 
 			// save and optimize the image on the user folder
 			file_put_contents($filePath, base64_decode($picture));
