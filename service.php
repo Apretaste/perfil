@@ -468,6 +468,7 @@ class Service
 
 	private function levelFileName($level): string
 	{
-		return str_replace(['á', 'é', 'í', 'ó', 'ú'], ['a', 'e', 'i', 'o', 'u'], strtolower($level));
+		$levels = ["Zafiro" => "zafiro", "Topacio" => "topacio", "Rubí" => "rubi", "Ópalo" => "opalo", "Esmeralda" => "esmeralda", "Diamante" => "diamante"];
+		return $levels[$level];
 	}
 }
