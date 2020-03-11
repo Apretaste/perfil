@@ -83,7 +83,8 @@ class Service
 		$content->ownProfile = $ownProfile;
 
 		// get the gem image
-		$images = SERVICE_PATH . 'perfil/images/' . 'level-' . strtolower($request->person->level) . '.png';
+		$level = $this->levelFileName($request->person->level);
+		$images = SERVICE_PATH . "perfil/images/level-$level.png";
 
 		// cache if seeing someone else's profile
 		if (!$ownProfile) {
@@ -463,5 +464,10 @@ class Service
 	{
 		$updatesThisYear = Database::query("SELECT COUNT(id) AS total FROM person_cellphone_update WHERE person_id = '{$person->id}' AND YEAR(NOW())=YEAR(updated)");
 		return (int)$updatesThisYear[0]->total;
+	}
+
+	private function levelFileName($level): string
+	{
+		return str_replace(['á', 'é', 'í', 'ó', 'ú'], ['a', 'e', 'i', 'o', 'u'], strtolower($level));
 	}
 }
