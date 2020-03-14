@@ -34,6 +34,15 @@ class Service
 			// get the data of the person requested
 			$profile = Person::find($data->username);
 
+			// check if the person exist. If not, message the requestor
+			if (!$profile) {
+				return $response->setTemplate('message.ejs', [
+					'header' => 'El perfil no existe',
+					'icon' => 'sentiment_very_dissatisfied',
+					'text' => 'Lo sentimos, pero el perfil que usted busca no pudo ser encontrado. Puede que el nombre de usuario halla cambiado o la persona halla salido de la app.'
+				]);
+			}
+
 			// run powers for amulet DETECTIVE
 			if (Amulets::isActive(Amulets::DETECTIVE, $profile->id)) {
 				$msg = "Los poderes del amuleto del Druida te avisan: @{$request->person->username} está revisando tu perfil";
@@ -46,15 +55,6 @@ class Service
 					'header' => 'Shadow-Mode',
 					'icon' => 'visibility_off',
 					'text' => 'La magia oscura de un amuleto rodea este perfil y te impide verlo. Por mucho que intentes romperlo, el hechizo del druida es poderoso.'
-				]);
-			}
-
-			// check if the person exist. If not, message the requestor
-			if (!$profile) {
-				return $response->setTemplate('message.ejs', [
-					'header' => 'El perfil no existe',
-					'icon' => 'sentiment_very_dissatisfied',
-					'text' => 'Lo sentimos, pero el perfil que usted busca no pudo ser encontrado. Puede que el nombre de usuario halla cambiado o la persona halla salido de la app.'
 				]);
 			}
 
