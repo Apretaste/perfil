@@ -81,7 +81,7 @@ var levels = [
 		experience: 100,
 		maxExperience: 299,
 		benefits: [
-			'Posibilidad de transferir crédito', 'Doble créditos al canjear un cupón'
+			'Posibilidad de canjear recargas', 'Doble créditos al canjear un cupón'
 		]
 	},
 
@@ -115,7 +115,7 @@ var levels = [
 		experience: 700,
 		maxExperience: 999,
 		benefits: [
-			'Beneficios anteriores', '10% de descuento en todas las compras', 'Doble créditos al terminar encuestas'
+			'Beneficios anteriores', '10% de descuento en todos los canjes', 'Doble créditos al terminar encuestas'
 		]
 	},
 	{
@@ -126,7 +126,7 @@ var levels = [
 		experience: 1000,
 		maxExperience: 1000,
 		benefits: [
-			'Beneficios anteriores', 'Acceso al "Club Diamante"', '§1 de crédito gratis al mes'
+			'Beneficios anteriores', 'Acceso al "Club Diamante"', '§1 de crédito cada mes'
 		]
 	},
 ];
