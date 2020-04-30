@@ -396,11 +396,14 @@ class Service
 
 		// clean, shorten and lowercase the username, if passed
 		if (!empty($request->input->data->username)) {
-			$username = preg_replace('/[^a-zA-Z0-9]+/', '', $request->input->data->username);
-			$request->input->data->username = strtolower(substr($username, 0, 15));
-			if (Person::find($username)) {
-				Notifications::alert($request->person->id, "Lo sentimos, el username @$username ya esta siendo usado");
-				unset($request->input->data->username);
+			$username = strtolower(substr(preg_replace('/[^a-zA-Z0-9]+/', '', $request->input->data->username), 0, 15));
+			if ($username == $request->person->username) unset($request->input->data->username);
+			else {
+				$request->input->data->username = $username;
+				if (Person::find($username)) {
+					Notifications::alert($request->person->id, "Lo sentimos, el username @$username ya esta siendo usado");
+					unset($request->input->data->username);
+				}
 			}
 		}
 
