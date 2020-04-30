@@ -93,7 +93,7 @@ var levels = [
 		experience: 300,
 		maxExperience: 499,
 		benefits: [
-			'Beneficios anteriores', '5 tickets gratis para la rifa mensual', 'Doble crédito al completar retos'
+			'Beneficios anteriores', '5 tickets gratis para la rifa mensual (Al inicio de cada mes)', 'Doble crédito al completar retos'
 		]
 	},
 	{
