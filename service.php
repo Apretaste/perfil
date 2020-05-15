@@ -399,11 +399,13 @@ class Service
 			$username = strtolower(substr(preg_replace('/[^a-zA-Z0-9]+/', '', $request->input->data->username), 0, 15));
 			if ($username == $request->person->username) unset($request->input->data->username);
 			else {
-				$request->input->data->username = $username;
-				if (Person::find($username)) {
-					Notifications::alert($request->person->id, "Lo sentimos, el username @$username ya esta siendo usado");
-					unset($request->input->data->username);
-				}
+				if (is_string($username) && strlen($username) > 0) {
+					$request->input->data->username = $username;
+					if (Person::find($username)) {
+						Notifications::alert($request->person->id, "Lo sentimos, el username @$username ya esta siendo usado");
+						unset($request->input->data->username);
+					}
+				} else throw new Alert('561', "El username generado a partir de \"{$request->input->data->username}\" es invalido");
 			}
 		}
 
