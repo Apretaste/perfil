@@ -105,10 +105,7 @@ class Service
 	public function _editar(Request $request, Response $response)
 	{
 		$request->person->cellphone = $request->person->phone;
-		$content = [
-			'profile' => $request->person,
-			'cellphoneUpdateAllowed' => $this->cellphoneUpdatesThisYear($request->person) < 2
-		];
+		$content = ['profile' => $request->person];
 
 		$response->setTemplate('edit.ejs', $content);
 	}
@@ -428,16 +425,8 @@ class Service
 
 			// escape dangerous chars in the value passed
 			$value = Database::escape($value);
-
-			// format interests as a CVS to be saved
-			if ($key === 'cellphone') {
-				$updatesThisYear = $this->cellphoneUpdatesThisYear($request->person);
-				if ($request->person->phone == $value || $updatesThisYear >= 2) continue;
-				else {
-					if (!$request->person->phone) $request->person->phone = "NULL";
-					Database::query("INSERT INTO person_cellphone_update(person_id, previous_cellphone, new_cellphone) VALUES('{$request->person->id}', '{$request->person->phone}', '$value')");
-				}
-			}
+			
+			if ($key === 'cellphone' && $request->person->phone == $value) continue;
 
 			// prepare the database query
 			if (in_array($key, $fields, true)) {
