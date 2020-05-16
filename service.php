@@ -425,7 +425,7 @@ class Service
 
 			// escape dangerous chars in the value passed
 			$value = Database::escape($value);
-			
+
 			if ($key === 'cellphone' && $request->person->phone == $value) continue;
 
 			// prepare the database query
@@ -452,12 +452,6 @@ class Service
 			Challenges::complete('complete-profile', $request->person->id);
 			Level::setExperience('FINISH_PROFILE_FIRST', $request->person->id);
 		}
-	}
-
-	private function cellphoneUpdatesThisYear($person): int
-	{
-		$updatesThisYear = Database::query("SELECT COUNT(id) AS total FROM person_cellphone_update WHERE person_id = '{$person->id}' AND YEAR(NOW())=YEAR(updated)");
-		return (int)$updatesThisYear[0]->total;
 	}
 
 	private function levelFileName($level): string
