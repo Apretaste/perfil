@@ -1,18 +1,18 @@
 <?php
 
-use Apretaste\Amulets;
-use Apretaste\Challenges;
 use Apretaste\Chats;
 use Apretaste\Level;
-use Apretaste\Notifications;
 use Apretaste\Person;
+use Apretaste\Amulets;
 use Apretaste\Request;
 use Apretaste\Response;
-use Framework\Alert;
+use Apretaste\Challenges;
+use Apretaste\Notifications;
 use Framework\Core;
-use Framework\Database;
-use Framework\Images;
 use Framework\Utils;
+use Framework\Alert;
+use Framework\Images;
+use Framework\Database;
 
 class Service
 {
