@@ -105,10 +105,7 @@ class Service
 	public function _editar(Request $request, Response $response)
 	{
 		$request->person->cellphone = $request->person->phone;
-		$content = [
-			'profile' => $request->person,
-			'cellphoneUpdateAllowed' => $this->cellphoneUpdatesThisYear($request->person) < 2
-		];
+		$content = ['profile' => $request->person];
 
 		$response->setTemplate('edit.ejs', $content);
 	}
@@ -399,11 +396,13 @@ class Service
 			$username = strtolower(substr(preg_replace('/[^a-zA-Z0-9]+/', '', $request->input->data->username), 0, 15));
 			if ($username == $request->person->username) unset($request->input->data->username);
 			else {
-				$request->input->data->username = $username;
-				if (Person::find($username)) {
-					Notifications::alert($request->person->id, "Lo sentimos, el username @$username ya esta siendo usado");
-					unset($request->input->data->username);
-				}
+				if (is_string($username) && strlen($username) > 0) {
+					$request->input->data->username = $username;
+					if (Person::find($username)) {
+						Notifications::alert($request->person->id, "Lo sentimos, el username @$username ya esta siendo usado");
+						unset($request->input->data->username);
+					}
+				} else throw new Alert('561', "El username generado a partir de \"{$request->input->data->username}\" es invalido");
 			}
 		}
 
@@ -427,15 +426,7 @@ class Service
 			// escape dangerous chars in the value passed
 			$value = Database::escape($value);
 
-			// format interests as a CVS to be saved
-			if ($key === 'cellphone') {
-				$updatesThisYear = $this->cellphoneUpdatesThisYear($request->person);
-				if ($request->person->phone == $value || $updatesThisYear >= 2) continue;
-				else {
-					if (!$request->person->phone) $request->person->phone = "NULL";
-					Database::query("INSERT INTO person_cellphone_update(person_id, previous_cellphone, new_cellphone) VALUES('{$request->person->id}', '{$request->person->phone}', '$value')");
-				}
-			}
+			if ($key === 'cellphone' && $request->person->phone == $value) continue;
 
 			// prepare the database query
 			if (in_array($key, $fields, true)) {
@@ -461,12 +452,6 @@ class Service
 			Challenges::complete('complete-profile', $request->person->id);
 			Level::setExperience('FINISH_PROFILE_FIRST', $request->person->id);
 		}
-	}
-
-	private function cellphoneUpdatesThisYear($person): int
-	{
-		$updatesThisYear = Database::query("SELECT COUNT(id) AS total FROM person_cellphone_update WHERE person_id = '{$person->id}' AND YEAR(NOW())=YEAR(updated)");
-		return (int)$updatesThisYear[0]->total;
 	}
 
 	private function levelFileName($level): string

@@ -156,14 +156,6 @@ $(document).ready(function () {
 	}
 
 	showStateOrProvince();
-
-	if (typeof cellphoneUpdateAllowed != "undefined" && !cellphoneUpdateAllowed) {
-		var cellphone = $('#cellphone');
-		cellphone.attr('disabled', '');
-		cellphone.parent().click(function () {
-			M.Modal.getInstance($('#cantUpdateCellphoneModal')).open();
-		});
-	}
 });
 
 // Main Functions
