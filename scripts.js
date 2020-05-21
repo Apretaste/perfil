@@ -1,66 +1,22 @@
 "use strict";
 
-// Variables
-
+// variables
 var selectedColor;
 
-var countries = [{
-	code: 'cu',
-	name: 'Cuba'
-}, {
-	code: 'us',
-	name: 'Estados Unidos'
-}, {
-	code: 'es',
-	name: 'España'
-}, {
-	code: 'it',
-	name: 'Italia'
-}, {
-	code: 'mx',
-	name: 'Mexico'
-}, {
-	code: 'br',
-	name: 'Brasil'
-}, {
-	code: 'ec',
-	name: 'Ecuador'
-}, {
-	code: 'ca',
-	name: 'Canada'
-}, {
-	code: 'vz',
-	name: 'Venezuela'
-}, {
-	code: 'al',
-	name: 'Alemania'
-}, {
-	code: 'co',
-	name: 'Colombia'
-}, {
-	code: 'OTRO',
-	name: 'Otro'
-}];
+// values for the enums
+var gender = {'M':'Masculino', 'F':'Femenino'};
+var sexualOrientation = {'HETERO':'Heterosexual', 'HOMO':'Homosexual', 'BI':'Bisexual'};
+var bodyType = {'DELGADO':'Delgado', 'MEDIO':'Medio', 'EXTRA':'Extra', 'ATLETICO':'Atlético'};
+var eyesColor = {'NEGRO':'Negro', 'CARMELITA':'Carmelita', 'VERDE':'Verde', 'AZUL':'Azul', 'AVELLANA':'Avellana', 'OTRO':'Otro'};
+var hairType = {'TRIGUENO':'Trigueño', 'CASTANO':'Castaño', 'RUBIO':'Rubio', 'NEGRO':'Negro', 'ROJO':'Rojo', 'BLANCO':'Blanco', 'OTRO':'Otro'};
+var race = {'NEGRO':'Negro', 'BLANCO':'Blanco', 'MESTIZO':'Mestizo', 'OTRO':'Otro'};
+var maritalStatus = {'SOLTERO':'Soltero', 'SALIENDO':'Saliendo', 'COMPROMETIDO':'Comprometido', 'CASADO':'Casado', 'DIVORCIADO':'Divorciado', 'VIUDO':'Viudo'};
+var education = {'PRIMARIO':'Primario', 'SECUNDARIO':'Secundario', 'TECNICO':'Técnico', 'UNIVERSITARIO':'Universitario', 'POSTGRADUADO':'Postgraduado', 'DOCTORADO':'Doctorado', 'OTRO':'Otro'};
+var occupation = {'AMA_DE_CASA' :'Ama de casa', 'ESTUDIANTE':'Estudiante', 'EMPLEADO_PRIVADO':'Empleado Privado', 'EMPLEADO_ESTATAL':'Empleado Estatal', 'INDEPENDIENTE':'Trabajador Independiente', 'JUBILADO':'Jubilado', 'DESEMPLEADO':'Desempleado'};
+var provinces = {'PINAR_DEL_RIO':'Pinar del Río','LA_HABANA':'La Habana','ARTEMISA':'Artemisa','MAYABEQUE':'Mayabeque','MATANZAS':'Matanzas','VILLA_CLARA':'Villa Clara','CIENFUEGOS':'Cienfuegos','SANCTI_SPIRITUS':'Sancti Spiritus','CIEGO_DE_AVILA':'Ciego de Ávila','CAMAGUEY':'Camagüey','LAS_TUNAS':'Las Tunas','HOLGUIN':'Holguín','GRANMA':'Granma','SANTIAGO_DE_CUBA':'Santiago de Cuba','GUANTANAMO':'Guantánamo','ISLA_DE_LA_JUVENTUD':'Isla de la Juventud'};
+var religions = {'ATEISMO': 'Ateísmo', 'SECULARISMO': 'Secularismo', 'AGNOSTICISMO': 'Agnosticismo', 'ISLAM': 'Islamismo', 'JUDAISTA': 'Judaísmo', 'ABAKUA': 'Abakuá', 'SANTERO': 'Santería', 'YORUBA': 'Yorubismo', 'BUDISMO': 'Budismo', 'CATOLICISMO': 'Catolicismo', 'CRISTIANISMO': 'Cristianismo', 'PROTESTANTE': 'Protestante', 'OTRA': 'Otra'};
 
-var province = {
-	'PINAR_DEL_RIO': 'Pinar del Río',
-	'ARTEMISA': 'Artemisa',
-	'LA_HABANA': 'La Habana',
-	'MAYABEQUE': 'Mayabeque',
-	'MATANZAS': 'Matanzas',
-	'CIENFUEGOS': 'Cienfuegos',
-	'VILLA_CLARA': 'Villa Clara',
-	'SANCTI_SPIRITUS': 'Sancti Spíritus',
-	'CIEGO_DE_AVILA': 'Ciego de Ávila',
-	'CAMAGUEY': 'Camagüey',
-	'LAS_TUNAS': 'Las Tunas',
-	'GRANMA': 'Granma',
-	'HOLGUIN': 'Holguín',
-	'SANTIAGO_DE_CUBA': 'Santiago de Cuba',
-	'GUANTANAMO': 'Guantánamo',
-	'ISLA_DE_LA_JUVENTUD': 'Isla de la Juventud'
-};
-
+// list of levels
 var levels = [
 	{
 		name: "Zafiro",
@@ -69,9 +25,7 @@ var levels = [
 		titleColor: '#0055ff',
 		experience: 0,
 		maxExperience: 99,
-		benefits: [
-			'Sin beneficios'
-		]
+		benefits: ['Sin beneficios']
 	},
 	{
 		name: "Topacio",
@@ -80,9 +34,7 @@ var levels = [
 		titleColor: '#ff046b',
 		experience: 100,
 		maxExperience: 299,
-		benefits: [
-			'Posibilidad de canjear recargas', 'Doble créditos al canjear un cupón'
-		]
+		benefits: ['Posibilidad de canjear recargas', 'Doble créditos al canjear un cupón']
 	},
 
 	{
@@ -92,9 +44,7 @@ var levels = [
 		titleColor: '#e20a0a',
 		experience: 300,
 		maxExperience: 499,
-		benefits: [
-			'Beneficios anteriores', '5 tickets gratis para la rifa mensual (Al inicio de cada mes)', 'Doble crédito al completar retos'
-		]
+		benefits: ['Beneficios anteriores', '5 tickets gratis para la rifa mensual (Al inicio de cada mes)', 'Doble crédito al completar retos']
 	},
 	{
 		name: "Ópalo",
@@ -103,9 +53,7 @@ var levels = [
 		titleColor: '#ff8800',
 		experience: 500,
 		maxExperience: 699,
-		benefits: [
-			'Beneficios anteriores', 'Acceso a nuevos servicios primero', 'Doble créditos al invitar a tus amig@s'
-		]
+		benefits: ['Beneficios anteriores', 'Acceso a nuevos servicios primero', 'Doble créditos al invitar a tus amig@s']
 	},
 	{
 		name: "Esmeralda",
@@ -114,9 +62,7 @@ var levels = [
 		titleColor: '#07880b',
 		experience: 700,
 		maxExperience: 999,
-		benefits: [
-			'Beneficios anteriores', '10% de descuento en todos los canjes', 'Doble créditos al terminar encuestas'
-		]
+		benefits: ['Beneficios anteriores', '10% de descuento en todos los canjes', 'Doble créditos al terminar encuestas']
 	},
 	{
 		name: "Diamante",
@@ -125,9 +71,7 @@ var levels = [
 		titleColor: '#00b0fe',
 		experience: 1000,
 		maxExperience: 1000,
-		benefits: [
-			'Beneficios anteriores', 'Acceso al "Club Diamante"', '§1 de crédito cada mes'
-		]
+		benefits: ['Beneficios anteriores', 'Acceso al "Club Diamante"', '§1 de crédito cada mes']
 	},
 ];
 
@@ -154,8 +98,6 @@ $(document).ready(function () {
 		$('.chips').chips();
 		$('.chips-initial').chips({data: interests});
 	}
-
-	showStateOrProvince();
 });
 
 // Main Functions
@@ -188,29 +130,6 @@ function genderColor(gender) {
 function changeColor(color) {
 	selectedColor = color;
 	$('.mini-card .person-avatar').css('background-color', avatarColors[color]);
-}
-
-function showStateOrProvince() {
-	var country = $('#country').val();
-	var province = $('.province-div');
-	var usstate = $('.usstate-div');
-
-	switch (country) {
-		case 'cu':
-			province.show();
-			usstate.hide();
-			break;
-
-		case 'us':
-			usstate.show();
-			province.hide();
-			break;
-
-		default:
-			usstate.hide();
-			province.hide();
-			break;
-	}
 }
 
 function getUserLevel(experience) {
@@ -297,8 +216,7 @@ function deleteImage() {
 	apretaste.send({
 		'command': 'PERFIL BORRAR',
 		'data': {'id': id},
-		'redirect': true/*,
-		'callback': {'name': 'deleteImageCallback'}*/
+		'redirect': true
 	});
 }
 
@@ -311,11 +229,6 @@ function selectDefaultImage() {
 	});
 }
 
-/*
-function deleteImageCallback() {
-	apretaste.send({'command': 'PERFIL IMAGENES'});
-}*/
-
 function setAvatarCallback() {
 	apretaste.send({
 		'command': 'PERFIL'
@@ -326,14 +239,12 @@ function sendFile(base64File) {
 	if (base64File.length > 2584000) {
 		showToast("Imagen demasiado pesada");
 		$('input:file').val(null);
-		return;
+		return false;
 	}
 
 	apretaste.send({
 		"command": "PERFIL FOTO",
-		"data": {
-			'picture': base64File
-		},
+		"data": {'picture': base64File},
 		"redirect": false,
 		"callback": {
 			"name": "updatePicture",
@@ -410,6 +321,7 @@ if (!Object.keys) {
 			}.propertyIsEnumerable('toString'),
 			dontEnums = ['toString', 'toLocaleString', 'valueOf', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'constructor'],
 			dontEnumsLength = dontEnums.length;
+
 		return function (obj) {
 			if (_typeof(obj) !== 'object' && (typeof obj !== 'function' || obj === null)) {
 				throw new TypeError('Object.keys called on non-object');

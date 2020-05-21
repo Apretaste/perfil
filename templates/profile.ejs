@@ -1,85 +1,80 @@
 <div class="row green apretaste top-bar">
-    <div class="col s12">
-        <ul class="tabs tabs-fixed-width green apretaste">
-            <li class="tab col s4"><a href="#" class="active white-text">Perfil</a></li>
-            <% if(ownProfile){ %>
-            <li class="tab col s4"><a href="#" class="white-text" onclick="apretaste.send({command: 'PERFIL NIVELES'})">Niveles</a>
-                <% } %>
-            <li class="tab col s4"><a href="#" class="white-text"
-                                      onclick="apretaste.send({command: 'PERFIL IMAGENES', 'data': {'id': profile.id}})">Imagenes</a>
-            </li>
-        </ul>
-    </div>
+	<div class="col s12">
+		<ul class="tabs tabs-fixed-width green apretaste">
+			<li class="tab col s4"><a href="#" class="active white-text">Perfil</a></li>
+			<% if(ownProfile){ %>
+				<li class="tab col s4"><a href="#" class="white-text" onclick="apretaste.send({command: 'PERFIL NIVELES'})">Niveles</a>
+			<% } %>
+			<li class="tab col s4"><a href="#" class="white-text" onclick="apretaste.send({command: 'PERFIL IMAGENES', 'data': {'id': profile.id}})">Imagenes</a>
+			</li>
+		</ul>
+	</div>
 </div>
 
 <div id="img-pre" class="green apretaste"></div>
 
 <!-- AVATAR -->
-<div class="person-avatar circle" id="profile-avatar" face="<%= profile.avatar %>" color="<%= profile.avatarColor %>"
-     size="<%= ($(window).height() / 4) + 8 %>"></div>
+<div class="person-avatar circle" id="profile-avatar" face="<%= profile.avatar %>" color="<%= profile.avatarColor %>" size="<%= ($(window).height() / 4) + 8 %>"></div>
 
 <div class="row profile-info">
-    <div class="col s12">
-        <div class="center-align">
-            <h3 class="black-text <%= !profile.firstName ? 'hide' : '' %>"><%= profile.firstName + ' ' + profile.lastName %></h3>
-            <h4 style="color: <%= genderColor(profile.gender) %>">@<%= profile.username %></h4>
-            <% if(profile.firstName){ %>
-                <style>
-                    .profile-info h4 {
-                        margin-top: 0
-                    }
-                </style>
-            <% } %>
-        </div>
+	<div class="col s12">
+		<div class="center-align">
+			<h3 class="black-text <%= !profile.firstName ? 'hide' : '' %>"><%= profile.firstName + ' ' + profile.lastName %></h3>
+			<h4 style="color: <%= genderColor(profile.gender) %>">@<%= profile.username %></h4>
+			<% if(profile.firstName){ %>
+				<style>
+					.profile-info h4 {
+						margin-top: 0
+					}
+				</style>
+			<% } %>
+		</div>
 
-    </div>
+	</div>
 
-    <% var userLevel = getUserLevel(profile.experience) %>
-    <div class="col s2 m1 center-align">
-        <img src="{{APP_SERVICE_PATH}}/images/<%= userLevel.img %>" class="gem">
-    </div>
-    <div class="col s10 m11" style="height: 55px">
-        <b>⚡<%= profile.experience %></b>
-        <div class="progress" style="margin: 2px 0; background-color: lightgray;">
-            <div class="determinate"
-                 style="width: <%= userLevel.percent %>%; background-color: <%= userLevel.color %>"></div>
-        </div>
-        <span style="color: <%= userLevel.titleColor %>"><%= userLevel.name %></span>
-    </div>
+	<% var userLevel = getUserLevel(profile.experience) %>
+	<div class="col s2 m1 center-align">
+		<img src="{{APP_SERVICE_PATH}}/images/<%= userLevel.img %>" class="gem">
+	</div>
+	<div class="col s10 m11" style="height: 55px">
+		<b>⚡<%= profile.experience %></b>
+		<div class="progress" style="margin: 2px 0; background-color: lightgray;">
+			<div class="determinate" style="width: <%= userLevel.percent %>%; background-color: <%= userLevel.color %>"></div>
+		</div>
+		<span style="color: <%= userLevel.titleColor %>"><%= userLevel.name %></span>
+	</div>
 
-    <div class="col s12">
-        <p style="margin: 1em 5px"><%= profile.aboutMe %></p>
+	<div class="col s12">
+		<p style="margin: 1em 5px"><%= profile.aboutMe %></p>
 
-        <table class="desc-table">
-            <% if(profile.profile_tags){ %>
-                <tr>
-                    <td><i class="material-icons grey-text text-darken-2">person</i></td>
-                    <td><%= profile.profile_tags %>.</td>
-                </tr>
-            <% } %>
+		<table class="desc-table">
+			<% if(profile.profile_tags){ %>
+				<tr>
+					<td><i class="material-icons grey-text text-darken-2">person</i></td>
+					<td><%= profile.profile_tags %>.</td>
+				</tr>
+			<% } %>
 
-            <% if(profile.profession_tags){ %>
-                <tr>
-                    <td><i class="material-icons grey-text text-darken-2">business_center</i></td>
-                    <td><%= profile.profession_tags %>.</td>
-                </tr>
-            <% } %>
+			<% if(profile.profession_tags){ %>
+				<tr>
+					<td><i class="material-icons grey-text text-darken-2">business_center</i></td>
+					<td><%= profile.profession_tags %>.</td>
+				</tr>
+			<% } %>
 
-            <% if(profile.location_tags){ %>
-                <tr>
-                    <td><i class="material-icons grey-text text-darken-2">place</i></td>
-                    <td><%= profile.location_tags %>.</td>
-                </tr>
-            <% } %>
+			<% if(profile.location_tags){ %>
+				<tr>
+					<td><i class="material-icons grey-text text-darken-2">place</i></td>
+					<td><%= profile.location_tags %>.</td>
+				</tr>
+			<% } %>
 
-        </table>
-    </div>
+		</table>
+	</div>
 </div>
 
 <% if(ownProfile){ %>
-    <div class="fixed-action-btn">
-        <a class="btn-floating btn-large waves-effect waves-light" href="#!"
-           onclick="apretaste.send({'command': 'PERFIL EDITAR'})"><i
-                    class="material-icons">edit</i></a>
-    </div>
+	<div class="fixed-action-btn">
+		<a class="btn-floating btn-large waves-effect waves-light" href="#!" onclick="apretaste.send({'command': 'PERFIL EDITAR'})"><i class="material-icons">edit</i></a>
+	</div>
 <% } %>

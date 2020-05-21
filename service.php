@@ -82,17 +82,13 @@ class Service
 		$content->profile = $profile;
 		$content->ownProfile = $ownProfile;
 
-		// get the gem image
-		$level = $this->levelFileName($request->person->level);
-		$images = SERVICE_PATH . "perfil/images/level-$level.png";
-
 		// cache if seeing someone else's profile
 		if (!$ownProfile) {
 			$response->setCache();
 		}
 
 		// send data to the template
-		$response->setTemplate('profile.ejs', $content, [$images]);
+		$response->setTemplate('profile.ejs', $content);
 	}
 
 	/**
@@ -104,9 +100,35 @@ class Service
 	 */
 	public function _editar(Request $request, Response $response)
 	{
-		$request->person->cellphone = $request->person->phone;
-		$content = ['profile' => $request->person];
+		// create the content array
+		$content = [
+			'profile' => (Object) [
+				'avatar' => $request->person->avatar,
+				'avatarColor' => $request->person->avatarColor,
+				'username' => $request->person->username,
+				'aboutMe' => $request->person->aboutMe,
+				'firstName' => $request->person->firstName,
+				'lastName' => $request->person->lastName,
+				'gender' => $request->person->gender,
+				'sexualOrientation' => $request->person->sexualOrientation,
+				'dayOfBirth' => $request->person->dayOfBirth,
+				'monthOfBirth' => $request->person->monthOfBirth,
+				'yearOfBirth' => $request->person->yearOfBirth,
+				'body' => $request->person->body,
+				'eyes' => $request->person->eyes,
+				'hair' => $request->person->hair,
+				'skin' => $request->person->skin,
+				'maritalStatus' => $request->person->maritalStatus,
+				'education' => $request->person->education,
+				'occupation' => $request->person->occupation,
+				'provinceCode' => $request->person->provinceCode,
+				'religion' => $request->person->religion,
+				'phone' => $request->person->phone,
+				'interests' => $request->person->interests
+			]
+		];
 
+		// crate send information to the view
 		$response->setTemplate('edit.ejs', $content);
 	}
 
@@ -452,11 +474,5 @@ class Service
 			Challenges::complete('complete-profile', $request->person->id);
 			Level::setExperience('FINISH_PROFILE_FIRST', $request->person->id);
 		}
-	}
-
-	private function levelFileName($level): string
-	{
-		$levels = ["Zafiro" => "zafiro", "Topacio" => "topacio", "Rubí" => "rubi", "Ópalo" => "opalo", "Esmeralda" => "esmeralda", "Diamante" => "diamante"];
-		return $levels[$level];
 	}
 }

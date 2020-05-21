@@ -1,334 +1,249 @@
 <div id="img-pre" class="green apretaste"></div>
 
-<!-- PICTURE -->
 <!-- AVATAR -->
 <div class="person-avatar circle" id="profile-avatar" face="<%= profile.avatar %>" color="<%= profile.avatarColor %>"
-     size="<%= ($(window).height() / 4) + 8 %>">
-    <a class="btn-floating white" id="pic-btn" onclick="apretaste.send({'command':'PERFIL AVATAR'})"><i
-                class="material-icons grey-text text-darken-4">edit</i></a>
+	 size="<%= ($(window).height() / 4) + 8 %>">
+	<a class="btn-floating white" id="pic-btn" onclick="apretaste.send({'command':'PERFIL AVATAR'})"><i class="material-icons grey-text text-darken-4">edit</i></a>
 </div>
 
 <div class="row">
-    <div class="row" id="edit-fields">
-        <!-- USERNAME -->
-        <div class="input-field col s12 center-align">
-            <input id="username" type="text" value="@<%= profile.username %>" class="validate"/>
-            <label for="username">Username</label>
-        </div>
+	<div class="row" id="edit-fields">
+		<!-- USERNAME -->
+		<div class="input-field col s12 center-align">
+			<input id="username" type="text" value="@<%= profile.username %>" class="validate"/>
+			<label for="username">Username</label>
+		</div>
 
-        <!-- DESCRIPTION -->
-        <div class="input-field col s12">
-            <i class="material-icons prefix grey-text text-darken-2">account_circle</i>
-            <textarea id="about_me" class="materialize-textarea" data-length="200"
-                      maxlength="200"><%= profile.aboutMe %></textarea>
-            <label for="about_me">Cuéntanos algo sobre ti</label>
-        </div>
+		<!-- DESCRIPTION -->
+		<div class="input-field col s12">
+			<i class="material-icons prefix grey-text text-darken-2">account_circle</i>
+			<textarea id="about_me" class="materialize-textarea" data-length="200" maxlength="200"><%= profile.aboutMe %></textarea>
+			<label for="about_me">Cuéntanos algo sobre ti</label>
+		</div>
 
-        <!-- NAME -->
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">person</i>
-            <input id="first_name" type="text" value="<%= profile.firstName %>" class="validate"/>
-            <label for="first_name">Nombre</label>
-        </div>
+		<!-- NAME -->
+		<div class="input-field col s12 m6">
+			<i class="material-icons prefix grey-text text-darken-2">person</i>
+			<input id="first_name" type="text" value="<%= profile.firstName %>" class="validate"/>
+			<label for="first_name">Nombre</label>
+		</div>
 
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">person</i>
-            <input id="last_name" type="text" class="validate" value="<%= profile.lastName %>">
-            <label for="last_name">Apellido</label>
-        </div>
+		<div class="input-field col s12 m6">
+			<i class="material-icons prefix grey-text text-darken-2">person</i>
+			<input id="last_name" type="text" class="validate" value="<%= profile.lastName %>">
+			<label for="last_name">Apellido</label>
+		</div>
 
-        <!-- GENDER -->
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">wc</i>
-            <select id="gender" class="validate">
-                <option value=""></option>
-                <option value="M" <% if(profile.gender == 'M'){ %>selected
-                        <% } %>
-                >Hombre
-                </option>
-                <option value="F" <% if(profile.gender == 'F'){ %>selected
-                        <% } %>
-                >Mujer
-                </option>
-            </select>
-            <label for="gender">Género</label>
-        </div>
+		<!-- GENDER -->
+		<div class="input-field col s12 m6">
+			<i class="material-icons prefix grey-text text-darken-2">wc</i>
+			<select id="gender" class="validate">
+				<option value=""></option>
+				<% Object.keys(gender).forEach(function(key){ %>
+					<% var selected = key==profile.gender ? 'selected' : '' %>
+					<option <%= selected %> value="<%= key %>"><%= gender[key] %></option>
+				<% }) %>
+			</select>
+			<label for="gender">Género</label>
+		</div>
 
-        <!-- SEXUAL ORIENTATION -->
-        <% var orientation = ["HETERO", "HOMO", "BI"] %>
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">favorite</i>
-            <select id="sexual_orientation" class="validate">
-                <option value=""></option>
-                <% orientation.forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.sexualOrientation){ %>selected
-                            <% } %>
-                    ><%= val.firstUpper() %></option>
-                <% }); %>
-            </select>
-            <label for="sexual_orientation">Orientación Sexual</label>
-        </div>
+		<!-- SEXUAL ORIENTATION -->
+		<div class="input-field col s12 m6">
+			<i class="material-icons prefix grey-text text-darken-2">favorite</i>
+			<select id="sexual_orientation" class="validate">
+				<option value=""></option>
+				<% Object.keys(sexualOrientation).forEach(function(key){ %>
+					<% var selected = key==profile.sexualOrientation ? 'selected' : '' %>
+					<option <%= selected %> value="<%= key %>"><%= sexualOrientation[key] %></option>
+				<% }) %>
+			</select>
+			<label for="sexual_orientation">Orientación Sexual</label>
+		</div>
 
-        <!-- BIRTH DAY -->
-        <% var daysArray = range(1, 31); %>
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">cake</i>
-            <select id="day_of_birth" class="validate">
-                <option value="">Día</option>
-                <% daysArray.forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.dayOfBirth){ %>selected
-                            <% } %>
-                    ><%= val %></option>
-                <% }); %>
-            </select>
-            <label for="day_of_birth">Día de nacimiento</label>
-        </div>
+		<!-- BIRTH DAY -->
+		<div class="input-field col s12 m6">
+			<i class="material-icons prefix grey-text text-darken-2">cake</i>
+			<select id="day_of_birth" class="validate">
+				<option value="">Día</option>
+				<% var daysArray = range(1, 31); %>
+				<% daysArray.forEach(function(val) { %>
+					<% var selected = val==profile.dayOfBirth ? 'selected' : '' %>
+					<option <%= selected %> value="<%= val %>"><%= val %></option>
+				<% }); %>
+			</select>
+			<label for="day_of_birth">Día de nacimiento</label>
+		</div>
 
-        <!-- BIRTH MONTH -->
-        <%
-        var monthName = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-        var monthNbr = range(1, 12);
-        %>
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">cake</i>
-            <select id="month_of_birth" class="validate">
-                <option value="">Mes</option>
-                <% for (var i = 0; i < monthNbr.length; i++) { %>
-                    <option value="<%= monthNbr[i] %>" <% if(monthNbr[i] == profile.monthOfBirth){ %>selected
-                            <% } %>
-                    ><%= monthName[i] %></option>
-                <% } %>
-            </select>
-            <label for="month_of_birth">Mes de nacimiento</label>
-        </div>
+		<!-- BIRTH MONTH -->
+		<%
+			var monthName = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+			var monthNbr = range(1, 12);
+		%>
+		<div class="input-field col s12 m6">
+			<i class="material-icons prefix grey-text text-darken-2">cake</i>
+			<select id="month_of_birth" class="validate">
+				<option value="">Mes</option>
+				<% for (var i = 0; i < monthNbr.length; i++) { %>
+					<% var selected = monthNbr[i] == profile.monthOfBirth ? 'selected' : '' %>
+					<option <%= selected %> value="<%= monthNbr[i] %>"><%= monthName[i] %></option>
+				<% } %>
+			</select>
+			<label for="month_of_birth">Mes de nacimiento</label>
+		</div>
 
-        <!-- BIRTH YEAR -->
-        <%
-        var currentYear = (new Date()).getFullYear();
-        var yearArr = range(currentYear - 100, currentYear - 10);
-        %>
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">cake</i>
-            <select id="year_of_birth" class="validate">
-                <option value="">Año</option>
-                <% yearArr.forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.yearOfBirth){ %>selected
-                            <% } %>
-                    ><%= val %></option>
-                <% }); %>
-            </select>
-            <label for="year_of_birth">Año de nacimiento</label>
-        </div>
+		<!-- BIRTH YEAR -->
+		<%
+			var currentYear = (new Date()).getFullYear();
+			var yearArr = range(currentYear - 100, currentYear - 10);
+		%>
+		<div class="input-field col s12 m6">
+			<i class="material-icons prefix grey-text text-darken-2">cake</i>
+			<select id="year_of_birth" class="validate">
+				<option value="">Año</option>
+				<% yearArr.forEach(function(val) { %>
+					<% var selected = val == profile.yearOfBirth ? 'selected' : '' %>
+					<option <%= selected %> value="<%= val %>"><%= val %></option>
+				<% }); %>
+			</select>
+			<label for="year_of_birth">Año de nacimiento</label>
+		</div>
 
-        <!-- BODY TYPE -->
-        <% var body_type = ["DELGADO", "MEDIO", "EXTRA", "ATLETICO"] %>
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">face</i>
-            <select id="body_type" class="validate">
-                <option value="" selected></option>
-                <% body_type.forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.body){ %>selected
-                            <% } %>
-                    ><%= val.firstUpper() %></option>
-                <% }); %>
-            </select>
-            <label for="body_type">Cuerpo</label>
-        </div>
+		<!-- BODY TYPE -->
+		<div class="input-field col s12 m6">
+			<i class="material-icons prefix grey-text text-darken-2">face</i>
+			<select id="body_type" class="validate">
+				<option value=""></option>
+				<% Object.keys(bodyType).forEach(function(key){ %>
+					<% var selected = key==profile.body ? 'selected' : '' %>
+					<option <%= selected %> value="<%= key %>"><%= bodyType[key] %></option>
+				<% }) %>
+			</select>
+			<label for="body_type">Cuerpo</label>
+		</div>
 
-        <!-- EYES -->
-        <% var eyes = ["NEGRO", "CARMELITA", "VERDE", "AZUL", "AVELLANA", "OTRO"] %>
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">face</i>
-            <select id="eyes" class="validate">
-                <option value=""></option>
-                <% eyes.forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.eyes){ %>selected
-                            <% } %>
-                    ><%= val.firstUpper() %></option>
-                <% }); %>
-            </select>
-            <label for="eyes">Ojos</label>
-        </div>
+		<!-- EYES -->
+		<div class="input-field col s12 m6">
+			<i class="material-icons prefix grey-text text-darken-2">face</i>
+			<select id="eyes" class="validate">
+				<option value=""></option>
+				<% Object.keys(eyesColor).forEach(function(key){ %>
+					<% var selected = key==profile.eyes ? 'selected' : '' %>
+					<option <%= selected %> value="<%= key %>"><%= eyesColor[key] %></option>
+				<% }) %>
+			</select>
+			<label for="eyes">Ojos</label>
+		</div>
 
-        <!-- HAIR -->
-        <% var hair = {
-            "TRIGUENO": "Trigueño",
-            "CASTANO": "Castaño",
-            "RUBIO": "Rubio",
-            "NEGRO": "Negro",
-            "ROJO": "Rojo",
-            "BLANCO": "Blanco",
-            "OTRO": "Otro"
-        } %>
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">face</i>
-            <select id="hair" class="validate">
-                <option value=""></option>
-                <% Object.keys(hair).forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.hair){ %>selected
-                            <% } %>
-                    ><%= hair[val] %></option>
-                <% }); %>
-            </select>
-            <label for="hair">Cabello</label>
-        </div>
+		<!-- HAIR -->
+		<div class="input-field col s12 m6">
+			<i class="material-icons prefix grey-text text-darken-2">face</i>
+			<select id="hair" class="validate">
+				<option value=""></option>
+				<% Object.keys(hairType).forEach(function(key){ %>
+					<% var selected = key==profile.hair ? 'selected' : '' %>
+					<option <%= selected %> value="<%= key %>"><%= hairType[key] %></option>
+				<% }) %>
+			</select>
+			<label for="hair">Cabello</label>
+		</div>
 
-        <!-- SKIN -->
-        <% var skin = ["BLANCO", "NEGRO", "MESTIZO", "OTRO"] %>
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">face</i>
-            <select id="skin" class="validate">
-                <option value=""></option>
-                <% skin.forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.skin){ %>selected
-                            <% } %>
-                    ><%= val.firstUpper() %></option>
-                <% }); %>
-            </select>
-            <label for="skin">Piel</label>
-        </div>
+		<!-- SKIN -->
+		<div class="input-field col s12 m6">
+			<i class="material-icons prefix grey-text text-darken-2">face</i>
+			<select id="skin" class="validate">
+				<option value=""></option>
+				<% Object.keys(race).forEach(function(key){ %>
+					<% var selected = key==profile.skin ? 'selected' : '' %>
+					<option <%= selected %> value="<%= key %>"><%= race[key] %></option>
+				<% }) %>
+			</select>
+			<label for="skin">Piel</label>
+		</div>
 
-        <!-- MARITAL STATUS -->
-        <% var marital_status = ["SOLTERO", "SALIENDO", "COMPROMETIDO", "CASADO"] %>
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">favorite</i>
-            <select id="marital_status" class="validate">
-                <option value=""></option>
-                <% marital_status.forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.maritalStatus){ %>selected
-                            <% } %>
-                    ><%= val.firstUpper() %></option>
-                <% }); %>
-            </select>
-            <label for="marital_status">Estado Civil</label>
-        </div>
+		<!-- MARITAL STATUS -->
+		<div class="input-field col s12 m6">
+			<i class="material-icons prefix grey-text text-darken-2">favorite</i>
+			<select id="marital_status" class="validate">
+				<option value=""></option>
+				<% Object.keys(maritalStatus).forEach(function(key){ %>
+					<% var selected = key==profile.maritalStatus ? 'selected' : '' %>
+					<option <%= selected %> value="<%= key %>"><%= maritalStatus[key] %></option>
+				<% }) %>
+			</select>
+			<label for="marital_status">Estado Civil</label>
+		</div>
 
-        <!-- HIGHEST SCHOOL LEVEL-->
-        <% var highest_school_level = {
-            "PRIMARIO": "Primario",
-            "SECUNDARIO": "Secundario",
-            "TECNICO": "Técnico",
-            "UNIVERSITARIO": "Universitario",
-            "POSTGRADUADO": "Postgraduado",
-            "DOCTORADO": "Doctorado",
-            "OTRO": "Otro"
-        } %>
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">school</i>
-            <select id="highest_school_level" class="validate">
-                <option value=""></option>
-                <% Object.keys(highest_school_level).forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.education){ %>selected
-                            <% } %>
-                    ><%= highest_school_level[val] %></option>
-                <% }); %>
-            </select>
-            <label for="highest_school_level">Nivel Educativo</label>
-        </div>
+		<!-- HIGHEST SCHOOL LEVEL-->
+		<div class="input-field col s12 m6">
+			<i class="material-icons prefix grey-text text-darken-2">school</i>
+			<select id="highest_school_level" class="validate">
+				<option value=""></option>
+				<% Object.keys(education).forEach(function(key){ %>
+					<% var selected = key==profile.education ? 'selected' : '' %>
+					<option <%= selected %> value="<%= key %>"><%= education[key] %></option>
+				<% }) %>
+			</select>
+			<label for="highest_school_level">Nivel Educativo</label>
+		</div>
 
-        <!-- OCCUPATION -->
-        <% var profesion = ["TRABAJADOR ESTATAL", "CUENTAPROPISTA", "ESTUDIANTE", "AMA DE CASA", "DESEMPLEADO", "OTRO"] %>
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">business_center</i>
-            <select id="occupation" class="validate">
-                <option value=""><%= profesion.indexOf(profile.occupation) == -1 ? profile.occupation : "" %></option>
-                <% profesion.forEach(function(val) { %>
-                    <option value="<%= val %>" <% if(val == profile.occupation.toUpperCase()){ %>selected
-                            <% } %>
-                    ><%= val.firstUpper() %></option>
-                <% }); %>
-            </select>
-            <label for="occupation">Ocupación</label>
-        </div>
+		<!-- OCCUPATION -->
+		<div class="input-field col s12 m6">
+			<i class="material-icons prefix grey-text text-darken-2">business_center</i>
+			<select id="occupation" class="validate">
+				<option value=""></option>
+				<% Object.keys(occupation).forEach(function(key){ %>
+					<% var selected = key==profile.occupation ? 'selected' : '' %>
+					<option <%= selected %> value="<%= key %>"><%= occupation[key] %></option>
+				<% }) %>
+			</select>
+			<label for="occupation">Ocupación</label>
+		</div>
 
-        <!-- COUNTRY -->
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">place</i>
-            <select id="country" class="validate" onchange="showStateOrProvince()">
-                <option value=""></option>
-                <% countries.forEach(function(country) { %>
-                    <option value="<%= country.code.toUpperCase() %>"
-                            <% if(profile.countryCode.toUpperCase() == country.code.toUpperCase()){ %>selected
-                            <% } %>
-                    ><%= country.name %></option>
-                <% }); %>
-            </select>
-            <label for="country">País</label>
-        </div>
+		<!-- PROVINCE-->
+		<div class="input-field province-div col s12 m6">
+			<i class="material-icons prefix grey-text text-darken-2">place</i>
+			<select id="province" class="validate">
+				<option value=""></option>
+				<% Object.keys(provinces).forEach(function(key){ %>
+					<% var selected = key==profile.provinceCode ? 'selected' : '' %>
+					<option <%= selected %> value="<%= key %>"><%= provinces[key] %></option>
+				<% }) %>
+			</select>
+			<label for="province">Provincia</label>
+		</div>
 
-        <!-- PROVINCE-->
-        <div class="input-field province-div col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">place</i>
-            <select id="province" class="validate">
-                <option value=""></option>
-                <% Object.keys(province).forEach(function(val) { %>
-                    <option value="<%= val %>"
-                    <% if(val == profile.province){ %> selected
-                            <% } %>
-                    > <%= province[val] %> </option>
-                <% }); %>
-            </select>
-            <label for="province">Provincia</label>
-        </div>
+		<!-- RELIGION -->
+		<div class="input-field col s12 m6">
+			<i class="material-icons prefix grey-text text-darken-2"> flare </i>
+			<select id="religion" class="validate">
+				<option value=""></option>
+				<% Object.keys(religions).forEach(function(key) { %>
+					<% var selected = key==profile.religion ? 'selected' : '' %>
+					<option <%= selected %> value="<%= key %>"><%= religions[key] %></option>
+				<% }) %>
+			</select>
+			<label for="religion">Religión</label>
+		</div>
 
-        <!-- CITY -->
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">place</i>
-            <input id="city" type="text" value="<%= profile.city %>" maxlength="100" data-length="100"
-                   class="validate"/>
-            <label for="city">¿En que ciudad o pueblo vives?</label>
-        </div>
+		<% if(typeof profile.phone != "undefined"){ %>
+			<div class="input-field col s12 m6">
+				<i class="material-icons prefix grey-text text-darken-2">phone</i>
+				<input value="<%= profile.phone %>" id="cellphone" type="tel" maxlength="10" class="validate">
+				<label for="cellphone">Celular</label>
+			</div>
+		<% } %>
 
-        <!-- RELIGION -->
-        <% var religion = {
-            "CRISTIANISMO": "Cristianismo",
-            "CATOLICISMO": "Catolicismo",
-            "YORUBA": "Yoruba",
-            "PROTESTANTE": "Protestante",
-            "SANTERO": "Santero",
-            "ABAKUA": "Abakua",
-            "BUDISMO": "Budismo",
-            "ISLAM": "Islam",
-            "ATEISMO": "Ateísmo",
-            "AGNOSTICISMO": "Agnosticismo",
-            "SECULARISMO": "Secularismo",
-            "OTRA": "Otra"
-        } %>
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2"> flare </i>
-            <select id="religion" class="validate">
-                <option value=""></option>
-                <% Object.keys(religion).forEach(function(val) { %>
-                    <option value="<%= val %>"
-                    <% if(val == profile.religion){ %>
-                            selected
-                            <% } %>
-                    ><%= religion[val] %></option>
-                <% }); %>
-            </select>
-            <label for="religion">Religión</label>
-        </div>
+		<div class="input-field col s12">
+			<i class="material-icons prefix grey-text text-darken-2">description</i>
+			<div class="chips chips-initial left-align" id="interests"></div>
+			<label for="interests" style="top:-20px">Intereses</label>
+		</div>
+	</div>
 
-        <% if(typeof profile.phone != "undefined"){ %>
-            <div class="input-field col s12 m6">
-                <i class="material-icons prefix grey-text text-darken-2">phone</i>
-                <input value="<%= profile.phone %>" id="cellphone" type="tel" maxlength="10" class="validate">
-                <label for="cellphone">Celular</label>
-            </div>
-        <% } %>
+	<!-- SAVE BUTTON -->
+	<div class="bottom-space"></div>
 
-        <div class="input-field col s12">
-            <i class="material-icons prefix grey-text text-darken-2">description</i>
-            <div class="chips chips-initial left-align" id="interests"></div>
-            <label for="interests" style="top:-20px">Intereses</label>
-        </div>
-    </div>
-
-    <!-- SAVE BUTTON -->
-    <div class="bottom-space"></div>
-
-    <div class="fixed-action-btn">
-        <a class="btn-floating btn-large waves-effect waves-light" href="#!" onclick="submitProfileData()"><i
-                    class="material-icons">save</i></a>
-    </div>
+	<div class="fixed-action-btn">
+		<a class="btn-floating btn-large waves-effect waves-light" href="#!" onclick="submitProfileData()"><i class="material-icons">save</i></a>
+	</div>
 </div>
