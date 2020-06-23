@@ -214,7 +214,7 @@ class Service
 			"idPerson" => $image->id_person,
 			'ownProfile' => $image->id_person == $request->person->id];
 
-		// send data to the view 
+		// send data to the view
 		$response->setTemplate('displayImage.ejs', $content, [$file]);
 	}
 
@@ -416,24 +416,32 @@ class Service
 		// clean, shorten and lowercase the username, if passed
 		if (!empty($request->input->data->username)) {
 			$username = strtolower(substr(preg_replace('/[^a-zA-Z0-9]+/', '', $request->input->data->username), 0, 15));
-			if ($username == $request->person->username) unset($request->input->data->username);
-			else {
+			if ($username == $request->person->username) {
+				unset($request->input->data->username);
+			} else {
 				if (is_string($username) && strlen($username) > 0) {
 					$request->input->data->username = $username;
 					if (Person::find($username)) {
 						Notifications::alert($request->person->id, "Lo sentimos, el username @$username ya esta siendo usado");
 						unset($request->input->data->username);
 					}
-				} else throw new Alert('561', "El username generado a partir de \"{$request->input->data->username}\" es invalido");
+				} else {
+					throw new Alert('561', "El username generado a partir de \"{$request->input->data->username}\" es invalido");
+				}
 			}
 		}
+
+		$my_mb_ucfirst = function ($str) {
+			$fc = mb_strtoupper(mb_substr($str, 0, 1));
+			return $fc.mb_substr($str, 1);
+		};
 
 		// get the JSON with the bulk
 		$pieces = [];
 		foreach ($request->input->data as $key => $value) {
 			// format first_name OR last_name in capital the first letter
 			if ($key === 'first_name' || $key === 'last_name') {
-				$value = ucfirst(strtolower($value));
+				$value = $my_mb_ucfirst(mb_strtolower($value));
 			}
 
 			// format interests as a CVS to be saved
@@ -448,7 +456,9 @@ class Service
 			// escape dangerous chars in the value passed
 			$value = Database::escape($value);
 
-			if ($key === 'cellphone' && $request->person->phone == $value) continue;
+			if ($key === 'cellphone' && $request->person->phone == $value) {
+				continue;
+			}
 
 			// prepare the database query
 			if (in_array($key, $fields, true)) {
