@@ -46,7 +46,7 @@ class Service
 			// run powers for amulet DETECTIVE
 			if (Amulets::isActive(Amulets::DETECTIVE, $profile->id)) {
 				$msg = "Los poderes del amuleto del Druida te avisan: @{$request->person->username} está revisando tu perfil";
-				Notifications::alert($profile->id, $msg, 'pageview', '{command:"PERFIL", data:{username:"@{$request->person->username}"}}');
+				Notifications::alert($profile->id, $msg, 'pageview', "{command:'PERFIL', data:{username:'@{$request->person->username}'}}");
 			}
 
 			// run powers for amulet SHADOWMODE
