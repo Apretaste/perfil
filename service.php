@@ -102,7 +102,7 @@ class Service
 	{
 		// create the content array
 		$content = [
-			'profile' => (Object) [
+			'profile' => (object)[
 				'avatar' => $request->person->avatar,
 				'avatarColor' => $request->person->avatarColor,
 				'username' => $request->person->username,
@@ -433,7 +433,7 @@ class Service
 
 		$my_mb_ucfirst = function ($str) {
 			$fc = mb_strtoupper(mb_substr($str, 0, 1));
-			return $fc.mb_substr($str, 1);
+			return $fc . mb_substr($str, 1);
 		};
 
 		// get the JSON with the bulk
@@ -471,12 +471,36 @@ class Service
 				if ($key === 'avatar') {
 					Challenges::complete('update-profile-picture', $request->person->id);
 				}
+
+				unset($request->input->data->$key);
 			}
 		}
 
 		// save changes on the database
 		if (!empty($pieces)) {
 			Database::query('UPDATE person SET ' . implode(',', $pieces) . " WHERE id={$request->person->id}");
+		}
+
+		// piropazo preferences
+		$fields = ['minAge', 'maxAge'];
+
+		$pieces = [];
+		foreach ($request->input->data as $key => $value) {
+			// prepare the database query
+			if (in_array($key, $fields, true)) {
+				if ($value === null || $value === '') {
+					$pieces[] = "$key = null";
+				} else {
+					$pieces[] = "$key = '$value'";
+				}
+
+				unset($request->input->data->$key);
+			}
+		}
+
+		// save changes on the database
+		if (!empty($pieces)) {
+			Database::query('UPDATE _piropazo_people SET ' . implode(',', $pieces) . " WHERE id_person={$request->person->id}");
 		}
 
 		// add the experience if profile is completed
