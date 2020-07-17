@@ -501,6 +501,7 @@ class Service
 		// save changes on the database
 		if (!empty($pieces)) {
 			Database::query('UPDATE _piropazo_people SET ' . implode(',', $pieces) . " WHERE id_person={$request->person->id}");
+			Database::query('DELETE FROM _piropazo_cache WHERE `user`={$request->person->id}');
 		}
 
 		// add the experience if profile is completed
