@@ -1,4 +1,4 @@
-<div id="gallery">
+<div id="gallery" style="margin-top: 2rem">
     <% images.forEach(function (image) { %>
         <div class="col s6 m3 l2 galleryImage"
              onclick="apretaste.send({'command': 'PERFIL VER', 'data': {'id': '<%= image.id %>'}})">
