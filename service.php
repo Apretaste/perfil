@@ -13,6 +13,8 @@ use Framework\Utils;
 use Framework\Alert;
 use Framework\Images;
 use Framework\Database;
+use Kreait\Firebase\Exception\FirebaseException;
+use Kreait\Firebase\Exception\MessagingException;
 
 class Service
 {
@@ -22,13 +24,14 @@ class Service
 	 * @param Request $request
 	 * @param Response $response
 	 * @return Response|void
-	 * @throws Exception
+	 * @throws Alert
+	 * @throws FirebaseException
+	 * @throws MessagingException
 	 */
 	public function _main(Request $request, Response $response)
 	{
 		// get the email or the username for the profile
 		$data = $request->input->data;
-		$content = new stdClass();
 
 		if (!empty($data->username) && $data->username != $request->person->username) {
 			// get the data of the person requested
@@ -75,12 +78,12 @@ class Service
 			$ownProfile = true;
 		}
 
-		unset($profile->credit, $profile->tickets, $profile->cellphone);
-		Person::setProfileTags($profile);
-
 		// pass variables to the template
-		$content->profile = $profile;
-		$content->ownProfile = $ownProfile;
+		$content = [
+			'profile' => self::profileMin($profile),
+			'ownProfile' => $ownProfile,
+			'title' => 'Perfil'
+		];
 
 		// cache if seeing someone else's profile
 		if (!$ownProfile) {
@@ -88,7 +91,8 @@ class Service
 		}
 
 		// send data to the template
-		$response->setTemplate('profile.ejs', $content);
+		$response->setLayout('perfil.ejs');
+		$response->setTemplate('main.ejs', $content);
 	}
 
 	/**
@@ -102,30 +106,7 @@ class Service
 	{
 		// create the content array
 		$content = [
-			'profile' => (object)[
-				'avatar' => $request->person->avatar,
-				'avatarColor' => $request->person->avatarColor,
-				'username' => $request->person->username,
-				'aboutMe' => $request->person->aboutMe,
-				'firstName' => $request->person->firstName,
-				'lastName' => $request->person->lastName,
-				'gender' => $request->person->gender,
-				'sexualOrientation' => $request->person->sexualOrientation,
-				'dayOfBirth' => $request->person->dayOfBirth,
-				'monthOfBirth' => $request->person->monthOfBirth,
-				'yearOfBirth' => $request->person->yearOfBirth,
-				'body' => $request->person->body,
-				'eyes' => $request->person->eyes,
-				'hair' => $request->person->hair,
-				'skin' => $request->person->skin,
-				'maritalStatus' => $request->person->maritalStatus,
-				'education' => $request->person->education,
-				'occupation' => $request->person->occupation,
-				'provinceCode' => $request->person->provinceCode,
-				'religion' => $request->person->religion,
-				'phone' => $request->person->phone,
-				'interests' => $request->person->interests
-			]
+			'profile' => self::profileMin($request->person)
 		];
 
 		// crate send information to the view
@@ -260,7 +241,7 @@ class Service
 		$ownProfile = $request->person->id == $id;
 
 		// get the list of images for the person
-		$imagesList = $ownProfile ? $request->person->gallery : Database::query("SELECT id, file, `default` FROM person_images WHERE id_person=$id AND active=1");
+		$imagesList = Database::query("SELECT id, file, `default` FROM person_images WHERE id_person=$id AND active=1");
 
 		// thumbnail the images
 		$images = [];
@@ -274,9 +255,11 @@ class Service
 		$content = [
 			'images' => $imagesList,
 			'ownProfile' => $ownProfile,
-			'idPerson' => $id];
+			'idPerson' => $id, 'title' => 'Imagenes'
+		];
 
 		// send data to the view
+		$response->setLayout('perfil.ejs');
 		$response->setTemplate('images.ejs', $content, $images);
 	}
 
@@ -509,5 +492,43 @@ class Service
 			Challenges::complete('complete-profile', $request->person->id);
 			Level::setExperience('FINISH_PROFILE_FIRST', $request->person->id);
 		}
+	}
+
+	/**
+	 * @param Person $person
+	 * @return object
+	 * @throws Alert
+	 */
+
+	private static function profileMin(Person $person): object
+	{
+		return (object)[
+			'avatar' => $person->avatar,
+			'avatarColor' => $person->avatarColor,
+			'username' => $person->username,
+			'aboutMe' => $person->aboutMe,
+			'firstName' => $person->firstName,
+			'lastName' => $person->lastName,
+			'fullName' => $person->fullName,
+			'gender' => $person->gender,
+			'sexualOrientation' => $person->sexualOrientation,
+			'dayOfBirth' => $person->dayOfBirth,
+			'monthOfBirth' => $person->monthOfBirth,
+			'yearOfBirth' => $person->yearOfBirth,
+			'body' => $person->body,
+			'eyes' => $person->eyes,
+			'hair' => $person->hair,
+			'skin' => $person->skin,
+			'maritalStatus' => $person->maritalStatus,
+			'education' => $person->education,
+			'occupation' => $person->occupation,
+			'country' => $person->country,
+			'province' => $person->province,
+			'city' => $person->city,
+			'religion' => $person->religion,
+			'interests' => $person->interests,
+			'friendList' => $person->getFriends(),
+			'experience' => $person->experience
+		];
 	}
 }

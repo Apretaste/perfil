@@ -1,20 +1,8 @@
 "use strict";
 
-// variables
-var selectedColor;
+// Variables
 
-// values for the enums
-var gender = {'M':'Masculino', 'F':'Femenino'};
-var sexualOrientation = {'HETERO':'Heterosexual', 'HOMO':'Homosexual', 'BI':'Bisexual'};
-var bodyType = {'DELGADO':'Delgado', 'MEDIO':'Medio', 'EXTRA':'Extra', 'ATLETICO':'Atlético'};
-var eyesColor = {'NEGRO':'Negro', 'CARMELITA':'Carmelita', 'VERDE':'Verde', 'AZUL':'Azul', 'AVELLANA':'Avellana', 'OTRO':'Otro'};
-var hairType = {'TRIGUENO':'Trigueño', 'CASTANO':'Castaño', 'RUBIO':'Rubio', 'NEGRO':'Negro', 'ROJO':'Rojo', 'BLANCO':'Blanco', 'OTRO':'Otro'};
-var race = {'NEGRO':'Negro', 'BLANCO':'Blanco', 'MESTIZO':'Mestizo', 'OTRO':'Otro'};
-var maritalStatus = {'SOLTERO':'Soltero', 'SALIENDO':'Saliendo', 'COMPROMETIDO':'Comprometido', 'CASADO':'Casado', 'DIVORCIADO':'Divorciado', 'VIUDO':'Viudo'};
-var education = {'PRIMARIO':'Primario', 'SECUNDARIO':'Secundario', 'TECNICO':'Técnico', 'UNIVERSITARIO':'Universitario', 'POSTGRADUADO':'Postgraduado', 'DOCTORADO':'Doctorado', 'OTRO':'Otro'};
-var occupation = {'AMA_DE_CASA' :'Ama de casa', 'ESTUDIANTE':'Estudiante', 'EMPLEADO_PRIVADO':'Empleado Privado', 'EMPLEADO_ESTATAL':'Empleado Estatal', 'INDEPENDIENTE':'Trabajador Independiente', 'JUBILADO':'Jubilado', 'DESEMPLEADO':'Desempleado'};
-var provinces = {'PINAR_DEL_RIO':'Pinar del Río','LA_HABANA':'La Habana','ARTEMISA':'Artemisa','MAYABEQUE':'Mayabeque','MATANZAS':'Matanzas','VILLA_CLARA':'Villa Clara','CIENFUEGOS':'Cienfuegos','SANCTI_SPIRITUS':'Sancti Spiritus','CIEGO_DE_AVILA':'Ciego de Ávila','CAMAGUEY':'Camagüey','LAS_TUNAS':'Las Tunas','HOLGUIN':'Holguín','GRANMA':'Granma','SANTIAGO_DE_CUBA':'Santiago de Cuba','GUANTANAMO':'Guantánamo','ISLA_DE_LA_JUVENTUD':'Isla de la Juventud'};
-var religions = {'ATEISMO': 'Ateísmo', 'SECULARISMO': 'Secularismo', 'AGNOSTICISMO': 'Agnosticismo', 'ISLAM': 'Islamismo', 'JUDAISTA': 'Judaísmo', 'ABAKUA': 'Abakuá', 'SANTERO': 'Santería', 'YORUBA': 'Yorubismo', 'BUDISMO': 'Budismo', 'CATOLICISMO': 'Catolicismo', 'CRISTIANISMO': 'Cristianismo', 'PROTESTANTE': 'Protestante', 'OTRA': 'Otra'};
+var selectedColor;
 
 // list of levels
 var levels = [
@@ -75,19 +63,128 @@ var levels = [
 	},
 ];
 
-// Doc Ready Function
+var props = {
+	fullName: {caption: 'Nombre y Apellido', icon: 'person', values: {}},
+	gender: {caption: 'Género', icon: 'person', values: {'M': 'Masculino', 'F': 'Femenino'}},
+	sexualOrientation: {
+		caption: 'Orientación sexual',
+		icon: 'favorite',
+		values: {'HETERO': 'Heterosexual', 'HOMO': 'Homosexual', 'BI': 'Bisexual'}
+	},
+	dayOfBirth: {caption: 'Día de nacimiento', icon: 'cake', values: {}},
+	monthOfBirth: {caption: 'Mes de nacimiento', icon: 'cake', values: {}},
+	yearOfBirth: {caption: 'Año de nacimiento', icon: 'cake', values: {}},
+	body: {
+		caption: 'Cuerpo',
+		icon: 'face',
+		values: {'DELGADO': 'Delgado', 'MEDIO': 'Medio', 'EXTRA': 'Extra', 'ATLETICO': 'Atlético'}
+	},
+	eyes: {
+		caption: 'Ojos', icon: 'face', values: {
+			'NEGRO': 'Negro',
+			'CARMELITA': 'Carmelita',
+			'VERDE': 'Verde',
+			'AZUL': 'Azul',
+			'AVELLANA': 'Avellana',
+			'OTRO': 'Otro'
+		}
+	},
+	hair: {
+		caption: 'Cabello', icon: 'face', values: {
+			'TRIGUENO': 'Trigueño',
+			'CASTANO': 'Castaño',
+			'RUBIO': 'Rubio',
+			'NEGRO': 'Negro',
+			'ROJO': 'Rojo',
+			'BLANCO': 'Blanco',
+			'OTRO': 'Otro'
+		}
+	},
+	skin: {
+		caption: 'Piel',
+		icon: 'face',
+		values: {'NEGRO': 'Negro', 'BLANCO': 'Blanco', 'MESTIZO': 'Mestizo', 'OTRO': 'Otro'}
+	},
+	maritalStatus: {
+		caption: 'Estado Civil', icon: 'favorite', values: {
+			'SOLTERO': 'Soltero',
+			'SALIENDO': 'Saliendo',
+			'COMPROMETIDO': 'Comprometido',
+			'CASADO': 'Casado',
+			'DIVORCIADO': 'Divorciado',
+			'VIUDO': 'Viudo'
+		}
+	},
+	education: {
+		caption: 'Nivel Educativo', icon: 'school', values: {
+			'PRIMARIO': 'Primario',
+			'SECUNDARIO': 'Secundario',
+			'TECNICO': 'Técnico',
+			'UNIVERSITARIO': 'Universitario',
+			'POSTGRADUADO': 'Postgraduado',
+			'DOCTORADO': 'Doctorado',
+			'OTRO': 'Otro'
+		}
+	},
+	occupation: {
+		caption: 'Ocupación', icon: 'business_center', values: {
+			'AMA_DE_CASA': 'Ama de casa',
+			'ESTUDIANTE': 'Estudiante',
+			'EMPLEADO_PRIVADO': 'Empleado Privado',
+			'EMPLEADO_ESTATAL': 'Empleado Estatal',
+			'INDEPENDIENTE': 'Trabajador Independiente',
+			'JUBILADO': 'Jubilado',
+			'DESEMPLEADO': 'Desempleado'
+		}
+	},
+	country: {caption: 'País', icon: 'place', values: {}},
+	province: {
+		caption: 'Provincia', icon: 'place', values: {
+			'PINAR_DEL_RIO': 'Pinar del Río',
+			'LA_HABANA': 'La Habana',
+			'ARTEMISA': 'Artemisa',
+			'MAYABEQUE': 'Mayabeque',
+			'MATANZAS': 'Matanzas',
+			'VILLA_CLARA': 'Villa Clara',
+			'CIENFUEGOS': 'Cienfuegos',
+			'SANCTI_SPIRITUS': 'Sancti Spiritus',
+			'CIEGO_DE_AVILA': 'Ciego de Ávila',
+			'CAMAGUEY': 'Camagüey',
+			'LAS_TUNAS': 'Las Tunas',
+			'HOLGUIN': 'Holguín',
+			'GRANMA': 'Granma',
+			'SANTIAGO_DE_CUBA': 'Santiago de Cuba',
+			'GUANTANAMO': 'Guantánamo',
+			'ISLA_DE_LA_JUVENTUD': 'Isla de la Juventud'
+		}
+	},
+	city: {caption: 'Ciudad', icon: 'place', values: {}},
+	religion: {
+		caption: 'Religión', icon: 'flare', values: {
+			'ATEISMO': 'Ateísmo',
+			'SECULARISMO': 'Secularismo',
+			'AGNOSTICISMO': 'Agnosticismo',
+			'ISLAM': 'Islamismo',
+			'JUDAISTA': 'Judaísmo',
+			'ABAKUA': 'Abakuá',
+			'SANTERO': 'Santería',
+			'YORUBA': 'Yorubismo',
+			'BUDISMO': 'Budismo',
+			'CATOLICISMO': 'Catolicismo',
+			'CRISTIANISMO': 'Cristianismo',
+			'PROTESTANTE': 'Protestante',
+			'OTRA': 'Otra'
+		}
+	}
+};
 
-$(document).ready(function () {
+// On load
+
+$(function () {
 	$('.tabs').tabs();
 	$('select').formSelect();
 	$('.modal').modal();
 	$('#about_me, #city').characterCounter();
-
-	var resizeInterval = setInterval(function () {
-		// check until the img has the correct size
-		resizeImg();
-		if ($('.mini-card .person-avatar').css('background-size') != 'auto') clearTimeout(resizeInterval);
-	}, 1);
 
 	if (typeof profile != "undefined") {
 		var interests = [];
@@ -100,37 +197,26 @@ $(document).ready(function () {
 	}
 });
 
-// Main Functions
+// Requests functions
 
-function resizeImg() {
-	if (typeof profile == "undefined") return;
-	$('.profile-img').css('height', '');
-
-	var img = $('#profile-avatar');
-	var size = $(window).height() / 4; // picture must be 1/4 of the screen
-
-	img.height(size);
-	img.width(size);
-
-	img.css('top', -4 - $(window).height() / 8 + 'px'); // align the picture with the div
-
-	$('#edit-fields, .profile-info').css('margin-top', 5 - $(window).height() / 6.5 + 'px'); // move the row before to the top to fill the empty space
-
-	$('#img-pre').height(img.height() * 0.7); // set the height of the colored div after the photo
+function openChat() {
+	apretaste.send({
+		command: 'chat',
+		data: {
+			id: profile.id
+		}
+	});
 }
 
-function getAvatar(avatar, resPath, size) {
-	return "background-image: url(" + resPath + "/images/avatars/" + avatar + ".png);";
+function openLevelsHelp() {
+	apretaste.send({command: 'perfil niveles'});
 }
 
-function genderColor(gender) {
-	return profile.gender == "M" ? "dodgerblue" : profile.gender == "F" ? "#e61966" : "black-text";
+function openEditProfile() {
+	apretaste.send({command: 'perfil editar'});
 }
 
-function changeColor(color) {
-	selectedColor = color;
-	$('.mini-card .person-avatar').css('background-color', avatarColors[color]);
-}
+// Functions
 
 function getUserLevel(experience) {
 	var userLevel;
@@ -147,15 +233,73 @@ function getUserLevel(experience) {
 	return userLevel;
 }
 
+function getReadableProp(prop) {
+	var readableProp = props[prop].values[profile[prop]];
+	if (readableProp !== undefined) return readableProp;
+	else return profile[prop];
+}
+
 function uploadPicture() {
 	loadFileToBase64();
+}
+
+function sendFile(base64File) {
+	if (base64File.length > 2584000) {
+		showToast("Imagen demasiado pesada");
+		$('input:file').val(null);
+		return false;
+	}
+
+	apretaste.send({
+		"command": "PERFIL FOTO",
+		"data": {'picture': base64File},
+		"redirect": false,
+		"callback": {
+			"name": "updatePicture",
+			"data": base64File
+		}
+	});
 }
 
 function showToast(text) {
 	M.toast({html: text});
 }
 
-// Request Functions
+function deleteImage() {
+	apretaste.send({
+		'command': 'PERFIL BORRAR',
+		'data': {'id': id}
+	});
+}
+
+function selectDefaultImage() {
+	apretaste.send({
+		'command': 'PERFIL FOTO',
+		'data': {'id': id},
+		'redirect': false,
+		'callback': {'name': 'showToast', 'data': 'Imagen principal cambiada'}
+	});
+}
+
+function changeColor(color) {
+	selectedColor = color;
+	$('.mini-card .person-avatar').css('background-color', avatarColors[color]);
+}
+
+function setAvatar(avatar) {
+	if (typeof selectedColor == "undefined") selectedColor = currentColor;
+	apretaste.send({
+		'command': 'PERFIL UPDATE',
+		'data': {
+			'avatar': avatar,
+			'avatarColor': selectedColor
+		},
+		'redirect': false,
+		'callback': {
+			'name': 'setAvatarCallback'
+		}
+	});
+}
 
 function submitProfileData() {
 	// array of possible values
@@ -187,9 +331,12 @@ function submitProfileData() {
 
 	// save changes in the database
 	apretaste.send({
-		"command": "PERFIL UPDATE",
-		"data": data,
-		"redirect": false
+		command: "PERFIL UPDATE",
+		data: data,
+		redirect: false,
+		callback: {
+			name: 'onSaveCallback'
+		}
 	});
 
 	// show success alert
@@ -197,81 +344,12 @@ function submitProfileData() {
 	return true;
 }
 
-function setAvatar(avatar) {
-	if (typeof selectedColor == "undefined") selectedColor = currentColor;
-	apretaste.send({
-		'command': 'PERFIL UPDATE',
-		'data': {
-			'avatar': avatar,
-			'avatarColor': selectedColor
-		},
-		'redirect': false,
-		'callback': {
-			'name': 'setAvatarCallback'
-		}
-	});
-}
-
-function deleteImage() {
-	apretaste.send({
-		'command': 'PERFIL BORRAR',
-		'data': {'id': id},
-		'redirect': true
-	});
-}
-
-function selectDefaultImage() {
-	apretaste.send({
-		'command': 'PERFIL FOTO',
-		'data': {'id': id},
-		'redirect': false,
-		'callback': {'name': 'showToast', 'data': 'Imagen principal cambiada'}
-	});
-}
-
-function setAvatarCallback() {
-	apretaste.send({
-		'command': 'PERFIL'
-	});
-}
-
-function sendFile(base64File) {
-	if (base64File.length > 2584000) {
-		showToast("Imagen demasiado pesada");
-		$('input:file').val(null);
-		return false;
-	}
-
-	apretaste.send({
-		"command": "PERFIL FOTO",
-		"data": {'picture': base64File},
-		"redirect": false,
-		"callback": {
-			"name": "updatePicture",
-			"data": base64File
-		}
-	});
-}
-
-// save changes to the origin
-function changeOrigin() {
-	var origin = $('#origin').val();
-
-	apretaste.send({
-		"command": "PERFIL UPDATE",
-		"data": {"origin": origin},
-		"redirect": false
-	});
-
-	showToast('¡Gracias por opinar!');
-}
-
-// Callback Functions
+// Callbacks
 
 function updatePicture(file) {
 	// add the picture to the gallery
 	var imgElement =
-		"<div class=\"col s6 m3 l2 image\"" +
+		"<div class=\"col s6 m3 l2 galleryImage\"" +
 		"	onclick=\"apretaste.send({'command': 'PERFIL VER', 'data': {'id': 'last'}})\">" +
 		"	<img src=\"data:image/jpg;base64," + file + "\" class=\"responsive-img\" width=\"100%\"" +
 		"	style=\"border-radius: 8px\">" +
@@ -281,6 +359,18 @@ function updatePicture(file) {
 	$('#gallery').append(imgElement);
 
 	showToast('Imagen agregada a la galeria');
+}
+
+function setAvatarCallback() {
+	apretaste.send({
+		'command': 'PERFIL'
+	});
+}
+
+function onSaveCallback() {
+	apretaste.send({
+		'command': 'PERFIL'
+	});
 }
 
 // Prototype Functions

@@ -1,0 +1,55 @@
+<div class="col s12">
+    <ul class="collection profile">
+        <li class="collection-item avatar">
+            <div class="person-avatar circle" face="<%= profile.avatar %>" color="<%= profile.avatarColor %>" size="45"
+                 online="<%= profile.online %>"></div>
+            <span class="title <%= profile.gender %>">@<%= profile.username %></span>
+            <p class="valign-wrapper grey-text text-darken-1">
+                <i class="material-icons">people</i> <%= profile.friendList.length %>
+            </p>
+            <% if(ownProfile){ %>
+                <a href="#!" class="secondary-content green-text first"
+                   onclick="openEditProfile()"><i class="material-icons">edit</i></a>
+            <% } else { %>
+                <a href="#!" class="secondary-content green-text first"
+                   onclick="openChat()"><i class="material-icons">chat</i></a>
+                <a href="#!" class="secondary-content green-text second"><i class="material-icons">person_add</i></a>
+            <% } %>
+        </li>
+    </ul>
+</div>
+
+<% var userLevel = getUserLevel(profile.experience) %>
+<div class="col s2 m1 center-align">
+    <img src="{{APP_SERVICE_PATH}}/images/<%= userLevel.img %>" class="gem">
+</div>
+<div class="col s10 m11" style="height: 55px">
+        <span>
+            <b>⚡<%= profile.experience %></b>
+            <i
+                    class="right far fa-question-circle"
+                    style="color: <%= userLevel.titleColor %>"
+                    onclick="openLevelsHelp()"
+            ></i>
+        </span>
+    <div class="progress" style="margin: 2px 0; background-color: lightgray;">
+        <div class="determinate"
+             style="width: <%= userLevel.percent %>%; background-color: <%= userLevel.color %>"></div>
+    </div>
+    <span style="color: <%= userLevel.titleColor %>"><%= userLevel.name %></span>
+</div>
+
+<div class="col s12">
+    <p> <%= profile.aboutMe %></p>
+    <ul class="collection one-line">
+        <% Object.keys(props).forEach(function(prop) { %>
+            <% if(profile[prop] != ''){ %>
+                <li class="collection-item avatar">
+                    <i class="tiny material-icons circle"><%= props[prop].icon %></i>
+                    <span class="title"><%= getReadableProp(prop) %></span>
+                    <p class="grey-text"><%= props[prop].caption %></p>
+                </li>
+            <% } %>
+        <% }) %>
+    </ul>
+</div>

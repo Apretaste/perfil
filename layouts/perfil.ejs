@@ -1,0 +1,26 @@
+<%
+var menu = [
+    {link: '', caption: 'Perfil'},
+    {link: 'imagenes', caption: 'Imagenes'}
+];
+%>
+
+<!-- HEADER -->
+<div class="row">
+    <div class="col s12">
+        <ul class="tabs tabs-fixed-width">
+            <% menu.forEach(function(e) { %>
+                <% var active = typeof title != "undefined" && title == e.caption ? 'active' : '' %>
+                <li class="tab">
+                    <a class="<%= active %>" onclick="apretaste.send({'command':'perfil <%= e.link %>'})">
+                        <%= e.caption %>
+                    </a>
+                </li>
+            <% }); %>
+        </ul>
+    </div>
+</div>
+
+<div class="row" style="margin-top: 1rem">
+    {{APP_TEMPLATE_CODE}}
+</div>

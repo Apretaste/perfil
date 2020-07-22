@@ -1,30 +1,30 @@
 <div class="row">
-	<div class="col s12">
-		<p>A continuación las maneras de ganar experiencia y la cantidad por cada una.</p>
+    <div class="col s12">
+        <p>A continuación las maneras de ganar experiencia y la cantidad por cada una.</p>
 
-		<table class="striped">
-			<thead>
-				<tr>
-					<th>Descripción</th>
-					<th class="center-align">Cantidad</th>
-				</tr>
-			</thead>
-			<tbody>
-				<% experience.forEach(function (exp) { %>
-				<tr>
-					<td><%= exp.description %></td>
-					<td class="center-align">+<%= exp.value %></td>
-				</tr>
-				<% }) %>
-			</tbody>
-		</table>
-	</div>
+        <table class="striped">
+            <thead>
+            <tr>
+                <th>Descripción</th>
+                <th class="center-align">Cantidad</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% experience.forEach(function (exp) { %>
+                <tr>
+                    <td><%= exp.description %></td>
+                    <td class="center-align">+<%= exp.value %></td>
+                </tr>
+            <% }) %>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <div class="bottom-space"></div>
 
 <div class="fixed-action-btn">
-	<a class="btn-floating btn-large waves-effect waves-light" href="#!" onclick="apretaste.send({'command':'PERFIL NIVELES'})">
-		<i class="material-icons">arrow_back</i>
-	</a>
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!" onclick="apretaste.back()">
+        <i class="material-icons">arrow_back</i>
+    </a>
 </div>
