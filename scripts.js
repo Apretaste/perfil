@@ -208,6 +208,15 @@ function openChat() {
 	});
 }
 
+function pizarraSearch() {
+	apretaste.send({
+		command: 'pizarra',
+		data: {
+			id: profile.id
+		}
+	});
+}
+
 function openLevelsHelp() {
 	apretaste.send({command: 'perfil niveles'});
 }
@@ -237,6 +246,22 @@ function getReadableProp(prop) {
 	var readableProp = props[prop].values[profile[prop]];
 	if (readableProp !== undefined) return readableProp;
 	else return profile[prop];
+}
+
+function addFriendModalOpen() {
+	M.Modal.getInstance($('#addFriendModal')).open();
+}
+
+function addFriend() {
+	apretaste.send({
+		command: 'amigos agregar',
+		data: {id: profile.id},
+		redirect: false,
+		callback: {
+			name: 'showToast',
+			data: 'Solicitud enviada'
+		}
+	});
 }
 
 function uploadPicture() {

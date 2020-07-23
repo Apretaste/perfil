@@ -30,21 +30,27 @@ class Service
 	 */
 	public function _main(Request $request, Response $response)
 	{
-		// get the email or the username for the profile
+		// get the id or the username for the profile
 		$data = $request->input->data;
+		$needle = $data->username ?? $data->id ?? false;
 
-		if (!empty($data->username) && $data->username != $request->person->username) {
+		$needle = '1';
+
+		if ($needle) {
 			// get the data of the person requested
-			$profile = Person::find($data->username);
+			$profile = Person::find($needle);
 
 			// check if the person exist. If not, message the requestor
 			if (!$profile) {
+				$response->setLayout('perfil.ejs');
 				return $response->setTemplate('message.ejs', [
 					'header' => 'El perfil no existe',
 					'icon' => 'sentiment_very_dissatisfied',
-					'text' => 'Lo sentimos, pero el perfil que usted busca no pudo ser encontrado. Puede que el nombre de usuario halla cambiado o la persona halla salido de la app.'
+					'text' => 'Lo sentimos, pero el perfil que usted busca no pudo ser encontrado. Puede que el nombre de usuario haya cambiado o la persona haya salido de la app.'
 				]);
 			}
+
+			$type = $profile->isFriendOf($request->person->id) ? 'friends' : 'none';
 
 			// run powers for amulet DETECTIVE
 			if (Amulets::isActive(Amulets::DETECTIVE, $profile->id)) {
@@ -82,6 +88,7 @@ class Service
 		$content = [
 			'profile' => self::profileMin($profile),
 			'ownProfile' => $ownProfile,
+			'type' => $type ?? 'none',
 			'title' => 'Perfil'
 		];
 
@@ -503,6 +510,7 @@ class Service
 	private static function profileMin(Person $person): object
 	{
 		return (object)[
+			'id' => $person->id,
 			'avatar' => $person->avatar,
 			'avatarColor' => $person->avatarColor,
 			'username' => $person->username,

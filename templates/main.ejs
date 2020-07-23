@@ -10,10 +10,20 @@
             <% if(ownProfile){ %>
                 <a href="#!" class="secondary-content green-text first"
                    onclick="openEditProfile()"><i class="material-icons">edit</i></a>
+            <% } else if(type == 'friends') { %>
+                <a onclick="pizarraSearch()" class="secondary-content green-text first">
+                    <i class="material-icons">assignment</i>
+                </a>
+                <a onclick="openChat()" class="secondary-content green-text second">
+                    <i class="material-icons">chat</i>
+                </a>
             <% } else { %>
-                <a href="#!" class="secondary-content green-text first"
-                   onclick="openChat()"><i class="material-icons">chat</i></a>
-                <a href="#!" class="secondary-content green-text second"><i class="material-icons">person_add</i></a>
+                <a onclick="addFriendModalOpen()" class="secondary-content green-text first">
+                    <i class="material-icons">person_add</i>
+                </a>
+                <a onclick="pizarraSearch()" class="secondary-content green-text second">
+                    <i class="material-icons">assignment</i>
+                </a>
             <% } %>
         </li>
     </ul>
@@ -43,7 +53,7 @@
     <p> <%= profile.aboutMe %></p>
     <ul class="collection one-line">
         <% Object.keys(props).forEach(function(prop) { %>
-            <% if(profile[prop] != ''){ %>
+            <% if(profile[prop] != null && profile[prop].trim() != ''){ %>
                 <li class="collection-item avatar">
                     <i class="tiny material-icons circle"><%= props[prop].icon %></i>
                     <span class="title"><%= getReadableProp(prop) %></span>
@@ -52,4 +62,14 @@
             <% } %>
         <% }) %>
     </ul>
+</div>
+
+<div id="addFriendModal" class="modal">
+    <div class="modal-content">
+        <p>¿Agregar a <b class="username">@<%= profile.username %></b> a sus amigos?</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+        <a onclick="addFriend()" class="waves-effect waves-green btn-flat green-text modal-close">Agregar</a>
+    </div>
 </div>
