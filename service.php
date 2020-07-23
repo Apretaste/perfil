@@ -34,8 +34,6 @@ class Service
 		$data = $request->input->data;
 		$needle = $data->username ?? $data->id ?? false;
 
-		$needle = '1';
-
 		if ($needle) {
 			// get the data of the person requested
 			$profile = Person::find($needle);
