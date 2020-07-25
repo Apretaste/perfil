@@ -462,7 +462,7 @@ class Service
 
 			// prepare the database query
 			if (in_array($key, $fields, true)) {
-				if ($value === null || $value === '') {
+				if ($key != 'username' && ($value === null || $value === '')) {
 					$pieces[] = "$key = null";
 				} else {
 					$pieces[] = "$key = '$value'";
