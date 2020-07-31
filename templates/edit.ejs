@@ -18,13 +18,15 @@
             <label for="username">Username</label>
         </div>
 
-        <!-- DESCRIPTION -->
-        <div class="input-field col s12">
-            <i class="material-icons prefix grey-text text-darken-2">account_circle</i>
-            <textarea id="about_me" class="materialize-textarea" data-length="200"
-                      maxlength="200"><%= profile.aboutMe %></textarea>
-            <label for="about_me">Cuéntanos algo sobre ti</label>
-        </div>
+        <% if(false){ %>
+            <!-- DESCRIPTION -->
+            <div class="input-field col s12">
+                <i class="material-icons prefix grey-text text-darken-2">account_circle</i>
+                <textarea id="about_me" class="materialize-textarea" data-length="200"
+                          maxlength="200"><%= profile.aboutMe %></textarea>
+                <label for="about_me">Cuéntanos algo sobre ti</label>
+            </div>
+        <% } %>
 
         <!-- NAME -->
         <div class="input-field col s12 m6">
@@ -210,7 +212,7 @@
             <select id="province" class="validate">
                 <option value=""></option>
                 <% Object.keys(props.province.values).forEach(function(key){ %>
-                    <% var selected = key == profile.provinceCode ? 'selected' : '' %>
+                    <% var selected = props.province.values[key] == profile.province ? 'selected' : '' %>
                     <option <%= selected %> value="<%= key %>"><%= props.province.values[key] %></option>
                 <% }) %>
             </select>
@@ -238,19 +240,25 @@
             </div>
         <% } %>
 
-        <div class="input-field col s12">
-            <i class="material-icons prefix grey-text text-darken-2">description</i>
-            <div class="chips chips-initial left-align" id="interests"></div>
-            <label for="interests" style="top:-20px">Intereses</label>
-        </div>
+        <% if(false){ %>
+            <div class="input-field col s12">
+                <i class="material-icons prefix grey-text text-darken-2">description</i>
+                <div class="chips chips-initial left-align" id="interests"></div>
+                <label for="interests" style="top:-20px">Intereses</label>
+            </div>
+        <% } %>
     </div>
 
     <div class="col s12">
         <!-- SAVE BUTTON -->
         <div class="bottom-space"></div>
-        <div class="fixed-action-btn">
-            <a class="btn-floating btn-large waves-effect waves-light" href="#!" onclick="submitProfileData()"><i
-                        class="material-icons">save</i></a>
+        <div id="btn" class="fixed-action-btn">
+            <a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
+                <i class="material-icons">arrow_back</i>
+            </a>
+            <a class="btn-floating btn-large waves-effect waves-light green" onclick="submitProfileData()">
+                <i class="material-icons">save</i>
+            </a>
         </div>
     </div>
 </div>

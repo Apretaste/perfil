@@ -1,7 +1,7 @@
 <%
 var menu = [
-    {link: '', caption: 'Perfil'},
-    {link: 'imagenes', caption: 'Imagenes'}
+    {link: 'openProfile()', caption: 'Perfil'},
+    {link: 'openGallery()', caption: 'Imagenes'}
 ];
 %>
 
@@ -12,7 +12,7 @@ var menu = [
             <% menu.forEach(function(e) { %>
                 <% var active = typeof title != "undefined" && title == e.caption ? 'active' : '' %>
                 <li class="tab">
-                    <a class="<%= active %>" onclick="apretaste.send({'command':'perfil <%= e.link %>'})">
+                    <a class="<%= active %>" onclick="<%= e.link %>">
                         <%= e.caption %>
                     </a>
                 </li>
