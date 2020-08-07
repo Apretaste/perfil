@@ -194,6 +194,9 @@ $(function () {
         profile.interests = JSON.stringify(interests);
         $('.chips').chips();
         $('.chips-initial').chips({data: interests});
+
+        var profileProps = $('#profile-props');
+        if(profileProps.children().length == 0) profileProps.remove();
     }
 });
 
@@ -410,7 +413,7 @@ function setAvatarCallback() {
 
 function onSaveCallback() {
     apretaste.send({
-        'command': 'PERFIL'
+        'command': 'PERFIL', data: {'ts': Date.now()}
     });
 }
 

@@ -534,7 +534,8 @@ class Service
             'religion' => $person->religion,
             'interests' => $person->interests,
             'friendList' => $person->getFriends(),
-            'experience' => $person->experience
+            'experience' => $person->experience,
+            'ranking' => $person->weekRank
         ];
     }
 }

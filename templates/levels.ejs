@@ -1,16 +1,24 @@
 <div class="row" style="margin-top: 2rem; margin-bottom: 2rem;">
     <% var userLevel = getUserLevel(experience) %>
-    <div class="col s2 m1 center-align">
+    <div class="col s2 m1 right-align">
         <img src="{{APP_SERVICE_PATH}}/images/<%= userLevel.img %>" class="gem">
     </div>
-    <div class="col s10 m11" style="height: 55px">
-        <b>⚡<%= experience %></b>
+    <div class="col s10 m11" style="height: 38px">
+        <span>
+            <b>
+                <span class="chip tiny clear" style="font-size: 1rem">
+                    <i class="fa fa-bolt"></i>
+                    <%= experience %>
+                    <%= userLevel.name %>
+                </span>
+            </b>
+        </span>
         <div class="progress" style="margin: 2px 0; background-color: lightgray;">
             <div class="determinate"
                  style="width: <%= userLevel.percent %>%; background-color: <%= userLevel.color %>"></div>
         </div>
-        <span style="color: <%= userLevel.titleColor %>"><%= userLevel.name %></span>
     </div>
+
 
     <div class="col s12">
         <p>Mientras más utilices la app, <a href="#!" onclick="apretaste.send({command:'PERFIL EXPERIENCIA'})">mayor
@@ -34,6 +42,7 @@
     </div>
 
     <div class="fixed-action-btn">
-        <a class="btn-floating btn-large waves-effect waves-light green" onclick="apretaste.back()"><i class="material-icons">arrow_back</i></a>
+        <a class="btn-floating btn-large waves-effect waves-light green" onclick="apretaste.back()"><i
+                    class="material-icons">arrow_back</i></a>
     </div>
 </div>

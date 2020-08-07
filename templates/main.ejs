@@ -4,9 +4,22 @@
             <div class="person-avatar circle" face="<%= profile.avatar %>" color="<%= profile.avatarColor %>" size="45"
                  online="<%= profile.online %>"></div>
             <span class="title <%= profile.gender %>">@<%= profile.username %></span>
-            <p class="valign-wrapper grey-text text-darken-1">
+
+            <br>
+            <span class="chip tiny clear" style="font-size: 1rem">
+                <i class="fa fa-user-friends"></i>
+                <%= profile.friendList.length %>
+            </span>
+            &nbsp;
+            <span class="chip tiny clear" style="font-size: 1rem">
+                <i class="fa fa-trophy"></i>
+                <%= profile.ranking %>
+            </span>
+
+            <!--p class="valign-wrapper grey-text text-darken-1">
                 <i class="material-icons" style="font-size: 1.2rem">people</i> <%= profile.friendList.length %>
-            </p>
+            </p-->
+
             <% if(ownProfile){ %>
                 <a href="#!" class="secondary-content green-text first"
                    onclick="openEditProfile()"><i class="material-icons">edit</i></a>
@@ -30,30 +43,38 @@
 </div>
 
 <% var userLevel = getUserLevel(profile.experience) %>
-<div class="col s2 m1 center-align">
+<div class="col s2 m1 right-align">
     <img src="{{APP_SERVICE_PATH}}/images/<%= userLevel.img %>" class="gem">
 </div>
-<div class="col s10 m11" style="height: 55px">
+<div class="col s10 m11" style="height: 38px">
         <span>
-            <b><span class="chip tiny clear"><i class="fa fa-bolt"></i> <%= profile.experience %></span></b>
-            <i
-                    class="right far fa-question-circle"
-                    style="color: <%= userLevel.titleColor %>"
-                    onclick="openLevelsHelp()"
-            ></i>
+            <b>
+                <span class="chip tiny clear" style="font-size: 1rem">
+                    <i class="fa fa-bolt"></i>
+                    <%= profile.experience %>
+                    <%= userLevel.name %>
+                </span>
+            </b>
+            <% if(ownProfile){ %>
+                <i
+                        class="right far fa-question-circle"
+                        style="color: <%= userLevel.titleColor %>"
+                        onclick="openLevelsHelp()"
+                ></i>
+            <% } %>
         </span>
     <div class="progress" style="margin: 2px 0; background-color: lightgray;">
         <div class="determinate"
              style="width: <%= userLevel.percent %>%; background-color: <%= userLevel.color %>"></div>
     </div>
-    <span style="color: <%= userLevel.titleColor %>"><%= userLevel.name %></span>
 </div>
 
 <div class="col s12">
     <p> <%= profile.aboutMe %></p>
-    <ul class="collection one-line">
+    <ul class="collection one-line" id="profile-props">
         <% Object.keys(props).forEach(function(prop) { %>
-            <% if(profile[prop] != null && profile[prop].trim() != ''){ %>
+            <!-- TODO use in future, delete false condition -->
+            <% if(false && profile[prop] != null && profile[prop].trim() != ''){ %>
                 <li class="collection-item avatar">
                     <i class="tiny material-icons circle"><%= props[prop].icon %></i>
                     <span class="title"><%= getReadableProp(prop) %></span>
