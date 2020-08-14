@@ -31,24 +31,20 @@
                     <i class="material-icons">chat</i>
                 </a>
             <% } else if(type == 'waitingForMe') { %>
-                <a href="#!">
+                <a class="secondary-content green-text first">
                     <i class="material-icons red-text"
                        onclick="rejectModalOpen('<%= profile.id %>', '<%= profile.username %>')">
                         delete
                     </i>
                 </a>
-                <a href="#!">
+                <a class="secondary-content green-text second">
                     <i class="material-icons"
                        onclick="acceptModalOpen('<%= profile.id %>', '<%= profile.username %>')">
                         person_add
                     </i>
                 </a>
-
-                <a onclick="pizarraSearch()" class="secondary-content green-text second">
-                    <i class="material-icons">assignment</i>
-                </a>
             <% }else if(type == 'waiting') { %>
-                <a href="#!">
+                <a class="secondary-content green-text first">
                     <i class="material-icons red-text"
                        onclick="cancelRequestModalOpen('<%= profile.id %>', '<%= profile.username %>')">
                         delete

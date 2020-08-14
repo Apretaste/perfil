@@ -271,6 +271,12 @@ function addFriendModalOpen() {
 	M.Modal.getInstance($('#addFriendModal')).open();
 }
 
+var currentUser;
+
+function setCurrentUsername(username) {
+	$('.username').html('@' + username);
+}
+
 function acceptModalOpen(id, username) {
 	currentUser = id;
 	setCurrentUsername(username);
