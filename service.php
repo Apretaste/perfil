@@ -52,8 +52,8 @@ class Service
 			if ($type == 'none') {
 				$waiting = $profile->getWaitingRelation($request->person->id);
 				if ($waiting) {
-					if ($waiting->user1 == $profile->id) $type = 'waiting';
-					else $type = 'waitingForMe';
+					if ($waiting->user1 == $profile->id) $type = 'waitingForMe';
+					else $type = 'waiting';
 				}
 			}
 
