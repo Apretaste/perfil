@@ -313,6 +313,42 @@ function addFriend() {
 	});
 }
 
+function rejectFriend(message) {
+	apretaste.send({
+		command: 'amigos rechazar',
+		data: {id: currentUser},
+		redirect: false,
+		callback: {
+			name: 'showToast',
+			data: message
+		}
+	});
+}
+
+function addFriend(message) {
+	apretaste.send({
+		command: 'amigos agregar',
+		data: {id: currentUser},
+		redirect: false,
+		callback: {
+			name: 'showToast',
+			data: message
+		}
+	});
+}
+
+function deleteFriend() {
+	apretaste.send({
+		command: 'amigos eliminar',
+		data: {id: currentUser},
+		redirect: false,
+		callback: {
+			name: 'showToast',
+			data: 'Amigo eliminado'
+		}
+	});
+}
+
 function uploadPicture() {
 	loadFileToBase64();
 }
