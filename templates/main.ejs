@@ -13,7 +13,7 @@
             &nbsp;
             <span class="chip tiny clear" style="font-size: 1rem">
                 <i class="fa fa-trophy"></i>
-                <%= profile.ranking %>
+                #<%= profile.ranking %>
             </span>
 
             <!--p class="valign-wrapper grey-text text-darken-1">
@@ -30,6 +30,34 @@
                 <a onclick="openChat()" class="secondary-content green-text second">
                     <i class="material-icons">chat</i>
                 </a>
+            <% } else if(type == 'waitingForMe') { %>
+                <a href="#!">
+                    <i class="material-icons red-text"
+                       onclick="rejectModalOpen('<%= profile.id %>', '<%= profile.username %>')">
+                        delete
+                    </i>
+                </a>
+                <a href="#!">
+                    <i class="material-icons"
+                       onclick="acceptModalOpen('<%= profile.id %>', '<%= profile.username %>')">
+                        person_add
+                    </i>
+                </a>
+
+                <a onclick="pizarraSearch()" class="secondary-content green-text second">
+                    <i class="material-icons">assignment</i>
+                </a>
+            <% }else if(type == 'waiting') { %>
+                <a href="#!">
+                    <i class="material-icons red-text"
+                       onclick="cancelRequestModalOpen('<%= profile.id %>', '<%= profile.username %>')">
+                        delete
+                    </i>
+                </a>
+
+                <a onclick="pizarraSearch()" class="secondary-content green-text second">
+                    <i class="material-icons">assignment</i>
+                </a>
             <% } else { %>
                 <a onclick="addFriendModalOpen()" class="secondary-content green-text first">
                     <i class="material-icons">person_add</i>
@@ -43,7 +71,7 @@
 </div>
 
 <% var userLevel = getUserLevel(profile.experience) %>
-<div class="col s2 m1 right-align">
+<div class="col s2 m1 right-align" style="padding-right: 3px;">
     <img src="{{APP_SERVICE_PATH}}/images/<%= userLevel.img %>" class="gem">
 </div>
 <div class="col s10 m11" style="height: 38px">
@@ -92,5 +120,60 @@
     <div class="modal-footer">
         <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
         <a onclick="addFriend()" class="waves-effect waves-green btn-flat green-text modal-close">Agregar</a>
+    </div>
+</div>
+
+<div id="acceptFriendModal" class="modal">
+    <div class="modal-content">
+        <p>¿Aceptar solicitud de amistad de <b class="username">@username</b>?</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+        <a onclick="addFriend('Solicitud aceptada')" class="waves-effect waves-green btn-flat green-text modal-close">Aceptar</a>
+    </div>
+</div>
+
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <p>¿Esta seguro de eliminar a <b class="username">@amigo</b> de sus amigos?</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+        <a onclick="deleteFriend()" class="modal-close waves-effect waves-red btn-flat red-text"
+           style="font-weight: 500">Eliminar</a>
+    </div>
+</div>
+
+<div id="rejectModal" class="modal">
+    <div class="modal-content">
+        <p>¿Rechazar solicitud de amistad de <b class="username">@username</b>?</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+        <a onclick="rejectFriend('Solicitud rechazada')" class="modal-close waves-effect waves-red btn-flat red-text"
+           style="font-weight: 500">Rechazar</a>
+    </div>
+</div>
+
+<div id="cancelRequestModal" class="modal">
+    <div class="modal-content">
+        <p>¿Cancelar solicitud de amistad para <b class="username">@username</b>?</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Atrás</a>
+        <a onclick="rejectFriend('Solicitud cancelada')" class="modal-close waves-effect waves-red btn-flat red-text"
+           style="font-weight: 500">Cancelar solicitud</a>
+    </div>
+</div>
+
+
+<div id="blockModal" class="modal">
+    <div class="modal-content">
+        <p>¿Esta segúro de bloquear a <b class="username">@username</b>?</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+        <a onclick="blockUser()" class="modal-close waves-effect waves-red btn-flat red-text"
+           style="font-weight: 500">Bloquear</a>
     </div>
 </div>

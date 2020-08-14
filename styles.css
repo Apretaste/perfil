@@ -126,6 +126,16 @@
     margin: -5px 10px 0px 0px;
 }
 
+/* CARDS */
+
+.card .card-person {
+    padding: 10px 16px;
+}
+
+.card .card-person .person-avatar {
+    margin: -5px 10px 0px 0px;
+}
+
 /* USER CARDS */
 
 .card.user-card .person-avatar {
@@ -383,6 +393,11 @@ ul.chat li {
 .gem {
     width: 32px;
     height: 32px;
+}
+
+.gem-big {
+    width: 50px;
+    height: 50px;
 }
 
 .gems-list {
