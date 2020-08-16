@@ -213,7 +213,7 @@ function openChat() {
 
 function pizarraSearch() {
 	apretaste.send({
-		command: 'pizarra',
+		command: 'pizarra global',
 		data: {
 			id: profile.id
 		}
