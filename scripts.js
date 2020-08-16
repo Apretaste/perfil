@@ -215,7 +215,7 @@ function pizarraSearch() {
 	apretaste.send({
 		command: 'pizarra global',
 		data: {
-			search: profile.username
+			search: '@' + profile.username
 		}
 	});
 }
