@@ -307,10 +307,24 @@ function addFriend() {
 		data: {id: profile.id},
 		redirect: false,
 		callback: {
-			name: 'showToast',
-			data: 'Solicitud enviada'
+			name: 'addFriendCallback'
 		}
 	});
+}
+
+function addFriendCallback() {
+	showToast('Solicitud enviada');
+	$('.actions').html(
+		'<a class="secondary-content green-text first">\n' +
+		'    <i class="material-icons red-text"\n' +
+		'       onclick="cancelRequestModalOpen(\'' + profile.id + '\', \'' + profile.username + '\')">\n' +
+		'        delete\n' +
+		'    </i>\n' +
+		'</a>\n' +
+		'<a onclick="pizarraSearch()" class="secondary-content green-text second">\n' +
+		'    <i class="material-icons">assignment</i>\n' +
+		'</a>'
+	);
 }
 
 function rejectFriend(message) {
@@ -319,22 +333,23 @@ function rejectFriend(message) {
 		data: {id: currentUser},
 		redirect: false,
 		callback: {
-			name: 'showToast',
+			name: 'rejectFriendCallback',
 			data: message
 		}
 	});
 }
 
-function addFriend(message) {
-	apretaste.send({
-		command: 'amigos agregar',
-		data: {id: currentUser},
-		redirect: false,
-		callback: {
-			name: 'showToast',
-			data: message
-		}
-	});
+function rejectFriendCallback(message) {
+	showToast(message);
+
+	$('.actions').html(
+		'<a onclick="addFriendModalOpen()" class="secondary-content green-text first">\n' +
+		'    <i class="material-icons">person_add</i>\n' +
+		'</a>\n' +
+		'<a onclick="pizarraSearch()" class="secondary-content green-text second">\n' +
+		'    <i class="material-icons">assignment</i>\n' +
+		'</a>'
+	);
 }
 
 function deleteFriend() {
@@ -343,7 +358,7 @@ function deleteFriend() {
 		data: {id: currentUser},
 		redirect: false,
 		callback: {
-			name: 'showToast',
+			name: 'rejectFriendCallback',
 			data: 'Amigo eliminado'
 		}
 	});
