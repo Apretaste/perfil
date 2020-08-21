@@ -393,7 +393,7 @@ function selectDefaultImage() {
 
 function changeColor(color) {
 	selectedColor = color;
-	$('.mini-card .person-avatar').css('background-color', avatarColors[color]);
+	$('#avatar-select .person-avatar').css('background-color', avatarColors[color]);
 }
 
 function setAvatar(avatar) {
@@ -473,7 +473,7 @@ function updatePicture(file) {
 
 function setAvatarCallback() {
 	apretaste.send({
-		'command': 'PERFIL'
+		'command': 'PERFIL', data: {'ts': Date.now()}
 	});
 }
 
