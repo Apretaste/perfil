@@ -85,7 +85,7 @@ class Service
 				]);
 			}
 		} else {
-			$profile = $request->person;
+			$profile = Person::find($request->person->username);
 			$ownProfile = true;
 		}
 
