@@ -72,9 +72,6 @@ class Service
 				]);
 			}
 
-			// prepare the profile for the person requested
-			$ownProfile = $profile->id === $request->person->id;
-
 			// check if current user blocked the user to lookup, or is blocked by
 			$blocks = Chats::isBlocked($request->person->id, $profile->id);
 			if ($blocks->blocked || $blocks->blockedByMe) {
