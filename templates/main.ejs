@@ -1,73 +1,29 @@
-<div class="col s12">
-    <ul class="collection profile">
-        <li class="collection-item avatar">
-            <div class="person-avatar circle" face="<%= profile.avatar %>" color="<%= profile.avatarColor %>" size="45"
-                 online="<%= profile.online %>"></div>
-            <span class="title <%= profile.gender %>">@<%= profile.username %></span>
+<div id="img-pre" class="green apretaste"></div>
 
-            <br>
-            <span class="chip tiny clear" style="font-size: 1rem">
+<!-- AVATAR -->
+<div class="person-avatar circle" id="profile-avatar" face="<%= profile.avatar %>" color="<%= profile.avatarColor %>"
+     size="<%= ($(window).height() / 4) + 8 %>"></div>
+
+<div class="row profile-info">
+    <div class="col s12">
+        <div class="center-align">
+            <h4 class="<%= profile.gender %>">@<%= profile.username %></h4>
+            <span class="chip clear" style="font-size: 1.35rem">
                 <i class="fa fa-user-friends"></i>
                 <%= profile.friendList.length %>
             </span>
             &nbsp;
-            <span class="chip tiny clear" style="font-size: 1rem">
+            <span class="chip clear" style="font-size: 1.35rem">
                 <i class="fa fa-trophy"></i>
                 #<%= profile.ranking %>
             </span>
+        </div>
+    </div>
 
-            <div class="actions">
-                <% if(ownProfile){ %>
-                    <a href="#!" class="secondary-content green-text first"
-                       onclick="openEditProfile()"><i class="material-icons">edit</i></a>
-                <% } else if(type == 'friends') { %>
-                    <a onclick="pizarraSearch()" class="secondary-content green-text first">
-                        <i class="material-icons">assignment</i>
-                    </a>
-                    <a onclick="openChat()" class="secondary-content green-text second">
-                        <i class="material-icons">chat</i>
-                    </a>
-                <% } else if(type == 'waitingForMe') { %>
-                    <a class="secondary-content green-text first">
-                        <i class="material-icons red-text"
-                           onclick="rejectModalOpen('<%= profile.id %>', '<%= profile.username %>')">
-                            delete
-                        </i>
-                    </a>
-                    <a class="secondary-content green-text second">
-                        <i class="material-icons"
-                           onclick="acceptModalOpen('<%= profile.id %>', '<%= profile.username %>')">
-                            person_add
-                        </i>
-                    </a>
-                <% }else if(type == 'waiting') { %>
-                    <a class="secondary-content green-text first">
-                        <i class="material-icons red-text"
-                           onclick="cancelRequestModalOpen('<%= profile.id %>', '<%= profile.username %>')">
-                            delete
-                        </i>
-                    </a>
-
-                    <a onclick="pizarraSearch()" class="secondary-content green-text second">
-                        <i class="material-icons">assignment</i>
-                    </a>
-                <% } else { %>
-                    <a onclick="addFriendModalOpen()" class="secondary-content green-text first">
-                        <i class="material-icons">person_add</i>
-                    </a>
-                    <a onclick="pizarraSearch()" class="secondary-content green-text second">
-                        <i class="material-icons">assignment</i>
-                    </a>
-                <% } %>
-            </div>
-        </li>
-    </ul>
-</div>
-
-<% var userLevel = getUserLevel(profile.experience) %>
-<div class="col s12">
-    <img src="{{APP_SERVICE_PATH}}/images/<%= userLevel.img %>" class="gem">
-    <div style="height: 38px; display: inline-block; width: calc(100% - 42px); margin-left: 5px;">
+    <% var userLevel = getUserLevel(profile.experience) %>
+    <div class="col s12">
+        <img src="{{APP_SERVICE_PATH}}/images/<%= userLevel.img %>" class="gem">
+        <div style="height: 38px; display: inline-block; width: calc(100% - 42px); margin-left: 5px;">
         <span>
             <b>
                 <span class="chip tiny clear" style="font-size: 1rem">
@@ -84,28 +40,102 @@
                 ></i>
             <% } %>
         </span>
-        <div class="progress" style="margin: 2px 0; background-color: lightgray;">
-            <div class="determinate"
-                 style="width: <%= userLevel.percent %>%; background-color: <%= userLevel.color %>"></div>
+            <div class="progress" style="margin: 2px 0; background-color: lightgray;">
+                <div class="determinate"
+                     style="width: <%= userLevel.percent %>%; background-color: <%= userLevel.color %>"></div>
+            </div>
         </div>
     </div>
+
+    <!--div class="col s12">
+        <p style="margin: 1em 5px"><%= profile.aboutMe %></p>
+
+        <table class="desc-table">
+            <% if(profile.profile_tags){ %>
+                <tr>
+                    <td><i class="material-icons grey-text text-darken-2">person</i></td>
+                    <td><%= profile.profile_tags %>.</td>
+                </tr>
+            <% } %>
+
+            <% if(profile.profession_tags){ %>
+                <tr>
+                    <td><i class="material-icons grey-text text-darken-2">business_center</i></td>
+                    <td><%= profile.profession_tags %>.</td>
+                </tr>
+            <% } %>
+
+            <% if(profile.location_tags){ %>
+                <tr>
+                    <td><i class="material-icons grey-text text-darken-2">place</i></td>
+                    <td><%= profile.location_tags %>.</td>
+                </tr>
+            <% } %>
+
+        </table>
+    </div-->
 </div>
 
 <div class="col s12">
-    <p> <%= profile.aboutMe %></p>
-    <ul class="collection one-line" id="profile-props">
-        <% Object.keys(props).forEach(function(prop) { %>
-            <!-- TODO use in future, delete false condition -->
-            <% if(false && profile[prop] != null && profile[prop].trim() != ''){ %>
-                <li class="collection-item avatar">
-                    <i class="tiny material-icons circle"><%= props[prop].icon %></i>
-                    <span class="title"><%= getReadableProp(prop) %></span>
-                    <p class="grey-text"><%= props[prop].caption %></p>
-                </li>
-            <% } %>
-        <% }) %>
-    </ul>
+    <div class="bottom-space"></div>
+    <div class="fixed-action-btn">
+        <% if(ownProfile){ %>
+            <a class="btn-floating btn-large waves-effect waves-light"
+               onclick="openEditProfile()"><i class="material-icons">edit</i></a>
+        <% } else if(type == 'friends') { %>
+            <a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light grey third">
+                <i class="material-icons">assignment</i>
+            </a>
+            <a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
+                <i class="material-icons">arrow_back</i>
+            </a>
+            <a onclick="openChat()" class="btn-floating btn-large waves-effect waves-light">
+                <i class="material-icons">chat</i>
+            </a>
+
+        <% } else if(type == 'waitingForMe') { %>
+            <a class="btn-floating waves-effect waves-light grey third">
+                <i class="material-icons" onclick="acceptModalOpen('<%= profile.id %>', '<%= profile.username %>')">
+                    person_add
+                </i>
+            </a>
+            <a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
+                <i class="material-icons">arrow_back</i>
+            </a>
+
+            <a class="btn-floating btn-large waves-effect waves-light">
+                <i class="material-icons red-text"
+                   onclick="rejectModalOpen('<%= profile.id %>', '<%= profile.username %>')">
+                    delete
+                </i>
+            </a>
+        <% }else if(type == 'waiting') { %>
+            <a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light grey third">
+                <i class="material-icons">assignment</i>
+            </a>
+            <a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
+                <i class="material-icons">arrow_back</i>
+            </a>
+            <a class="btn-floating btn-large waves-effect waves-light">
+                <i class="material-icons red-text"
+                   onclick="cancelRequestModalOpen('<%= profile.id %>', '<%= profile.username %>')">
+                    delete
+                </i>
+            </a>
+        <% } else { %>
+            <a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light grey third">
+                <i class="material-icons">assignment</i>
+            </a>
+            <a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
+                <i class="material-icons">arrow_back</i>
+            </a>
+            <a onclick="addFriendModalOpen()" class="btn-floating btn-large waves-effect waves-light">
+                <i class="material-icons">person_add</i>
+            </a>
+        <% } %>
+    </div>
 </div>
+
 
 <div id="addFriendModal" class="modal">
     <div class="modal-content">

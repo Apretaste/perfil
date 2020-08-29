@@ -6,13 +6,13 @@ var menu = [
 %>
 
 <!-- HEADER -->
-<div class="row">
+<div class="row green apretaste" style="margin-bottom: 0">
     <div class="col s12">
-        <ul class="tabs tabs-fixed-width">
+        <ul class="tabs tabs-fixed-width green apretaste">
             <% menu.forEach(function(e) { %>
                 <% var active = typeof title != "undefined" && title == e.caption ? 'active' : '' %>
                 <li class="tab">
-                    <a class="<%= active %>" onclick="<%= e.link %>">
+                    <a class="<%= active %> white-text" onclick="<%= e.link %>">
                         <%= e.caption %>
                     </a>
                 </li>
@@ -21,6 +21,6 @@ var menu = [
     </div>
 </div>
 
-<div class="row" style="margin-top: 1rem">
+<div class="row">
     {{APP_TEMPLATE_CODE}}
 </div>
