@@ -335,14 +335,17 @@ function addFriend() {
 function addFriendCallback() {
     showToast('Solicitud enviada');
     $('.actions').html(
-        '<a class="secondary-content green-text first">\n' +
+        '<a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light grey third">\n' +
+        '                <i class="material-icons">assignment</i>\n' +
+        '</a>\n' +
+        '<a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">\n' +
+        '    <i class="material-icons">arrow_back</i>\n' +
+        '</a>\n' +
+        '<a class="btn-floating btn-large waves-effect waves-light">\n' +
         '    <i class="material-icons red-text"\n' +
         '       onclick="cancelRequestModalOpen(\'' + profile.id + '\', \'' + profile.username + '\')">\n' +
         '        delete\n' +
         '    </i>\n' +
-        '</a>\n' +
-        '<a onclick="pizarraSearch()" class="secondary-content green-text second">\n' +
-        '    <i class="material-icons">assignment</i>\n' +
         '</a>'
     );
 }
@@ -363,11 +366,14 @@ function rejectFriendCallback(message) {
     showToast(message);
 
     $('.actions').html(
-        '<a onclick="addFriendModalOpen()" class="secondary-content green-text first">\n' +
-        '    <i class="material-icons">person_add</i>\n' +
-        '</a>\n' +
-        '<a onclick="pizarraSearch()" class="secondary-content green-text second">\n' +
+        '<a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light grey third">\n' +
         '    <i class="material-icons">assignment</i>\n' +
+        '</a>\n' +
+        '<a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">\n' +
+        '    <i class="material-icons">arrow_back</i>\n' +
+        '</a>\n' +
+        '<a onclick="addFriendModalOpen()" class="btn-floating btn-large waves-effect waves-light">\n' +
+        '    <i class="material-icons">person_add</i>\n' +
         '</a>'
     );
 }
