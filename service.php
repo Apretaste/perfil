@@ -33,7 +33,7 @@ class Service
         // get the id or the username for the profile
         $data = $request->input->data;
         $needle = $data->username ?? $data->id ?? false;
-        $ownProfile = $needle == $request->person->id || $needle == $request->person->username;
+        $ownProfile = $needle == $request->person->id || str_replace('@', '', $needle) == $request->person->username;
 
         if ($needle && !$ownProfile) {
             // get the data of the person requested
