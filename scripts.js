@@ -396,7 +396,7 @@ function uploadPicture() {
 
 function sendFile(base64File) {
     if (base64File.length > 2584000) {
-        showToast("Imagen demasiado pesada");
+        showToast("La imagen que escogió pesa mucho. Una solución rápida es tomar una captura de pantalla de la imagen, para disminuir el peso sin perder calidad.");
         $('input:file').val(null);
         return false;
     }

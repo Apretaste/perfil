@@ -267,7 +267,7 @@ class Service
         $content = [
             'images' => $imagesList,
             'ownProfile' => $ownProfile,
-            'idPerson' => $id, 'title' => 'Imagenes'
+            'idPerson' => $id, 'title' => 'Imágenes'
         ];
 
         // send data to the view
