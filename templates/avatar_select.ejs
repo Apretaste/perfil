@@ -12,12 +12,15 @@
 
     <div class="col s12" id="avatar-select">
         <% Object.keys(avatars).forEach(function (avatar) { %>
+            <% if (avatar == 'apretin' || avatar == 'apretina') return; %>
+
             <% var color = avatars[avatar].gender == "M" ? "blue-text" : avatars[avatar].gender == "F" ? "pink-text text-lighten-2" : "black-text"; %>
-            <div class="col s6 m4 l3">
-                <div class="center-align mini-card valign-wrapper" onclick="setAvatar('<%= avatar %>')">
-                    <div>
-                        <div class="person-avatar" face="<%= avatar %>" color="<%= currentColor %>" size="50"></div>
-                        <p class="<%= color %> text-medium" style="margin: 0 8px"><%= avatars[avatar].caption %></p>
+
+            <div class="col s4 m2">
+                <div class="card user-card center-align" onclick="setAvatar('<%= avatar %>')">
+                    <div class="content">
+                        <div class="person-avatar circle" face="<%= avatar %>" color="<%= currentColor %>" size="50"></div>
+                        <p class="<%= color %> text-medium" style="margin: 0 8px; "><%= avatars[avatar].caption %></p>
                     </div>
                 </div>
             </div>

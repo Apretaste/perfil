@@ -1,20 +1,6 @@
-<div class="row green apretaste top-bar">
-    <div class="col s12">
-        <ul class="tabs tabs-fixed-width green apretaste">
-            <li class="tab col s4"><a href="#" class="white-text"
-                                      onclick="apretaste.send({command: 'PERFIL', data: {'username': idPerson}})">Perfil</a>
-            </li>
-            <% if(ownProfile){ %>
-            <li class="tab col s4"><a href="#" class="white-text" onclick="apretaste.send({command: 'PERFIL NIVELES'})">Niveles</a>
-                <% } %>
-            <li class="tab col s4"><a href="#" class="active white-text">Imagenes</a></li>
-        </ul>
-    </div>
-</div>
-
-<div class="row" id="gallery" style="margin-top: 1rem">
+<div id="gallery" style="margin-top: 2rem">
     <% images.forEach(function (image) { %>
-        <div class="col s6 m3 l2 image"
+        <div class="col s6 m3 l2 galleryImage"
              onclick="apretaste.send({'command': 'PERFIL VER', 'data': {'id': '<%= image.id %>'}})">
             <% if(image.default == 1){ %>
                 <div class="default">

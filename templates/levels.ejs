@@ -1,45 +1,48 @@
-<div class="row green apretaste top-bar">
-	<div class="col s12">
-		<ul class="tabs tabs-fixed-width green apretaste">
-			<li class="tab col s4"><a href="#" class="white-text" onclick="apretaste.send({command: 'PERFIL'})">Perfil</a></li>
-			<li class="tab col s4"><a href="#" class="active white-text">Niveles</a>
-			<li class="tab col s4"><a href="#" class="white-text" onclick="apretaste.send({command: 'PERFIL IMAGENES'})">Imagenes</a></li>
-		</ul>
-	</div>
-</div>
+<div class="row" style="margin-top: 2rem; margin-bottom: 2rem;">
+    <% var userLevel = getUserLevel(experience) %>
+    <div class="col s2 m1 right-align">
+        <img src="{{APP_SERVICE_PATH}}/images/<%= userLevel.img %>" class="gem-big">
+    </div>
+    <div class="col s10 m11" style="height: 38px">
+        <span>
+            <b>
+                <span class="chip tiny clear" style="font-size: 1rem">
+                    <i class="fa fa-bolt"></i>
+                    <%= experience %>
+                    <%= userLevel.name %>
+                </span>
+            </b>
+        </span>
+        <div class="progress" style="margin: 2px 0; background-color: lightgray;">
+            <div class="determinate"
+                 style="width: <%= userLevel.percent %>%; background-color: <%= userLevel.color %>"></div>
+        </div>
+    </div>
 
-<div class="row" style="margin-top: 1rem">
-	<% var userLevel = getUserLevel(experience) %>
-	<div class="col s2 m1 center-align">
-		<img src="{{APP_SERVICE_PATH}}/images/<%= userLevel.img %>" class="gem">
-	</div>
 
-	<div class="col s10 m11" style="height: 55px">
-		<b>⚡<%= experience %></b>
-		<div class="progress" style="margin: 2px 0; background-color: lightgray;">
-			<div class="determinate"
-				 style="width: <%= userLevel.percent %>%; background-color: <%= userLevel.color %>"></div>
-		</div>
-		<span style="color: <%= userLevel.titleColor %>"><%= userLevel.name %></span>
-	</div>
+    <div class="col s12">
+        <p>Mientras más utilices la app, <a href="#!" onclick="apretaste.send({command:'PERFIL EXPERIENCIA'})">mayor
+                experiencia ganarás</a>, y al subir de nivel podrás disfrutar de mayores
+            beneficios.</p>
+        <ul class="collection gems-list">
+            <% levels.forEach(function (level) { %>
+                <li class="collection-item avatar">
+                    <img src="{{APP_SERVICE_PATH}}/images/<%= level.img %>" class="circle">
+                    <span style="color: <%= level.titleColor %>"><%= level.name %> </span><span>(<b>⚡</b><%= level.experience %> o más):</span>
+                    <% level.benefits.forEach(function (benefit) { %>
+                        <br><span>• <%= benefit %>.</span>
+                    <% }) %>
+                </li>
+            <% }) %>
+        </ul>
+    </div>
 
-	<div class="col s12">
-		<p>Mientras más utilices la app, <a href="#!" onclick="apretaste.send({command:'PERFIL EXPERIENCIA'})">mayor experiencia ganarás</a>, y al subir de nivel podrás disfrutar de mayores
-			beneficios.</p>
-		<ul class="collection gems-list">
-			<% levels.forEach(function (level) { %>
-				<li class="collection-item avatar">
-					<img src="{{APP_SERVICE_PATH}}/images/<%= level.img %>" class="circle">
-					<span style="color: <%= level.titleColor %>"><%= level.name %> </span><span>(<b>⚡</b><%= level.experience %> o más):</span>
-					<% level.benefits.forEach(function (benefit) { %>
-						<br><span>• <%= benefit %>.</span>
-					<% }) %>
-				</li>
-			<% }) %>
-		</ul>
-	</div>
+    <div class="col s12 center-align">
+        <a href="#!" onclick="apretaste.send({command:'PERFIL EXPERIENCIA'})">¿Cómo gano experiencia?</a>
+    </div>
 
-	<div class="col s12 center-align">
-		<a href="#!" onclick="apretaste.send({command:'PERFIL EXPERIENCIA'})">¿Cómo gano experiencia?</a>
-	</div>
+    <div class="fixed-action-btn">
+        <a class="btn-floating btn-large waves-effect waves-light green" onclick="apretaste.back()"><i
+                    class="material-icons">arrow_back</i></a>
+    </div>
 </div>
