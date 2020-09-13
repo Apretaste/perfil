@@ -339,9 +339,6 @@ class Service
         $content->origin = $request->person->origin;
         $content->origins = Core::$origins;
 
-        // complete challenge
-        Challenges::complete('where-found-apretaste', $request->person->id);
-
         // send data to the view
         $response->setTemplate('origin.ejs', $content);
     }
@@ -465,6 +462,10 @@ class Service
 
                 if ($key === 'avatar') {
                     Challenges::complete('update-profile-picture', $request->person->id);
+                }
+
+                if ($key === 'origin') {
+                    Challenges::complete('where-found-apretaste', $request->person->id);
                 }
 
                 unset($request->input->data->$key);

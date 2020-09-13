@@ -590,3 +590,18 @@ if (!Object.keys) {
         };
     }();
 }
+
+
+
+// save changes to the origin
+function changeOrigin() {
+    var origin = $('#origin').val();
+
+    apretaste.send({
+        "command": "PERFIL UPDATE",
+        "data": {"origin": origin},
+        "redirect": false
+    });
+
+    showToast('¡Gracias por opinar!');
+}
