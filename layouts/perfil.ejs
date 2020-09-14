@@ -1,24 +1,24 @@
 <%
 var menu = [
-    {link: 'openProfile()', caption: 'Perfil'},
-    {link: 'openGallery()', caption: 'Imágenes'}
+	{link: 'openProfile()', caption: 'Perfil'},
+	{link: 'openGallery()', caption: 'Imágenes'}
 ];
 %>
 
 <!-- HEADER -->
 <div class="row green apretaste" style="margin-bottom: 0">
-    <ul class="tabs tabs-fixed-width green apretaste" style="box-shadow: 0 0 4px 0 #494949;">
-        <% menu.forEach(function(e) { %>
-            <% var active = typeof title != "undefined" && title == e.caption ? 'active' : '' %>
-            <li class="tab">
-                <a class="<%= active %> white-text" onclick="<%= e.link %>">
-                    <%= e.caption %>
-                </a>
-            </li>
-        <% }); %>
-    </ul>
+	<ul class="tabs tabs-fixed-width green apretaste" style="box-shadow: 0 0 4px 0 #494949;">
+		<% menu.forEach(function(e) { %>
+			<% var active = typeof title != "undefined" && title == e.caption ? 'active' : '' %>
+			<li class="tab">
+				<a class="<%= active %> white-text" onclick="<%= e.link %>">
+					<%= e.caption %>
+				</a>
+			</li>
+		<% }); %>
+	</ul>
 </div>
 
 <div class="row">
-    {{APP_TEMPLATE_CODE}}
+	{{APP_TEMPLATE_CODE}}
 </div>
