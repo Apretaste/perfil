@@ -302,7 +302,7 @@ class Service
 			// get the image name and path
 			$fileName = Utils::randomHash();
 			$filePath = SHARED_PUBLIC_PATH . "/profile/$fileName.jpg";
-			
+
 			// save and optimize the image on the user folder
 			Images::saveBase64Image($picture, $filePath);
 
@@ -514,6 +514,19 @@ class Service
 			Challenges::complete('complete-profile', $request->person->id);
 			Level::setExperience('FINISH_PROFILE_FIRST', $request->person->id);
 		}
+	}
+
+	/**
+	 * Function to inactive the user when logout
+	 * @param Request $request
+	 * @param Response $response
+	 * @throws Alert
+	 */
+
+	public function _salir(Request $request, Response $response)
+	{
+		Database::query("UPDATE person SET active=0 WHERE id={$request->person->id}");
+		Database::query("DELETE FROM tokens WHERE person_id={$request->person->id} AND token_type='apretaste:firebase'");
 	}
 
 	/**
