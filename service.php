@@ -466,7 +466,7 @@ class Service
 			if (in_array($key, $fields, true)) {
 				if ($key != 'username' && ($value === null || $value === '')) {
 					$pieces[] = "$key = null";
-				} else {
+				} else if ($key != 'username' || ($key == 'username' && $value != null && $value != '')) {
 					$pieces[] = "$key = '$value'";
 				}
 

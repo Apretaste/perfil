@@ -472,7 +472,7 @@ function submitProfileData() {
 
     // add username to data object
     var cleanUsername = $('#username').val().replace('@', '');
-    if (cleanUsername != profile.username) data.username = cleanUsername;
+    if (cleanUsername != profile.username && cleanUsername != '') data.username = cleanUsername;
 
     // do not send empty petitions
     if ($.isEmptyObject(data)) {
