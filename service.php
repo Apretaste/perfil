@@ -302,10 +302,9 @@ class Service
 			// get the image name and path
 			$fileName = Utils::randomHash();
 			$filePath = SHARED_PUBLIC_PATH . "/profile/$fileName.jpg";
-
+			
 			// save and optimize the image on the user folder
-			file_put_contents($filePath, base64_decode($picture));
-			Images::optimize($filePath);
+			Images::saveBase64Image($picture, $filePath);
 
 			// save changes on the database
 			Database::query("INSERT INTO person_images(id_person, file) VALUES('{$request->person->id}', '$fileName')");
