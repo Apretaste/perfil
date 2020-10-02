@@ -206,6 +206,19 @@
             <label for="occupation">Ocupación</label>
         </div>
 
+        <!-- COUNTRY -->
+        <div class="input-field col s12 m6">
+            <i class="material-icons prefix grey-text text-darken-2">place</i>
+            <select id="country" class="validate" onchange="showProvince()">
+                <option value=""></option>
+                <% Object.keys(props.country.values).forEach(function(key){ %>
+                    <% var selected = props.country.values[key] == profile.country ? 'selected' : '' %>
+                    <option <%= selected %> value="<%= key %>"><%= props.country.values[key] %></option>
+                <% }) %>
+            </select>
+            <label for="country">País</label>
+        </div>
+
         <!-- PROVINCE-->
         <div class="input-field province-div col s12 m6">
             <i class="material-icons prefix grey-text text-darken-2">place</i>

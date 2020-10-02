@@ -1,6 +1,6 @@
 <div id="gallery" style="margin-top: 2rem">
 	<% images.forEach(function (image) { %>
-		<div class="col s6 m3 l2 galleryImage"
+		<div class="col s6 m4 galleryImage"
 			 onclick="apretaste.send({'command': 'PERFIL VER', 'data': {'id': '<%= image.id %>'}})">
 			<% if(image.default == 1){ %>
 				<div class="default">
