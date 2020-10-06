@@ -525,7 +525,7 @@ class Service
 
 	public function _salir(Request $request, Response $response)
 	{
-		Database::query("UPDATE person SET active=0 WHERE id={$request->person->id}");
+		Database::query("UPDATE person SET status='SLEEP' WHERE id={$request->person->id}");
 		Database::query("DELETE FROM tokens WHERE person_id={$request->person->id} AND token_type='apretaste:firebase'");
 	}
 
