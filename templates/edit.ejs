@@ -14,7 +14,8 @@
         <!-- USERNAME -->
         <div class="input-field col s12">
             <i class="material-icons prefix grey-text text-darken-2">person</i>
-            <input id="username" type="text" value="@<%= profile.username %>" class="validate"/>
+            <input id="username" type="text" value="@<%= profile.username %>" class="validate"
+                   onkeypress="validateUsername(event)"/>
             <label for="username">Username</label>
         </div>
 
@@ -212,8 +213,8 @@
             <select id="country" class="validate" onchange="showProvince()">
                 <option value=""></option>
                 <% Object.keys(props.country.values).forEach(function(key){ %>
-                    <% var selected = props.country.values[key] == profile.country ? 'selected' : '' %>
-                    <option <%= selected %> value="<%= key %>"><%= props.country.values[key] %></option>
+                    <% var selected = key == profile.country ? 'selected' : '' %>
+                    <option <%= selected %> value="<%= props.country.values[key] %>"><%= key %></option>
                 <% }) %>
             </select>
             <label for="country">País</label>
