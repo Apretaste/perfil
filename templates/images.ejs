@@ -1,32 +1,32 @@
 <div id="gallery" style="margin-top: 2rem">
-	<% images.forEach(function (image) { %>
-		<div class="col s6 m4 galleryImage"
-			 onclick="apretaste.send({'command': 'PERFIL VER', 'data': {'id': '<%= image.id %>'}})">
-			<% if(image.default == 1){ %>
-				<div class="default">
-					<i class="material-icons">star</i>
-				</div>
-			<% } %>
-			<img src="{{APP_IMAGE_PATH}}/<%= image.file %>" class="responsive-img" width="100%"
-				 style="border-radius: 8px">
-		</div>
-	<% }) %>
+    <% images.forEach(function (image) { %>
+        <div class="col s6 m4 galleryImage"
+             onclick="apretaste.send({'command': 'PERFIL VER', 'data': {'id': '<%= image.id %>'}})">
+            <% if(image.default == 1){ %>
+                <div class="default">
+                    <i class="material-icons">star</i>
+                </div>
+            <% } %>
+            <img src="{{APP_IMAGE_PATH}}/<%= image.file %>" class="responsive-img" width="100%"
+                 style="border-radius: 8px">
+        </div>
+    <% }) %>
 
-	<% if(images.length == 0){ %>
-		<div class="col s12 center-align">
-			<h1>¡Oops!</h1>
-			<i class="large material-icons">sentiment_very_dissatisfied</i>
-			<p style="margin:10px 0;">La galería de imágenes se encuentra vacía.</p>
-		</div>
-	<% } %>
+    <% if(images.length == 0){ %>
+        <div class="col s12 center-align">
+            <h1>¡Oops!</h1>
+            <i class="large material-icons">sentiment_very_dissatisfied</i>
+            <p style="margin:10px 0;">La galería de imágenes se encuentra vacía.</p>
+        </div>
+    <% } %>
 </div>
 
 <% if(ownProfile){ %>
-	<input id="picturefield" type="file" class="hide"/>
+    <input id="picturefield" type="file" class="hide"/>
 
-	<div class="fixed-action-btn">
-		<a class="btn-floating btn-large waves-effect waves-light" href="#!"
-		   onclick="uploadPicture()"><i
-					class="material-icons">cloud_upload</i></a>
-	</div>
+    <div class="fixed-action-btn">
+        <a class="btn-floating btn-large waves-effect waves-light" href="#!"
+           onclick="uploadPicture()"><i
+                    class="fa fa-cloud-upload-alt"></i></a>
+    </div>
 <% } %>

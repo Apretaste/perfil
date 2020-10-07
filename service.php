@@ -203,8 +203,10 @@ class Service
 
 		// get the image to display
 		$image = ($id !== 'last') ?
-			Database::query("SELECT * FROM person_images WHERE id='$id'")[0] :
-			Database::query("SELECT * FROM person_images WHERE id_person='{$request->person->id}' ORDER BY id DESC LIMIT 1")[0];
+			Database::queryFirst("SELECT * FROM person_images WHERE id='$id'") :
+			Database::queryFirst("SELECT * FROM person_images WHERE id_person='{$request->person->id}' ORDER BY id DESC LIMIT 1");
+
+		if (empty($image)) return $this->_imagenes($request, $response);
 
 		// get the full path to the image
 		$file = SHARED_PUBLIC_PATH . "profile/{$image->file}.jpg";
@@ -463,9 +465,10 @@ class Service
 
 			// prepare the database query
 			if (in_array($key, $fields, true)) {
-				if ($key != 'username' && ($value === null || $value === '')) {
-					$pieces[] = "$key = null";
-				} else if ($key != 'username' || ($key == 'username' && $value != null && $value != '')) {
+				if ($key != 'username') {
+					if ($value === null || $value === '') $pieces[] = "$key = null";
+					else $pieces[] = "$key = '$value'";
+				} else if ($value != null && $value != '') {
 					$pieces[] = "$key = '$value'";
 				}
 
