@@ -514,6 +514,9 @@ class Service
 			Challenges::complete('complete-profile', $request->person->id);
 			Level::setExperience('FINISH_PROFILE_FIRST', $request->person->id);
 		}
+
+		// remove piropazo cache
+		Database::query("DELETE FROM _piropazo_cache WHERE user = {$request->person->id}");
 	}
 
 	/**
