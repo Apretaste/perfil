@@ -13,6 +13,7 @@ use Framework\Utils;
 use Framework\Alert;
 use Framework\Images;
 use Framework\Database;
+use Framework\GoogleAnalytics;
 use Kreait\Firebase\Exception\FirebaseException;
 use Kreait\Firebase\Exception\MessagingException;
 
@@ -406,10 +407,7 @@ class Service
 	 *
 	 * @param Request $request
 	 * @param Response $response
-	 *
-	 * @throws Exception
 	 * @author salvipascual
-	 * @version 1.0
 	 */
 	public function _update(Request $request, Response $response)
 	{
@@ -506,16 +504,25 @@ class Service
 			}
 		}
 
+		// submit to Google Analytics 
+		GoogleAnalytics::event('profile_update', $request->person->id);
+
 		// save changes on the database
 		if (!empty($pieces)) {
 			Database::query('UPDATE _piropazo_people SET ' . implode(',', $pieces) . " WHERE id_person={$request->person->id}");
 			Database::query("DELETE FROM _piropazo_cache WHERE `user`={$request->person->id}");
 		}
 
-		// add the experience if profile is completed
+		// if profile was completed ...
 		if ($request->person->completion > 80) {
+			// set the challenge
 			Challenges::complete('complete-profile', $request->person->id);
+
+			// add the experience 
 			Level::setExperience('FINISH_PROFILE_FIRST', $request->person->id);
+
+			// submit to Google Analytics 
+			GoogleAnalytics::event('profile_full', $request->person->id);
 		}
 
 		// remove piropazo cache
