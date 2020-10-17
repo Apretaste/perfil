@@ -266,7 +266,7 @@ class Service
 		$ownProfile = $request->person->id == $id;
 
 		// get the list of images for the person
-		$imagesList = Database::query("SELECT id, file, `default` FROM person_images WHERE id_person=$id AND active=1");
+		$imagesList = Database::query("SELECT id, file, `default` FROM person_images WHERE id_person='$id' AND active=1");
 
 		// thumbnail the images
 		$images = [];
