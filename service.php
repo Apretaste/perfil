@@ -420,7 +420,7 @@ class Service
 			if ($username == $request->person->username) {
 				unset($request->input->data->username);
 			} else {
-				if (is_string($username) && strlen($username) > 0) {
+				if (is_string($username) && strlen($username) > 0 && !is_numeric($username)) {
 					$request->input->data->username = $username;
 					if (Person::find($username)) {
 						Notifications::alert($request->person->id, "Lo sentimos, el username @$username ya esta siendo usado");

@@ -692,6 +692,10 @@ function submitProfileData() {
 	// add username to data object
 	var cleanUsername = $('#username').val().replace('@', '');
 	if (cleanUsername != profile.username && cleanUsername != '') data.username = cleanUsername;
+	if (!isNaN(cleanUsername)) {
+		showToast('El username debe contener al menos una letra');
+		return;
+	}
 
 	// do not send empty petitions
 	if ($.isEmptyObject(data)) {
