@@ -50,7 +50,7 @@ var levels = [
 		titleColor: '#07880b',
 		experience: 700,
 		maxExperience: 999,
-		benefits: ['Beneficios anteriores', '10% de descuento en todos los canjes', 'Doble créditos al terminar encuestas']
+		benefits: ['Beneficios anteriores', 'Descuento del 10% al canjear', 'Doble créditos al terminar encuestas']
 	},
 	{
 		name: "Diamante",
@@ -667,8 +667,15 @@ function showProvince() {
 }
 
 function validateUsername(event) {
-	var valid = /[^a-zA-Z0-9@]+/.exec(event.key) == null;
-	if (!valid) event.preventDefault();
+	var username = $('#username');
+	var value = username.val();
+	var valid = /[^a-zA-Z0-9@]+/.exec(value);
+
+	while (valid != null) {
+		value = value.replace(valid[0], '');
+		valid = /[^a-zA-Z0-9@]+/.exec(value);
+	}
+	username.val(value);
 }
 
 function submitProfileData() {
