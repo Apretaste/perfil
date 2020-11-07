@@ -484,7 +484,11 @@ class Service
 
 		// save changes on the database
 		if (!empty($pieces)) {
-			Database::query('UPDATE person SET ' . implode(',', $pieces) . " WHERE id={$request->person->id}");
+			$strPieces = implode(',', $pieces);
+			Database::query("
+				UPDATE person 
+				SET last_update_date=CURRENT_TIMESTAMP, updated_by_user=1, $strPieces 
+				WHERE id={$request->person->id}");
 		}
 
 		// piropazo preferences
