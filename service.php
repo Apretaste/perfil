@@ -13,6 +13,7 @@ use Framework\Utils;
 use Framework\Alert;
 use Framework\Images;
 use Framework\Database;
+use Framework\GoogleAnalytics;
 use Kreait\Firebase\Exception\FirebaseException;
 use Kreait\Firebase\Exception\MessagingException;
 
@@ -39,52 +40,54 @@ class Service
 			// get the data of the person requested
 			$profile = Person::find($needle);
 
-			// check if the person exist. If not, message the requestor
-			if (!$profile) {
-				$response->setLayout('perfil.ejs');
-				return $response->setTemplate('message.ejs', [
-					'header' => 'El perfil no existe',
-					'icon' => 'sentiment_very_dissatisfied',
-					'text' => 'Lo sentimos, pero el perfil que usted busca no pudo ser encontrado. Puede que el nombre de usuario haya cambiado o la persona haya salido de la app.'
-				]);
-			}
-
-			$type = $profile->isFriendOf($request->person->id) ? 'friends' : 'none';
-			if ($type == 'none') {
-				$waiting = $profile->getWaitingRelation($request->person->id);
-				if ($waiting) {
-					if ($waiting->user1 == $profile->id) $type = 'waitingForMe';
-					else $type = 'waiting';
+			if ($profile != null) {
+				$type = $profile->isFriendOf($request->person->id) ? 'friends' : 'none';
+				if ($type == 'none') {
+					$waiting = $profile->getWaitingRelation($request->person->id);
+					if ($waiting) {
+						if ($waiting->user1 == $profile->id) $type = 'waitingForMe';
+						else $type = 'waiting';
+					}
 				}
-			}
 
-			// run powers for amulet DETECTIVE
-			if (Amulets::isActive(Amulets::DETECTIVE, $profile->id)) {
-				$msg = "Los poderes del amuleto del Druida te avisan: @{$request->person->username} está revisando tu perfil";
-				Notifications::alert($profile->id, $msg, 'pageview', "{command:'PERFIL', data:{username:'@{$request->person->username}'}}");
-			}
+				// run powers for amulet DETECTIVE
+				if (Amulets::isActive(Amulets::DETECTIVE, $profile->id)) {
+					$msg = "Los poderes del amuleto del Druida te avisan: @{$request->person->username} está revisando tu perfil";
+					Notifications::alert($profile->id, $msg, 'pageview', "{command:'PERFIL', data:{username:'@{$request->person->username}'}}");
+				}
 
-			// run powers for amulet SHADOWMODE
-			if (Amulets::isActive(Amulets::SHADOWMODE, $profile->id)) {
-				return $response->setTemplate('message.ejs', [
-					'header' => 'Shadow-Mode',
-					'icon' => 'visibility_off',
-					'text' => 'La magia oscura de un amuleto rodea este perfil y te impide verlo. Por mucho que intentes romperlo, el hechizo del druida es poderoso.'
-				]);
-			}
+				// run powers for amulet SHADOWMODE
+				if (Amulets::isActive(Amulets::SHADOWMODE, $profile->id)) {
+					return $response->setTemplate('message.ejs', [
+						'header' => 'Shadow-Mode',
+						'icon' => 'visibility_off',
+						'text' => 'La magia oscura de un amuleto rodea este perfil y te impide verlo. Por mucho que intentes romperlo, el hechizo del druida es poderoso.'
+					]);
+				}
 
-			// check if current user blocked the user to lookup, or is blocked by
-			$blocks = Chats::isBlocked($request->person->id, $profile->id);
-			if ($blocks->blocked || $blocks->blockedByMe) {
-				return $response->setTemplate('message.ejs', [
-					'header' => 'Perfil bloqueado',
-					'icon' => 'sentiment_very_dissatisfied',
-					'text' => 'Esta persona le ha bloqueado, o usted ha bloqueado a esta persona, por lo tanto no puede revisar su perfil.'
-				]);
+				// check if current user blocked the user to lookup, or is blocked by
+				$blocks = Chats::isBlocked($request->person->id, $profile->id);
+				if ($blocks->blocked || $blocks->blockedByMe) {
+					return $response->setTemplate('message.ejs', [
+						'header' => 'Perfil bloqueado',
+						'icon' => 'sentiment_very_dissatisfied',
+						'text' => 'Esta persona le ha bloqueado, o usted ha bloqueado a esta persona, por lo tanto no puede revisar su perfil.'
+					]);
+				}
 			}
 		} else {
 			$profile = Person::find($request->person->username);
 			$ownProfile = true;
+		}
+
+		// check if the person exist. If not, message the requestor
+		if (!$profile) {
+			$response->setLayout('perfil.ejs');
+			return $response->setTemplate('message.ejs', [
+				'header' => 'El perfil no existe',
+				'icon' => 'sentiment_very_dissatisfied',
+				'text' => 'Lo sentimos, pero el perfil que usted busca no pudo ser encontrado. Puede que el nombre de usuario haya cambiado o la persona haya salido de la app.'
+			]);
 		}
 
 		Person::setProfileTags($profile);
@@ -265,7 +268,7 @@ class Service
 		$ownProfile = $request->person->id == $id;
 
 		// get the list of images for the person
-		$imagesList = Database::query("SELECT id, file, `default` FROM person_images WHERE id_person=$id AND active=1");
+		$imagesList = Database::query("SELECT id, file, `default` FROM person_images WHERE id_person='$id' AND active=1");
 
 		// thumbnail the images
 		$images = [];
@@ -406,10 +409,8 @@ class Service
 	 *
 	 * @param Request $request
 	 * @param Response $response
-	 *
-	 * @throws Exception
+	 * @throws Alert
 	 * @author salvipascual
-	 * @version 1.0
 	 */
 	public function _update(Request $request, Response $response)
 	{
@@ -422,7 +423,7 @@ class Service
 			if ($username == $request->person->username) {
 				unset($request->input->data->username);
 			} else {
-				if (is_string($username) && strlen($username) > 0) {
+				if (is_string($username) && strlen($username) > 0 && !is_numeric($username)) {
 					$request->input->data->username = $username;
 					if (Person::find($username)) {
 						Notifications::alert($request->person->id, "Lo sentimos, el username @$username ya esta siendo usado");
@@ -445,6 +446,11 @@ class Service
 			// format first_name OR last_name in capital the first letter
 			if ($key === 'first_name' || $key === 'last_name') {
 				$value = $my_mb_ucfirst(mb_strtolower($value));
+				$value = Database::escape($value, 50);
+			}
+
+			if ($key === 'about_me') {
+				$value = Database::escape($value, 1000);
 			}
 
 			// format interests as a CVS to be saved
@@ -486,7 +492,11 @@ class Service
 
 		// save changes on the database
 		if (!empty($pieces)) {
-			Database::query('UPDATE person SET ' . implode(',', $pieces) . " WHERE id={$request->person->id}");
+			$strPieces = implode(',', $pieces);
+			Database::query("
+				UPDATE person 
+				SET last_update_date=CURRENT_TIMESTAMP, updated_by_user=1, $strPieces 
+				WHERE id={$request->person->id}");
 		}
 
 		// piropazo preferences
@@ -506,16 +516,25 @@ class Service
 			}
 		}
 
+		// submit to Google Analytics 
+		GoogleAnalytics::event('profile_update', $request->person->id);
+
 		// save changes on the database
 		if (!empty($pieces)) {
 			Database::query('UPDATE _piropazo_people SET ' . implode(',', $pieces) . " WHERE id_person={$request->person->id}");
 			Database::query("DELETE FROM _piropazo_cache WHERE `user`={$request->person->id}");
 		}
 
-		// add the experience if profile is completed
+		// if profile was completed ...
 		if ($request->person->completion > 80) {
+			// set the challenge
 			Challenges::complete('complete-profile', $request->person->id);
+
+			// add the experience 
 			Level::setExperience('FINISH_PROFILE_FIRST', $request->person->id);
+
+			// submit to Google Analytics 
+			GoogleAnalytics::event('profile_full', $request->person->id);
 		}
 
 		// remove piropazo cache
