@@ -429,7 +429,7 @@ class Service
 						unset($request->input->data->username);
 					}
 				} else {
-					throw new Alert('561', "El username generado a partir de \"{$request->input->data->username}\" es invalido");
+					throw new Alert('561', "El username generado es invalido");
 				}
 			}
 		}
