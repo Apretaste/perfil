@@ -410,135 +410,13 @@ class Service
 	 * @param Request $request
 	 * @param Response $response
 	 * @throws Alert
+	 * @throws FirebaseException
+	 * @throws MessagingException
 	 * @author salvipascual
 	 */
 	public function _update(Request $request, Response $response)
 	{
-		// possible fields to update in the database
-		$fields = ['username', 'first_name', 'middle_name', 'last_name', 'mother_name', 'about_me', 'avatar', 'avatarColor', 'year_of_birth', 'month_of_birth', 'day_of_birth', 'gender', 'cellphone', 'eyes', 'skin', 'body_type', 'hair', 'province', 'city', 'highest_school_level', 'occupation', 'marital_status', 'interests', 'about_me', 'mail_list', 'picture', 'sexual_orientation', 'religion', 'origin', 'show_images', 'country', 'usstate'];
-
-		// clean, shorten and lowercase the username, if passed
-		if (!empty($request->input->data->username)) {
-			$username = strtolower(substr(preg_replace('/[^a-zA-Z0-9]+/', '', $request->input->data->username), 0, 15));
-			if ($username == $request->person->username) {
-				unset($request->input->data->username);
-			} else {
-				if (is_string($username) && strlen($username) > 0 && !is_numeric($username)) {
-					$request->input->data->username = $username;
-					if (Person::find($username)) {
-						Notifications::alert($request->person->id, "Lo sentimos, el username @$username ya esta siendo usado");
-						unset($request->input->data->username);
-					}
-				} else {
-					throw new Alert('561', "El username generado es invalido");
-				}
-			}
-		}
-
-		$my_mb_ucfirst = function ($str) {
-			$fc = mb_strtoupper(mb_substr($str, 0, 1));
-			return $fc . mb_substr($str, 1);
-		};
-
-		// get the JSON with the bulk
-		$pieces = [];
-		foreach ($request->input->data as $key => $value) {
-			// format first_name OR last_name in capital the first letter
-			if ($key === 'first_name' || $key === 'last_name') {
-				$value = $my_mb_ucfirst(mb_strtolower($value));
-				$value = Database::escape($value, 50);
-			}
-
-			if ($key === 'about_me') {
-				$value = Database::escape($value, 1000);
-			}
-
-			// format interests as a CVS to be saved
-			if ($key === 'interests') {
-				$interests = [];
-				foreach ($value as $piece) {
-					$interests[] = $piece->tag;
-				}
-				$value = implode(',', $interests);
-			}
-
-			// escape dangerous chars in the value passed
-			$value = Database::escape($value);
-
-			if ($key === 'cellphone' && $request->person->phone == $value) {
-				continue;
-			}
-
-			// prepare the database query
-			if (in_array($key, $fields, true)) {
-				if ($key != 'username') {
-					if ($value === null || $value === '') $pieces[] = "$key = null";
-					else $pieces[] = "$key = '$value'";
-				} else if ($value != null && $value != '') {
-					$pieces[] = "$key = '$value'";
-				}
-
-				if ($key === 'avatar') {
-					Challenges::complete('update-profile-picture', $request->person->id);
-				}
-
-				if ($key === 'origin') {
-					Challenges::complete('where-found-apretaste', $request->person->id);
-				}
-
-				unset($request->input->data->$key);
-			}
-		}
-
-		// save changes on the database
-		if (!empty($pieces)) {
-			$strPieces = implode(',', $pieces);
-			Database::query("
-				UPDATE person 
-				SET last_update_date=CURRENT_TIMESTAMP, updated_by_user=1, $strPieces 
-				WHERE id={$request->person->id}");
-		}
-
-		// piropazo preferences
-		$fields = ['minAge', 'maxAge'];
-
-		$pieces = [];
-		foreach ($request->input->data as $key => $value) {
-			// prepare the database query
-			if (in_array($key, $fields, true)) {
-				if ($value === null || $value === '') {
-					$pieces[] = "$key = null";
-				} else {
-					$pieces[] = "$key = '$value'";
-				}
-
-				unset($request->input->data->$key);
-			}
-		}
-
-		// submit to Google Analytics 
-		GoogleAnalytics::event('profile_update', $request->person->id);
-
-		// save changes on the database
-		if (!empty($pieces)) {
-			Database::query('UPDATE _piropazo_people SET ' . implode(',', $pieces) . " WHERE id_person={$request->person->id}");
-			Database::query("DELETE FROM _piropazo_cache WHERE `user`={$request->person->id}");
-		}
-
-		// if profile was completed ...
-		if ($request->person->completion > 80) {
-			// set the challenge
-			Challenges::complete('complete-profile', $request->person->id);
-
-			// add the experience 
-			Level::setExperience('FINISH_PROFILE_FIRST', $request->person->id);
-
-			// submit to Google Analytics 
-			GoogleAnalytics::event('profile_full', $request->person->id);
-		}
-
-		// remove piropazo cache
-		Database::query("DELETE FROM _piropazo_cache WHERE user = {$request->person->id}");
+		Person::update($request->person->id, $request->input->data);
 	}
 
 	/**
