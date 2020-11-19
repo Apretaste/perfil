@@ -9,33 +9,29 @@
         <div class="center-align">
             <h4 class="<%= profile.gender %>">@<%= profile.username %></h4>
             <span class="chip clear" style="font-size: 1.35rem; margin-right: 8px;">
-				<i class="fa fa-user-friends"></i>
-				&nbsp;
-				<%= profile.friendList.length %>
+				<i class="fa fa-user-friends"></i>&nbsp;<%= profile.friendList.length %>
 			</span>
             <span class="chip clear" style="font-size: 1.35rem">
-				<i class="fa fa-trophy"></i>
-				&nbsp;
-				#<%= profile.ranking %>
+				<i class="fa fa-trophy"></i>&nbsp;#<%= profile.ranking %>
 			</span>
         </div>
     </div>
 
     <% var userLevel = getUserLevel(profile.experience) %>
-    <div class="col s12">
+    <div class="col s12 valign-wrapper">
         <img src="{{APP_SERVICE_PATH}}/images/<%= userLevel.img %>" class="gem">
-        <div style="height: 38px; display: inline-block; width: calc(100% - 42px); margin-left: 5px;">
-		<span>
-			<b>
-				<span class="chip tiny clear" style="font-size: 1rem">
-					<i class="fa fa-bolt"></i>&nbsp;<%= profile.experience %>&nbsp;<%= userLevel.name %>
-				</span>
-			</b>
-            <% if(ownProfile){ %>
-                <i class="right far fa-question-circle" style="color: <%= userLevel.titleColor %>"
-                   onclick="openLevelsHelp()"></i>
-            <% } %>
-        </span>
+        <div style="height: 32px; display: inline-block; width: calc(100% - 42px); margin-left: 5px;">
+            <span>
+                <b>
+                    <span class="chip tiny clear" style="font-size: 1rem">
+                        <i class="fa fa-bolt"></i>&nbsp;<%= profile.experience %>&nbsp;<%= userLevel.name %>
+                    </span>
+                </b>
+                <% if(ownProfile){ %>
+                    <i class="right far fa-question-circle" style="color: <%= userLevel.titleColor %>"
+                       onclick="openLevelsHelp()"></i>
+                <% } %>
+            </span>
             <div class="progress" style="margin: 2px 0; background-color: lightgray;">
                 <div class="determinate"
                      style="width: <%= userLevel.percent %>%; background-color: <%= userLevel.color %>"></div>
