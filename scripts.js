@@ -603,6 +603,7 @@ function onImageLoaded(path) {
 		"command": "PERFIL FOTO",
 		"data": {'pictureName': basename},
 		"redirect": false,
+		"files": [path],
 		"callback": {
 			"name": "showUploadedPicture",
 			"data": path
