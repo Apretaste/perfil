@@ -299,12 +299,12 @@ class Service
 	 */
 	public function _foto(Request $request, Response $response)
 	{
-		// do not allow empty files
-		if (isset($request->input->data->picture)) {
-			$picture = $request->input->data->picture ?? false;
-			$pictureName = $request->input->data->pictureName ?? false;
-			$updatePicture = $request->input->data->updatePicture ?? false;
+		$picture = $request->input->data->picture ?? false;
+		$pictureName = $request->input->data->pictureName ?? false;
+		$updatePicture = $request->input->data->updatePicture ?? false;
 
+		// do not allow empty files
+		if ($picture || $pictureName) {
 			// get the image name and path
 			$fileName = Utils::randomHash();
 			$filePath = SHARED_PUBLIC_PATH . "/profile/$fileName.jpg";
