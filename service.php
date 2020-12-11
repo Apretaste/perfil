@@ -301,15 +301,21 @@ class Service
 	{
 		// do not allow empty files
 		if (isset($request->input->data->picture)) {
-			$picture = $request->input->data->picture;
+			$picture = $request->input->data->picture ?? false;
+			$pictureName = $request->input->data->pictureName ?? false;
 			$updatePicture = $request->input->data->updatePicture ?? false;
 
 			// get the image name and path
 			$fileName = Utils::randomHash();
 			$filePath = SHARED_PUBLIC_PATH . "/profile/$fileName.jpg";
 
-			// save and optimize the image on the user folder
-			Images::saveBase64Image($picture, $filePath);
+			if ($picture) {
+				// save and optimize the image on the user folder
+				Images::saveBase64Image($picture, $filePath);
+			} elseif ($pictureName) {
+				$tempPicturePath = $request->input->files[$pictureName];
+				rename($tempPicturePath, $filePath);
+			}
 
 			// save changes on the database
 			Database::query("INSERT INTO person_images(id_person, file) VALUES('{$request->person->id}', '$fileName')");

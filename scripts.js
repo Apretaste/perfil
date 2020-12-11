@@ -590,7 +590,24 @@ function deleteFriend() {
 }
 
 function uploadPicture() {
-	loadFileToBase64();
+	if (typeof apretaste.loadImage != 'undefined') {
+		apretaste.loadImage('onImageLoaded')
+	} else {
+		loadFileToBase64();
+	}
+}
+
+function onImageLoaded(path) {
+	var basename = path.split(/[\\/]/).pop()
+	apretaste.send({
+		"command": "PERFIL FOTO",
+		"data": {'pictureName': basename},
+		"redirect": false,
+		"callback": {
+			"name": "showUploadedPicture",
+			"data": path
+		}
+	});
 }
 
 function sendFile(base64File) {
@@ -728,11 +745,16 @@ function submitProfileData() {
 // Callbacks
 
 function updatePicture(file) {
+	file = "data:image/jpg;base64," + file;
+	showUploadedPicture(file)
+}
+
+function showUploadedPicture(file) {
 	// add the picture to the gallery
 	var imgElement =
 		"<div class=\"col s6 m4 galleryImage\"" +
 		"	onclick=\"apretaste.send({'command': 'PERFIL VER', 'data': {'id': 'last'}})\">" +
-		"	<img src=\"data:image/jpg;base64," + file + "\" class=\"responsive-img\" width=\"100%\"" +
+		"	<img src=\"" + file + "\" class=\"responsive-img\" width=\"100%\"" +
 		"	style=\"border-radius: 8px\">" +
 		"</div>"
 
