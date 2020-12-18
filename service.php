@@ -26,8 +26,6 @@ class Service
 	 * @param Response $response
 	 * @return Response|void
 	 * @throws Alert
-	 * @throws FirebaseException
-	 * @throws MessagingException
 	 */
 	public function _main(Request $request, Response $response)
 	{
@@ -105,9 +103,11 @@ class Service
 			$response->setCache();
 		}
 
+		$template = $profile->isContentCreator ? 'main-cdc.ejs' : 'main.ejs';
+
 		// send data to the template
 		$response->setLayout('perfil.ejs');
-		$response->setTemplate('main.ejs', $content);
+		$response->setTemplate($template, $content);
 	}
 
 	/**
@@ -119,6 +119,16 @@ class Service
 	 */
 	public function _editar(Request $request, Response $response)
 	{
+		if ($request->person->isContentCreator) {
+			$response->setTemplate('message.ejs', [
+				'header' => 'Lo sentimos',
+				'icon' => 'sentiment_very_dissatisfied',
+				'text' => 'Los creadores de contenido no pueden editar su perfil directamente, contactanos para mas información.'
+			]);
+
+			return;
+		}
+
 		// create the content array
 		$content = [
 			'profile' => self::profileMin($request->person)
@@ -422,6 +432,8 @@ class Service
 	 */
 	public function _update(Request $request, Response $response)
 	{
+		if ($request->person->isContentCreator) return;
+
 		Person::update($request->person->id, $request->input->data);
 	}
 
@@ -446,12 +458,22 @@ class Service
 
 	private static function profileMin(Person $person): object
 	{
+		if ($person->isContentCreator) {
+			return (object)[
+				'id' => $person->id,
+				'username' => $person->username,
+				'aboutMe' => $person->aboutMe,
+				'gender' => $person->gender,
+				'interests' => $person->interests,
+			];
+		}
+
 		return (object)[
 			'id' => $person->id,
 			'avatar' => $person->avatar,
 			'avatarColor' => $person->avatarColor,
 			'username' => $person->username,
-			'aboutMe' => $person->personToText(), //$person->aboutMe, TODO change
+			'aboutMe' => $person->personToText(),
 			'firstName' => $person->firstName,
 			'lastName' => $person->lastName,
 			'fullName' => $person->fullName,

@@ -458,7 +458,7 @@ p {
 	position: relative;
 	margin: auto;
 	border: 4px solid white;
-	background-size: contain;
+	background-size: cover;
 }
 
 #pic-btn {

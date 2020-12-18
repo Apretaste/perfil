@@ -463,6 +463,10 @@ function openEditProfile() {
 	apretaste.send({command: 'perfil editar'});
 }
 
+function openFriendsList() {
+	apretaste.send({command: 'amigos'});
+}
+
 // Functions
 
 function getUserLevel(experience) {
