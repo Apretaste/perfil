@@ -2,6 +2,7 @@
 
 use Apretaste\Chats;
 use Apretaste\Level;
+use Apretaste\Money;
 use Apretaste\Person;
 use Apretaste\Amulets;
 use Apretaste\Request;
@@ -298,6 +299,60 @@ class Service
 		// send data to the view
 		$response->setLayout('perfil.ejs');
 		$response->setTemplate('images.ejs', $content, $images);
+	}
+
+
+	/**
+	 * Donate some credits to a content creator
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 * @throws Exception
+	 */
+	public function _donar(Request $request, Response $response)
+	{
+		$creator = $request->input->data->creator;
+		$amount = $request->input->data->amount;
+
+		if ($request->person->credit < $amount) {
+			$response->setTemplate('message.ejs', [
+				'header' => 'Crédito insuficiente',
+				'icon' => 'sentiment_very_dissatisfied',
+				'text' => "No tienes suficiente crédito, tu crédito actual es §{$request->person->credit}."
+			]);
+			return;
+		}
+
+		$isCreator = Database::queryFirst("SELECT username, is_content_creator FROM person WHERE id='$creator'");
+		if ($isCreator && $isCreator->is_content_creator) {
+			try {
+				Money::transfer($request->person->id, $creator, $amount, 'DONATION');
+				Notifications::alert(
+					$creator, "@{$request->person->username} te ha donado §$amount",
+					'attach_money', '{"command":"CREDITO"}'
+				);
+
+
+				$response->setTemplate('message.ejs', [
+					'header' => 'Transferencia confirmada',
+					'icon' => 'attach_money',
+					'text' => "Has donado §$amount a @{$isCreator->username}"
+				]);
+			} catch (Alert $alert) {
+				$response->setTemplate('message.ejs', [
+					'header' => 'Error al transferir',
+					'icon' => 'sentiment_very_dissatisfied',
+					'text' => $alert->message
+				]);
+			}
+
+		} else {
+			$response->setTemplate('message.ejs', [
+				'header' => 'Usuario invalido',
+				'icon' => 'sentiment_very_dissatisfied',
+				'text' => "El usuario al que intentas donar créditos no es un creador de contenido."
+			]);
+		}
 	}
 
 	/**
