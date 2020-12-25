@@ -96,7 +96,8 @@ class Service
 			'profile' => self::profileMin($profile),
 			'ownProfile' => $ownProfile,
 			'type' => $type ?? 'none',
-			'title' => 'Perfil'
+			'title' => 'Perfil',
+			'myCredit' => $request->person->credit
 		];
 
 		// cache if seeing someone else's profile
@@ -104,7 +105,7 @@ class Service
 			$response->setCache();
 		}
 
-		$template = $profile->isContentCreator ? 'main-cdc.ejs' : 'main.ejs';
+		$template = $profile->isInfluencer ? 'main-influencer.ejs' : 'main.ejs';
 
 		// send data to the template
 		$response->setLayout('perfil.ejs');
@@ -120,7 +121,7 @@ class Service
 	 */
 	public function _editar(Request $request, Response $response)
 	{
-		if ($request->person->isContentCreator) {
+		if ($request->person->isInfluencer) {
 			$response->setTemplate('message.ejs', [
 				'header' => 'Lo sentimos',
 				'icon' => 'sentiment_very_dissatisfied',
@@ -311,10 +312,10 @@ class Service
 	 */
 	public function _donar(Request $request, Response $response)
 	{
-		$creator = $request->input->data->creator;
+		$influencer = $request->input->data->influencer;
 		$amount = $request->input->data->amount;
 
-		if ($request->person->credit < $amount) {
+		if ($request->person->credit < $amount || $amount < 0.1) {
 			$response->setTemplate('message.ejs', [
 				'header' => 'Crédito insuficiente',
 				'icon' => 'sentiment_very_dissatisfied',
@@ -323,12 +324,12 @@ class Service
 			return;
 		}
 
-		$isCreator = Database::queryFirst("SELECT username, is_content_creator FROM person WHERE id='$creator'");
-		if ($isCreator && $isCreator->is_content_creator) {
+		$isCreator = Database::queryFirst("SELECT username, is_influencer FROM person WHERE id='$influencer'");
+		if ($isCreator && $isCreator->is_influencer) {
 			try {
-				Money::transfer($request->person->id, $creator, $amount, 'DONATION');
+				Money::transfer($request->person->id, $influencer, $amount, 'DONATION');
 				Notifications::alert(
-					$creator, "@{$request->person->username} te ha donado §$amount",
+					$influencer, "@{$request->person->username} te ha donado §$amount",
 					'attach_money', '{"command":"CREDITO"}'
 				);
 
@@ -487,7 +488,7 @@ class Service
 	 */
 	public function _update(Request $request, Response $response)
 	{
-		if ($request->person->isContentCreator) return;
+		if ($request->person->isInfluencer) return;
 
 		Person::update($request->person->id, $request->input->data);
 	}
@@ -513,13 +514,15 @@ class Service
 
 	private static function profileMin(Person $person): object
 	{
-		if ($person->isContentCreator) {
+		if ($person->isInfluencer) {
 			return (object)[
 				'id' => $person->id,
 				'username' => $person->username,
 				'aboutMe' => $person->aboutMe,
 				'gender' => $person->gender,
 				'interests' => $person->interests,
+				'isInfluencer' => true,
+				'influencerData' => $person->getInfluencerData()
 			];
 		}
 
@@ -554,7 +557,8 @@ class Service
 			'ranking' => $person->weekRank,
 			'profile_tags' => $person->profile_tags ?? false,
 			'profession_tags' => $person->profession_tags ?? false,
-			'location_tags' => $person->location_tags ?? false
+			'location_tags' => $person->location_tags ?? false,
+			'isInfluencer' => false
 		];
 	}
 }

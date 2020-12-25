@@ -383,6 +383,7 @@ $(function () {
 	$('select').formSelect();
 	$('.modal').modal();
 	$('#about_me, #city').characterCounter();
+	$('.fixed-action-btn').floatingActionButton({direction: 'left', hoverEnabled: false});
 
 	if (typeof profile != "undefined") {
 		resizeImg();
@@ -414,7 +415,9 @@ function resizeImg() {
 
 	img.css('top', -4 - $(window).height() / 8 + 'px'); // align the picture with the div
 
-	$('.profile-info').css('margin-top', 5 - $(window).height() / 6.5 + 'px'); // move the row before to the top to fill the empty space
+	var initialMargin = 5;
+	if (profile.isInfluencer) initialMargin += 10;
+	$('.profile-info').css('margin-top', initialMargin - $(window).height() / 6.5 + 'px'); // move the row before to the top to fill the empty space
 
 	$('#img-pre').height(img.height() * 0.7); // set the height of the colored div after the photo
 }
@@ -488,6 +491,10 @@ function getReadableProp(prop) {
 	var readableProp = props[prop].values[profile[prop]];
 	if (readableProp !== undefined) return readableProp;
 	else return profile[prop];
+}
+
+function openDonationModal() {
+	M.Modal.getInstance($('#donationModal')).open();
 }
 
 function addFriendModalOpen() {
@@ -630,6 +637,22 @@ function sendFile(base64File) {
 			"name": "updatePicture",
 			"data": base64File
 		}
+	});
+}
+
+function sendDonation() {
+	var amount = parseFloat($('#donationAmount').val());
+	if (amount > parseFloat(myCredit)) {
+		showToast('No tienes suficiente crédito');
+		return;
+	} else if(amount < 0.1){
+		showToast('El minimo a donar es §0.1');
+		return;
+	}
+
+	apretaste.send({
+		command: 'perfil donar',
+		data: {'amount': amount, influencer: profile.id}
 	});
 }
 
