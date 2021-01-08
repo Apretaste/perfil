@@ -19,6 +19,9 @@
     <div class="col s12">
         <p style="margin: 1em 5px"><%= profile.aboutMe %></p>
         <div class="chip small spacing">
+            <i class="fa fa-user-alt"></i> <%= profile.influencerData.friends %> amigos
+        </div>
+        <div class="chip small spacing">
             <i class="fa fa-hashtag"></i> <%= profile.influencerData.first_category %>
         </div>
         <% if(profile.influencerData.second_category != null){ %>
@@ -170,7 +173,7 @@
     <div class="modal-content">
         <h4 class="green-text">Donar crédito</h4>
         <p>
-            Usted tiene <span id="flowerCount"> §<%= myCredit %> </span> créditos, ¿cuanto desea donar a
+            Usted tiene <span id="flowerCount"> §<%= myCredit %> </span> créditos, ¿Cuánto desea donar a
             @<%= profile.username %>?
         </p>
         <div class="row">

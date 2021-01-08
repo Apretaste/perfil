@@ -335,9 +335,9 @@ class Service
 
 
 				$response->setTemplate('message.ejs', [
-					'header' => 'Transferencia confirmada',
+					'header' => 'Su donación se ha realizado',
 					'icon' => 'attach_money',
-					'text' => "Has donado §$amount a @{$isCreator->username}"
+					'text' => "Gracias por donar §$amount de crédito a @{$isCreator->username}. Estos fondos serán usados para llegar a más personas y hacer un trabajo de más calidad."
 				]);
 			} catch (Alert $alert) {
 				$response->setTemplate('message.ejs', [
