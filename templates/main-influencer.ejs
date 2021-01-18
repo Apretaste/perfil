@@ -22,11 +22,11 @@
             <i class="fa fa-user-alt"></i> <%= profile.influencerData.friends %> amigos
         </div>
         <div class="chip small spacing">
-            <i class="fa fa-hashtag"></i> <%= profile.influencerData.first_category %>
+            <i class="fa fa-hashtag"></i> <%= profile.influencerData.firstCategoryCaption %>
         </div>
-        <% if(profile.influencerData.second_category != null){ %>
+        <% if(profile.influencerData.secondCategoryCaption != null){ %>
             <div class="chip small spacing">
-                <i class="fa fa-hashtag"></i> <%= profile.influencerData.second_category %>
+                <i class="fa fa-hashtag"></i> <%= profile.influencerData.secondCategoryCaption %>
             </div>
         <% } %>
     </div>
@@ -44,19 +44,15 @@
         </div>
     <% }else { %>
         <div class="fixed-action-btn">
+            <a class="btn-floating waves-effect waves-light grey second" onclick="apretaste.back()">
+                <i class="material-icons">arrow_back</i>
+            </a>
+
             <a class="btn-floating btn-large green">
                 <i class="large material-icons">more_horiz</i>
             </a>
 
             <ul>
-                <li>
-                    <a class="btn-floating grey" onclick="apretaste.back()">
-                        <i class="material-icons">
-                            arrow_back
-                        </i>
-                    </a>
-                </li>
-
                 <li>
                     <a class="btn-floating green" onclick="openDonationModal()">
                         <i class="material-icons">

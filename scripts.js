@@ -383,7 +383,7 @@ $(function () {
 	$('select').formSelect();
 	$('.modal').modal();
 	$('#about_me, #city').characterCounter();
-	$('.fixed-action-btn').floatingActionButton({direction: 'left', hoverEnabled: false});
+	$('.fixed-action-btn').floatingActionButton({direction: 'up', hoverEnabled: false});
 
 	if (typeof profile != "undefined") {
 		resizeImg();
