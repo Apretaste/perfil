@@ -429,6 +429,9 @@ class Service
 		$content->origin = $request->person->origin;
 		$content->origins = Core::$origins;
 
+		// complete tutorial
+		Tutorial::complete($request->person->id, 'app_origin');
+
 		// send data to the view
 		$response->setTemplate('origin.ejs', $content);
 	}
