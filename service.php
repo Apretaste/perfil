@@ -169,6 +169,9 @@ class Service
 	 */
 	public function _experiencia(Request $request, Response $response)
 	{
+		// complete tutorial
+		Tutorial::complete($request->person->id, 'check_ranking');
+
 		// get the experience leve
 		$experience = Database::query('
 			SELECT description, value, concept
