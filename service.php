@@ -7,6 +7,7 @@ use Apretaste\Person;
 use Apretaste\Amulets;
 use Apretaste\Request;
 use Apretaste\Response;
+use Apretaste\Tutorial;
 use Apretaste\Challenges;
 use Apretaste\Notifications;
 use Framework\Core;
@@ -488,9 +489,14 @@ class Service
 	 */
 	public function _update(Request $request, Response $response)
 	{
+		// do not allow update for influencers
 		if ($request->person->isInfluencer) return;
 
+		// update the profile
 		Person::update($request->person->id, $request->input->data);
+
+		// complete tutorial
+		Tutorial::complete($request->person->id, 'fill_profile');
 	}
 
 	/**
