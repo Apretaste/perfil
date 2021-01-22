@@ -7,6 +7,7 @@ use Apretaste\Person;
 use Apretaste\Amulets;
 use Apretaste\Request;
 use Apretaste\Response;
+use Apretaste\Tutorial;
 use Apretaste\Challenges;
 use Apretaste\Notifications;
 use Framework\Core;
@@ -168,6 +169,9 @@ class Service
 	 */
 	public function _experiencia(Request $request, Response $response)
 	{
+		// complete tutorial
+		Tutorial::complete($request->person->id, 'check_ranking');
+
 		// get the experience leve
 		$experience = Database::query('
 			SELECT description, value, concept
@@ -425,6 +429,9 @@ class Service
 		$content->origin = $request->person->origin;
 		$content->origins = Core::$origins;
 
+		// complete tutorial
+		Tutorial::complete($request->person->id, 'app_origin');
+
 		// send data to the view
 		$response->setTemplate('origin.ejs', $content);
 	}
@@ -488,9 +495,14 @@ class Service
 	 */
 	public function _update(Request $request, Response $response)
 	{
+		// do not allow update for influencers
 		if ($request->person->isInfluencer) return;
 
+		// update the profile
 		Person::update($request->person->id, $request->input->data);
+
+		// complete tutorial
+		Tutorial::complete($request->person->id, 'fill_profile');
 	}
 
 	/**
