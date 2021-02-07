@@ -334,9 +334,8 @@ class Service
 				Money::transfer($request->person->id, $influencer, $amount, 'DONATION');
 				Notifications::alert(
 					$influencer, "@{$request->person->username} te ha donado §$amount",
-					'attach_money', '{"command":"CREDITO"}'
+					'attach_money', '{"command":"PERFIL", "data":{"username":"'.$request->person->username.'"}}'
 				);
-
 
 				$response->setTemplate('message.ejs', [
 					'header' => 'Su donación se ha realizado',
