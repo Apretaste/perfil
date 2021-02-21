@@ -36,11 +36,67 @@
 <div class="col s12">
     <div class="bottom-space"></div>
     <% if(ownProfile){ %>
-        <div class="fixed-action-btn actions">
-            <a class="btn-floating btn-large waves-effect waves-light"
-               onclick="openFriendsList()">
-                <i class="material-icons">people</i>
+        <div class="fixed-action-btn">
+            <a class="btn-floating waves-effect waves-light grey second" onclick="apretaste.back()">
+                <i class="material-icons">arrow_back</i>
             </a>
+
+            <a class="btn-floating btn-large green">
+                <i class="large material-icons">more_horiz</i>
+            </a>
+
+            <ul>
+                <li>
+                    <a class="btn-floating btn-large waves-effect waves-light" onclick="openFriendsList()">
+                        <i class="material-icons">people</i>
+                    </a>
+                </li>
+
+                <li>
+                    <a class="btn-floating green"
+                       onclick="apretaste.send({command: 'amigos listar', data: {id: profile.id}});">
+                        <i class="material-icons">
+                            people
+                        </i>
+                    </a>
+                </li>
+
+                <% if(type == 'friends') { %>
+                    <li>
+                        <a class="btn-floating green" onclick="pizarraSearch()">
+                            <i class="material-icons">
+                                assignment
+                            </i>
+                        </a>
+                    </li>
+                <% } else if(type == 'waitingForMe') { %>
+                    <li>
+                        <a class="btn-floating green"
+                           onclick="acceptModalOpen('<%= profile.id %>', '<%= profile.username %>')">
+                            <i class="material-icons">
+                                person_add
+                            </i>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="btn-floating red"
+                           onclick="rejectModalOpen('<%= profile.id %>', '<%= profile.username %>')">
+                            <i class="material-icons">
+                                delete
+                            </i>
+                        </a>
+                    </li>
+                <% } else { %>
+                    <li>
+                        <a class="btn-floating green" onclick="pizarraSearch()">
+                            <i class="material-icons">
+                                assignment
+                            </i>
+                        </a>
+                    </li>
+
+                <% } %>
+            </ul>
         </div>
     <% }else { %>
         <div class="fixed-action-btn">
