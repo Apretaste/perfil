@@ -2,236 +2,244 @@
 
 <!-- AVATAR -->
 <% var size = ($(window).height() / 4) + 8; %>
-
-<div class="circle person-avatar" id="profile-avatar"
-     size="<%= size %>" creator_image="{{APP_SERVICE_PATH}}/images/<%= profile.username %>.png"
-     state="gold" color="<%= profile.avatarColor %>"
-></div>
+<div class="circle person-avatar" id="profile-avatar" size="<%= size %>" creator_image="{{APP_SERVICE_PATH}}/images/<%= profile.username %>.png" state="gold" color="<%= profile.avatarColor %>"></div>
 
 <div class="row profile-info">
-    <div class="col s12">
-        <div class="center-align">
-            <h4 style="margin-bottom: 0">@<%= profile.username %></h4>
-            <small>Influencer desde el <%= moment(profile.influencerData.created).format('YYYY') %></small>
-        </div>
-    </div>
+	<!-- PROFILE INFO -->
+	<div class="col s12">
+		<div class="center-align">
+			<h4 style="margin-bottom: 0">@<%= profile.username %></h4>
+			<small>Influencer desde el <%= moment(profile.influencerData.created).format('YYYY') %></small>
+		</div>
+	</div>
 
-    <div class="col s12">
-        <p style="margin: 1em 5px"><%= profile.aboutMe %></p>
-        <div class="chip small spacing">
-            <i class="fa fa-user-alt"></i> <%= profile.influencerData.friends %> amigos
-        </div>
-        <div class="chip small spacing">
-            <i class="fa fa-hashtag"></i> <%= profile.influencerData.firstCategoryCaption %>
-        </div>
-        <% if(profile.influencerData.secondCategoryCaption != null){ %>
-            <div class="chip small spacing">
-                <i class="fa fa-hashtag"></i> <%= profile.influencerData.secondCategoryCaption %>
-            </div>
-        <% } %>
-    </div>
+	<!-- PROFILE TAGS -->
+	<div class="col s12">
+		<p style="margin: 1em 5px"><%= profile.aboutMe %></p>
+		<div class="chip small spacing">
+			<i class="fa fa-user-alt"></i> <%= profile.influencerData.friends %> amigos
+		</div>
+		<div class="chip small spacing">
+			<i class="fa fa-hashtag"></i> <%= profile.influencerData.firstCategoryCaption %>
+		</div>
+		<% if(profile.influencerData.secondCategoryCaption != null){ %>
+			<div class="chip small spacing">
+				<i class="fa fa-hashtag"></i> <%= profile.influencerData.secondCategoryCaption %>
+			</div>
+		<% } %>
+	</div>
+
+	<!-- SOCIAL MEDIA -->
+	<% if(!emptySocialLinks || ownProfile) { %>
+		<div class="col s12" style="margin-top: 15px">
+			<ul class="collection one-line single">
+				<% socialLinks.forEach(function(item) { %>
+					<% if(ownProfile || profile[item.name]) { %>
+						<li class="collection-item avatar">
+							<i class="<%= item.icon %> circle green lighten-3"></i>
+							<% if(profile[item.name]) { %>
+								<p class="green-text lighten-4 <%= item.name %>-link"><%= item.caption %><%= profile[item.name] %></p>
+							<% } else { %>
+								<p class="grey-text lighten-4 <%= item.name %>-link">Agregar cuenta</p>
+							<% } %>
+							<% if(ownProfile) { %>
+								<a href="#!" onclick="updateSocialOpen('<%= item.name %>')" class="secondary-content green-text lighten-4"><i class="fas fa-pen"></i></a>
+							<% } else { %>
+								<a href="<%= item.link %><%= profile[item.name] %>" target="_blank" class="secondary-content green-text lighten-4"><i class="fas fa-arrow-right"></i></a>
+							<% } %>
+						</li>
+					<% } %>
+				<% }) %> 
+			</ul>
+		</div>
+	<% } %>
 </div>
 
+<!-- BUTTONS -->
 
-<div class="col s12">
-    <div class="bottom-space"></div>
-    <% if(ownProfile){ %>
-        <div class="fixed-action-btn">
-            <a class="btn-floating waves-effect waves-light grey second" onclick="apretaste.back()">
-                <i class="material-icons">arrow_back</i>
-            </a>
+<div class="bottom-space"></div>
 
-            <a class="btn-floating btn-large green">
-                <i class="large material-icons">more_horiz</i>
-            </a>
+<% if(ownProfile){ %>
+	<div class="fixed-action-btn">
+		<a class="btn-floating waves-effect waves-light grey second" onclick="apretaste.back()">
+			<i class="material-icons">arrow_back</i>
+		</a>
+		<a class="btn-floating btn-large green">
+			<i class="large material-icons">more_horiz</i>
+		</a>
+		<ul>
+			<li>
+				<a class="btn-floating green" onclick="apretaste.send({command: 'amigos listar', data: {id: profile.id}});">
+					<i class="material-icons"> people </i>
+				</a>
+			</li>
 
-            <ul>
-                <li>
-                    <a class="btn-floating green"
-                       onclick="apretaste.send({command: 'amigos listar', data: {id: profile.id}});">
-                        <i class="material-icons">
-                            people
-                        </i>
-                    </a>
-                </li>
+			<% if(type == 'friends') { %>
+				<li>
+					<a class="btn-floating green" onclick="pizarraSearch()">
+						<i class="material-icons">
+							assignment
+						</i>
+					</a>
+				</li>
+			<% } else if(type == 'waitingForMe') { %>
+				<li>
+					<a class="btn-floating green"
+					   onclick="acceptModalOpen('<%= profile.id %>', '<%= profile.username %>')">
+						<i class="material-icons">person_add</i>
+					</a>
+				</li>
+				<li>
+					<a class="btn-floating red"
+					   onclick="rejectModalOpen('<%= profile.id %>', '<%= profile.username %>')">
+						<i class="material-icons">delete</i>
+					</a>
+				</li>
+			<% } else { %>
+				<li>
+					<a class="btn-floating green" onclick="pizarraSearch()">
+						<i class="material-icons">assignment</i>
+					</a>
+				</li>
+			<% } %>
+		</ul>
+	</div>
+<% } else { %>
+	<div class="fixed-action-btn">
+		<a class="btn-floating waves-effect waves-light grey second" onclick="apretaste.back()">
+			<i class="material-icons">arrow_back</i>
+		</a>
 
-                <% if(type == 'friends') { %>
-                    <li>
-                        <a class="btn-floating green" onclick="pizarraSearch()">
-                            <i class="material-icons">
-                                assignment
-                            </i>
-                        </a>
-                    </li>
-                <% } else if(type == 'waitingForMe') { %>
-                    <li>
-                        <a class="btn-floating green"
-                           onclick="acceptModalOpen('<%= profile.id %>', '<%= profile.username %>')">
-                            <i class="material-icons">
-                                person_add
-                            </i>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="btn-floating red"
-                           onclick="rejectModalOpen('<%= profile.id %>', '<%= profile.username %>')">
-                            <i class="material-icons">
-                                delete
-                            </i>
-                        </a>
-                    </li>
-                <% } else { %>
-                    <li>
-                        <a class="btn-floating green" onclick="pizarraSearch()">
-                            <i class="material-icons">
-                                assignment
-                            </i>
-                        </a>
-                    </li>
+		<a class="btn-floating btn-large green">
+			<i class="large material-icons">more_horiz</i>
+		</a>
 
-                <% } %>
-            </ul>
-        </div>
-    <% }else { %>
-        <div class="fixed-action-btn">
-            <a class="btn-floating waves-effect waves-light grey second" onclick="apretaste.back()">
-                <i class="material-icons">arrow_back</i>
-            </a>
+		<ul>
+			<li>
+				<a class="btn-floating green" onclick="openDonationModal()">
+					<i class="material-icons">attach_money</i>
+				</a>
+			</li>
 
-            <a class="btn-floating btn-large green">
-                <i class="large material-icons">more_horiz</i>
-            </a>
+			<li>
+				<a class="btn-floating green" onclick="apretaste.send({command: 'amigos listar', data: {id: profile.id}});">
+					<i class="material-icons">people</i>
+				</a>
+			</li>
 
-            <ul>
-                <li>
-                    <a class="btn-floating green" onclick="openDonationModal()">
-                        <i class="material-icons">
-                            attach_money
-                        </i>
-                    </a>
-                </li>
+			<% if(type == 'friends') { %>
+				<li>
+					<a class="btn-floating green" onclick="pizarraSearch()">
+						<i class="material-icons">assignment</i>
+					</a>
+				</li>
+				<li>
+					<a class="btn-floating green" onclick="openChat()">
+						<i class="material-icons">chat</i>
+					</a>
+				</li>
+			<% } else if(type == 'waitingForMe') { %>
+				<li>
+					<a class="btn-floating green" onclick="acceptModalOpen('<%= profile.id %>', '<%= profile.username %>')">
+						<i class="material-icons">person_add</i>
+					</a>
+				</li>
+				<li>
+					<a class="btn-floating red" onclick="rejectModalOpen('<%= profile.id %>', '<%= profile.username %>')">
+						<i class="material-icons">delete</i>
+					</a>
+				</li>
+			<% } else { %>
+				<li>
+					<a class="btn-floating green" onclick="pizarraSearch()">
+						<i class="material-icons">assignment</i>
+					</a>
+				</li>
+				<li>
+					<a class="btn-floating green" onclick="addFriendModalOpen()">
+						<i class="material-icons">person_add</i>
+					</a>
+				</li>
+			<% } %>
+		</ul>
+	</div>
+<% } %>
 
-                <li>
-                    <a class="btn-floating green"
-                       onclick="apretaste.send({command: 'amigos listar', data: {id: profile.id}});">
-                        <i class="material-icons">
-                            people
-                        </i>
-                    </a>
-                </li>
-
-                <% if(type == 'friends') { %>
-                    <li>
-                        <a class="btn-floating green" onclick="pizarraSearch()">
-                            <i class="material-icons">
-                                assignment
-                            </i>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="btn-floating green" onclick="openChat()">
-                            <i class="material-icons">
-                                chat
-                            </i>
-                        </a>
-                    </li>
-                <% } else if(type == 'waitingForMe') { %>
-                    <li>
-                        <a class="btn-floating green"
-                           onclick="acceptModalOpen('<%= profile.id %>', '<%= profile.username %>')">
-                            <i class="material-icons">
-                                person_add
-                            </i>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="btn-floating red"
-                           onclick="rejectModalOpen('<%= profile.id %>', '<%= profile.username %>')">
-                            <i class="material-icons">
-                                delete
-                            </i>
-                        </a>
-                    </li>
-                <% } else { %>
-                    <li>
-                        <a class="btn-floating green" onclick="pizarraSearch()">
-                            <i class="material-icons">
-                                assignment
-                            </i>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="btn-floating green" onclick="addFriendModalOpen()">
-                            <i class="material-icons">
-                                person_add
-                            </i>
-                        </a>
-                    </li>
-                <% } %>
-            </ul>
-        </div>
-    <% } %>
-</div>
+<!-- MODALS -->
 
 <div id="addFriendModal" class="modal">
-    <div class="modal-content">
-        <p>¿Agregar a <b class="username">@<%= profile.username %></b> a sus amigos?</p>
-    </div>
-    <div class="modal-footer">
-        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
-        <a onclick="addFriend()" class="waves-effect waves-green btn-flat green-text modal-close">Agregar</a>
-    </div>
+	<div class="modal-content">
+		<p>¿Agregar a <b class="username">@<%= profile.username %></b> a sus amigos?</p>
+	</div>
+	<div class="modal-footer">
+		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+		<a onclick="addFriend()" class="waves-effect waves-green btn-flat green-text modal-close">Agregar</a>
+	</div>
 </div>
 
 <div id="acceptFriendModal" class="modal">
-    <div class="modal-content">
-        <p>¿Aceptar solicitud de amistad de <b class="username">@username</b>?</p>
-    </div>
-    <div class="modal-footer">
-        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
-        <a onclick="addFriend('Solicitud aceptada')" class="waves-effect waves-green btn-flat green-text modal-close">Aceptar</a>
-    </div>
+	<div class="modal-content">
+		<p>¿Aceptar solicitud de amistad de <b class="username">@username</b>?</p>
+	</div>
+	<div class="modal-footer">
+		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+		<a onclick="addFriend('Solicitud aceptada')" class="waves-effect waves-green btn-flat green-text modal-close">Aceptar</a>
+	</div>
 </div>
 
 <div id="deleteModal" class="modal">
-    <div class="modal-content">
-        <p>¿Esta seguro de eliminar a <b class="username">@amigo</b> de sus amigos?</p>
-    </div>
-    <div class="modal-footer">
-        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
-        <a onclick="deleteFriend()" class="modal-close waves-effect waves-red btn-flat red-text"
-           style="font-weight: 500">Eliminar</a>
-    </div>
+	<div class="modal-content">
+		<p>¿Esta seguro de eliminar a <b class="username">@amigo</b> de sus amigos?</p>
+	</div>
+	<div class="modal-footer">
+		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+		<a onclick="deleteFriend()" class="modal-close waves-effect waves-red btn-flat red-text"
+		   style="font-weight: 500">Eliminar</a>
+	</div>
 </div>
 
 <div id="rejectModal" class="modal">
-    <div class="modal-content">
-        <p>¿Rechazar solicitud de amistad de <b class="username">@username</b>?</p>
-    </div>
-    <div class="modal-footer">
-        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
-        <a onclick="rejectFriend('Solicitud rechazada')" class="modal-close waves-effect waves-red btn-flat red-text"
-           style="font-weight: 500">Rechazar</a>
-    </div>
+	<div class="modal-content">
+		<p>¿Rechazar solicitud de amistad de <b class="username">@username</b>?</p>
+	</div>
+	<div class="modal-footer">
+		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+		<a onclick="rejectFriend('Solicitud rechazada')" class="modal-close waves-effect waves-red btn-flat red-text"
+		   style="font-weight: 500">Rechazar</a>
+	</div>
 </div>
 
 <div id="donationModal" class="modal">
-    <div class="modal-content">
-        <h4 class="green-text">Donar crédito</h4>
-        <p>
-            Usted tiene <span id="flowerCount"> §<%= myCredit %> </span> créditos, ¿Cuánto desea donar a
-            @<%= profile.username %>?
-        </p>
-        <div class="row">
-            <div class="input-field col s12">
-                <input type="number" min="0.1" id="donationAmount" class="validate materialize-input"/>
-                <label for="donationAmount">Cantidad a donar</label>
-            </div>
-        </div>
-    </div>
-    <div class="modal-footer">
-        <a class="modal-close waves-effect waves-green btn-flat">Cerrar</a>
-        <a class="modal-close waves-effect waves-green btn-flat green-text"
-           onclick="sendDonation()">Enviar</a>
-    </div>
+	<div class="modal-content">
+		<h4 class="green-text">Donar crédito</h4>
+		<p>
+			Usted tiene <span id="flowerCount"> §<%= myCredit %> </span> créditos, ¿Cuánto desea donar a
+			@<%= profile.username %>?
+		</p>
+		<div class="row">
+			<div class="input-field col s12">
+				<input type="number" min="0.1" id="donationAmount" class="validate materialize-input"/>
+				<label for="donationAmount">Cantidad a donar</label>
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<a class="modal-close waves-effect waves-green btn-flat">Cerrar</a>
+		<a class="modal-close waves-effect waves-green btn-flat green-text"
+		   onclick="sendDonation()">Enviar</a>
+	</div>
+</div>
+
+<div id="updateSocialModal" class="modal">
+	<div class="modal-content">
+		<div class="input-field">
+			<i class="fab social-icon circle prefix"></i>
+			<input id="social" type="text" value="" data-type=""/>
+		</div>
+		<p class="social-text grey-text"></p>
+	</div>
+	<div class="modal-footer">
+		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+		<a onclick="updateSocial()" class="modal-close btn-flat green-text">Enviar</a>
+	</div>
 </div>

@@ -210,6 +210,10 @@
     line-height: 40px;
 }
 
+.collection.single p {
+    margin-top: 10px !important;
+}
+
 /* NUMBERS LIST */
 
 .collection.number-list .collection-item {
