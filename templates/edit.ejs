@@ -14,8 +14,7 @@
         <!-- USERNAME -->
         <div class="input-field col s12">
             <i class="material-icons prefix grey-text text-darken-2">person</i>
-            <input id="username" type="text" value="@<%= profile.username %>" class="validate"
-                   oninput="validateUsername(event)"/>
+            <input id="username" type="text" value="@<%= profile.username %>" class="validate" oninput="validateUsername(event)"/>
             <label for="username">Username</label>
         </div>
 
@@ -23,8 +22,7 @@
             <!-- DESCRIPTION -->
             <div class="input-field col s12">
                 <i class="material-icons prefix grey-text text-darken-2">account_circle</i>
-                <textarea id="about_me" class="materialize-textarea" data-length="200"
-                          maxlength="200"><%= profile.aboutMe %></textarea>
+                <textarea id="about_me" class="materialize-textarea" data-length="200" maxlength="200"><%= profile.aboutMe %></textarea>
                 <label for="about_me">Cuéntanos algo sobre ti</label>
             </div>
         <% } %>

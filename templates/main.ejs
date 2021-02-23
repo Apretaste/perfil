@@ -1,168 +1,199 @@
 <div id="img-pre" class="green apretaste"></div>
 
 <!-- AVATAR -->
-<div class="person-avatar circle" id="profile-avatar" face="<%= profile.avatar %>" color="<%= profile.avatarColor %>"
-     size="<%= ($(window).height() / 4) + 8 %>"></div>
+<div class="person-avatar circle" id="profile-avatar" face="<%= profile.avatar %>" color="<%= profile.avatarColor %>" size="<%= ($(window).height() / 4) + 8 %>"></div>
 
 <div class="row profile-info">
-    <div class="col s12">
-        <div class="center-align">
-            <h4 class="<%= profile.gender %>">@<%= profile.username %></h4>
-            <span class="chip clear" style="font-size: 1.35rem; margin-right: 8px;">
+	<!-- INFO -->
+	<div class="col s12">
+		<div class="center-align">
+			<h4 class="<%= profile.gender %>">@<%= profile.username %></h4>
+			<span class="chip clear" style="font-size: 1.35rem; margin-right: 8px;">
 				<i class="fa fa-user-friends"></i>&nbsp;<%= profile.friendList.length %>
 			</span>
-            <span class="chip clear" style="font-size: 1.35rem">
+			<span class="chip clear" style="font-size: 1.35rem">
 				<i class="fa fa-trophy"></i>&nbsp;#<%= profile.ranking %>
 			</span>
-        </div>
-    </div>
+		</div>
+	</div>
 
-    <% var userLevel = getUserLevel(profile.experience) %>
-    <div class="col s12 valign-wrapper">
-        <img src="{{APP_SERVICE_PATH}}/images/<%= userLevel.img %>" class="gem">
-        <div style="height: 32px; display: inline-block; width: calc(100% - 42px); margin-left: 5px;">
-            <span>
-                <b>
-                    <span class="chip tiny clear" style="font-size: 1rem">
-                        <i class="fa fa-bolt"></i>&nbsp;<%= profile.experience %>&nbsp;<%= userLevel.name %>
-                    </span>
-                </b>
-                <% if(ownProfile){ %>
-                    <i class="right far fa-question-circle" style="color: <%= userLevel.titleColor %>"
-                       onclick="openLevelsHelp()"></i>
-                <% } %>
-            </span>
-            <div class="progress" style="margin: 2px 0; background-color: lightgray;">
-                <div class="determinate"
-                     style="width: <%= userLevel.percent %>%; background-color: <%= userLevel.color %>"></div>
-            </div>
-        </div>
-    </div>
+	<!-- LEVEL -->
+	<% var userLevel = getUserLevel(profile.experience) %>
+	<div class="col s12 valign-wrapper">
+		<img src="{{APP_SERVICE_PATH}}/images/<%= userLevel.img %>" class="gem">
+		<div style="height: 32px; display: inline-block; width: calc(100% - 42px); margin-left: 5px;">
+			<span>
+				<b>
+					<span class="chip tiny clear" style="font-size: 1rem">
+						<i class="fa fa-bolt"></i>&nbsp;<%= profile.experience %>&nbsp;<%= userLevel.name %>
+					</span>
+				</b>
+				<% if(ownProfile){ %>
+					<i class="right far fa-question-circle" style="color: <%= userLevel.titleColor %>"
+					   onclick="openLevelsHelp()"></i>
+				<% } %>
+			</span>
+			<div class="progress" style="margin: 2px 0; background-color: lightgray;">
+				<div class="determinate"
+					 style="width: <%= userLevel.percent %>%; background-color: <%= userLevel.color %>"></div>
+			</div>
+		</div>
+	</div>
 
-    <div class="col s12">
-        <p style="margin: 1em 5px"><%= profile.aboutMe %></p>
-    </div>
+	<!-- ABOUT ME -->
+	<div class="col s12">
+		<p style="margin: 1em 5px"><%= profile.aboutMe %></p>
+	</div>
+
+	<!-- SOCIAL MEDIA -->
+	<% if(!emptySocialLinks || ownProfile) { %>
+		<div class="col s12">
+			<ul class="collection one-line single">
+				<% socialLinks.forEach(function(item) { %>
+					<% if(ownProfile || profile[item.name]) { %>
+						<li class="collection-item avatar">
+							<i class="<%= item.icon %> circle green lighten-3"></i>
+							<% if(profile[item.name]) { %>
+								<p class="green-text lighten-4 <%= item.name %>-link"><%= item.caption %><%= profile[item.name] %></p>
+							<% } else { %>
+								<p class="grey-text lighten-4 <%= item.name %>-link">Agregar cuenta</p>
+							<% } %>
+							<% if(ownProfile) { %>
+								<a href="#!" onclick="updateSocialOpen('<%= item.name %>')" class="secondary-content green-text lighten-4"><i class="fas fa-pen"></i></a>
+							<% } else { %>
+								<a href="<%= item.link %><%= profile[item.name] %>" target="_blank" class="secondary-content green-text lighten-4"><i class="fas fa-arrow-right"></i></a>
+							<% } %>
+						</li>
+					<% } %>
+				<% }) %> 
+			</ul>
+		</div>
+	<% } %>
 </div>
+
+<!-- BUTTONS -->
 
 <div class="col s12">
-    <div class="bottom-space"></div>
-    <div class="fixed-action-btn actions">
-        <% if(ownProfile){ %>
-            <a class="btn-floating btn-large waves-effect waves-light"
-               onclick="openEditProfile()"><i class="material-icons">edit</i></a>
-        <% } else if(type == 'friends') { %>
-            <a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light grey third">
-                <i class="material-icons">assignment</i>
-            </a>
-            <a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
-                <i class="material-icons">arrow_back</i>
-            </a>
-            <a onclick="openChat()" class="btn-floating btn-large waves-effect waves-light">
-                <i class="material-icons">chat</i>
-            </a>
-
-        <% } else if(type == 'waitingForMe') { %>
-            <a class="btn-floating waves-effect waves-light grey third">
-                <i class="material-icons" onclick="acceptModalOpen('<%= profile.id %>', '<%= profile.username %>')">
-                    person_add
-                </i>
-            </a>
-            <a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
-                <i class="material-icons">arrow_back</i>
-            </a>
-
-            <a class="btn-floating btn-large waves-effect waves-light">
-                <i class="material-icons red-text"
-                   onclick="rejectModalOpen('<%= profile.id %>', '<%= profile.username %>')">
-                    delete
-                </i>
-            </a>
-        <% }else if(type == 'waiting') { %>
-            <a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light grey third">
-                <i class="material-icons">assignment</i>
-            </a>
-            <a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
-                <i class="material-icons">arrow_back</i>
-            </a>
-            <a class="btn-floating btn-large waves-effect waves-light">
-                <i class="material-icons red-text"
-                   onclick="cancelRequestModalOpen('<%= profile.id %>', '<%= profile.username %>')">
-                    delete
-                </i>
-            </a>
-        <% } else { %>
-            <a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light grey third">
-                <i class="material-icons">assignment</i>
-            </a>
-            <a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
-                <i class="material-icons">arrow_back</i>
-            </a>
-            <a onclick="addFriendModalOpen()" class="btn-floating btn-large waves-effect waves-light">
-                <i class="material-icons">person_add</i>
-            </a>
-        <% } %>
-    </div>
+	<div class="bottom-space"></div>
+	<div class="fixed-action-btn actions">
+		<% if(ownProfile){ %>
+			<a class="btn-floating btn-large waves-effect waves-light" onclick="openEditProfile()"><i class="material-icons">edit</i></a>
+		<% } else if(type == 'friends') { %>
+			<a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light grey third">
+				<i class="material-icons">assignment</i>
+			</a>
+			<a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
+				<i class="material-icons">arrow_back</i>
+			</a>
+			<a onclick="openChat()" class="btn-floating btn-large waves-effect waves-light">
+				<i class="material-icons">chat</i>
+			</a>
+		<% } else if(type == 'waitingForMe') { %>
+			<a class="btn-floating waves-effect waves-light grey third">
+				<i class="material-icons" onclick="acceptModalOpen('<%= profile.id %>', '<%= profile.username %>')">person_add</i>
+			</a>
+			<a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
+				<i class="material-icons">arrow_back</i>
+			</a>
+			<a class="btn-floating btn-large waves-effect waves-light">
+				<i class="material-icons red-text" onclick="rejectModalOpen('<%= profile.id %>', '<%= profile.username %>')">delete</i>
+			</a>
+		<% }else if(type == 'waiting') { %>
+			<a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light grey third">
+				<i class="material-icons">assignment</i>
+			</a>
+			<a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
+				<i class="material-icons">arrow_back</i>
+			</a>
+			<a class="btn-floating btn-large waves-effect waves-light">
+				<i class="material-icons red-text" onclick="cancelRequestModalOpen('<%= profile.id %>', '<%= profile.username %>')">delete</i>
+			</a>
+		<% } else { %>
+			<a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light grey third">
+				<i class="material-icons">assignment</i>
+			</a>
+			<a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
+				<i class="material-icons">arrow_back</i>
+			</a>
+			<a onclick="addFriendModalOpen()" class="btn-floating btn-large waves-effect waves-light">
+				<i class="material-icons">person_add</i>
+			</a>
+		<% } %>
+	</div>
 </div>
 
+<!-- MODALS -->
+
 <div id="addFriendModal" class="modal">
-    <div class="modal-content">
-        <p>¿Agregar a <b class="username">@<%= profile.username %></b> a sus amigos?</p>
-    </div>
-    <div class="modal-footer">
-        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
-        <a onclick="addFriend()" class="waves-effect waves-green btn-flat green-text modal-close">Agregar</a>
-    </div>
+	<div class="modal-content">
+		<p>¿Agregar a <b class="username">@<%= profile.username %></b> a sus amigos?</p>
+	</div>
+	<div class="modal-footer">
+		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+		<a onclick="addFriend()" class="waves-effect waves-green btn-flat green-text modal-close">Agregar</a>
+	</div>
 </div>
 
 <div id="acceptFriendModal" class="modal">
-    <div class="modal-content">
-        <p>¿Aceptar solicitud de amistad de <b class="username">@username</b>?</p>
-    </div>
-    <div class="modal-footer">
-        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
-        <a onclick="addFriend('Solicitud aceptada')" class="waves-effect waves-green btn-flat green-text modal-close">Aceptar</a>
-    </div>
+	<div class="modal-content">
+		<p>¿Aceptar solicitud de amistad de <b class="username">@username</b>?</p>
+	</div>
+	<div class="modal-footer">
+		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+		<a onclick="addFriend('Solicitud aceptada')" class="waves-effect waves-green btn-flat green-text modal-close">Aceptar</a>
+	</div>
 </div>
 
 <div id="deleteModal" class="modal">
-    <div class="modal-content">
-        <p>¿Esta seguro de eliminar a <b class="username">@amigo</b> de sus amigos?</p>
-    </div>
-    <div class="modal-footer">
-        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
-        <a onclick="deleteFriend()" class="modal-close waves-effect waves-red btn-flat red-text"
-           style="font-weight: 500">Eliminar</a>
-    </div>
+	<div class="modal-content">
+		<p>¿Esta seguro de eliminar a <b class="username">@amigo</b> de sus amigos?</p>
+	</div>
+	<div class="modal-footer">
+		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+		<a onclick="deleteFriend()" class="modal-close waves-effect waves-red btn-flat red-text" style="font-weight: 500">Eliminar</a>
+	</div>
 </div>
 
 <div id="rejectModal" class="modal">
-    <div class="modal-content">
-        <p>¿Rechazar solicitud de amistad de <b class="username">@username</b>?</p>
-    </div>
-    <div class="modal-footer">
-        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
-        <a onclick="rejectFriend('Solicitud rechazada')" class="modal-close waves-effect waves-red btn-flat red-text"
-           style="font-weight: 500">Rechazar</a>
-    </div>
+	<div class="modal-content">
+		<p>¿Rechazar solicitud de amistad de <b class="username">@username</b>?</p>
+	</div>
+	<div class="modal-footer">
+		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+		<a onclick="rejectFriend('Solicitud rechazada')" class="modal-close waves-effect waves-red btn-flat red-text" style="font-weight: 500">Rechazar</a>
+	</div>
 </div>
 
 <div id="cancelRequestModal" class="modal">
-    <div class="modal-content">
-        <p>¿Cancelar solicitud de amistad para <b class="username">@username</b>?</p>
-    </div>
-    <div class="modal-footer">
-        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Atrás</a>
-        <a onclick="rejectFriend('Solicitud cancelada')" class="modal-close waves-effect waves-red btn-flat red-text"
-           style="font-weight: 500">Cancelar solicitud</a>
-    </div>
+	<div class="modal-content">
+		<p>¿Cancelar solicitud de amistad para <b class="username">@username</b>?</p>
+	</div>
+	<div class="modal-footer">
+		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Atrás</a>
+		<a onclick="rejectFriend('Solicitud cancelada')" class="modal-close waves-effect waves-red btn-flat red-text" style="font-weight: 500">Cancelar solicitud</a>
+	</div>
 </div>
 
 <div id="blockModal" class="modal">
-    <div class="modal-content">
-        <p>¿Esta segúro de bloquear a <b class="username">@username</b>?</p>
-    </div>
-    <div class="modal-footer">
-        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
-        <a onclick="blockUser()" class="modal-close waves-effect waves-red btn-flat red-text" style="font-weight: 500">Bloquear</a>
-    </div>
+	<div class="modal-content">
+		<p>¿Esta segúro de bloquear a <b class="username">@username</b>?</p>
+	</div>
+	<div class="modal-footer">
+		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+		<a onclick="blockUser()" class="modal-close waves-effect waves-red btn-flat red-text" style="font-weight: 500">Bloquear</a>
+	</div>
+</div>
+
+<div id="updateSocialModal" class="modal">
+	<div class="modal-content">
+		<div class="input-field">
+			<i class="fab social-icon circle prefix"></i>
+			<input id="social" type="text" value="" data-type=""/>
+		</div>
+		<p class="social-text grey-text"></p>
+	</div>
+	<div class="modal-footer">
+		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+		<a onclick="updateSocial()" class="modal-close btn-flat green-text">Enviar</a>
+	</div>
 </div>

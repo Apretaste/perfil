@@ -90,7 +90,11 @@ class Service
 			]);
 		}
 
+		// set the tags
 		Person::setProfileTags($profile);
+
+		// check if the person has no social links
+		$emptySocialLinks = empty($profile->facebook) && empty($profile->twitter) && empty($profile->instagram) && empty($profile->telegram) && empty($profile->whatsapp) && empty($profile->website);
 
 		// pass variables to the template
 		$content = [
@@ -98,6 +102,7 @@ class Service
 			'ownProfile' => $ownProfile,
 			'type' => $type ?? 'none',
 			'title' => 'Perfil',
+			'emptySocialLinks' => $emptySocialLinks,
 			'myCredit' => $request->person->credit
 		];
 
@@ -494,9 +499,6 @@ class Service
 	 */
 	public function _update(Request $request, Response $response)
 	{
-		// do not allow update for influencers
-		if ($request->person->isInfluencer) return;
-
 		// update the profile
 		Person::update($request->person->id, $request->input->data);
 
@@ -510,7 +512,6 @@ class Service
 	 * @param Response $response
 	 * @throws Alert
 	 */
-
 	public function _salir(Request $request, Response $response)
 	{
 		Database::query("UPDATE person SET status='SLEEP' WHERE id={$request->person->id}");
@@ -522,22 +523,27 @@ class Service
 	 * @return object
 	 * @throws Alert
 	 */
-
 	private static function profileMin(Person $person): object
 	{
 		if ($person->isInfluencer) {
-			return (object)[
+			return (object) [
 				'id' => $person->id,
 				'username' => $person->username,
 				'aboutMe' => $person->aboutMe,
 				'gender' => $person->gender,
 				'interests' => $person->interests,
+				'facebook' => $person->facebook ?? false,
+				'twitter' => $person->twitter ?? false,
+				'instagram' => $person->instagram ?? false,
+				'telegram' => $person->telegram ?? false,
+				'whatsapp' => $person->whatsapp ?? false,
+				'website' => $person->website ?? false,
 				'isInfluencer' => true,
 				'influencerData' => $person->getInfluencerData()
 			];
 		}
 
-		return (object)[
+		return (object) [
 			'id' => $person->id,
 			'avatar' => $person->avatar,
 			'avatarColor' => $person->avatarColor,
@@ -569,6 +575,12 @@ class Service
 			'profile_tags' => $person->profile_tags ?? false,
 			'profession_tags' => $person->profession_tags ?? false,
 			'location_tags' => $person->location_tags ?? false,
+			'facebook' => $person->facebook ?? false,
+			'twitter' => $person->twitter ?? false,
+			'instagram' => $person->instagram ?? false,
+			'telegram' => $person->telegram ?? false,
+			'whatsapp' => $person->whatsapp ?? false,
+			'website' => $person->website ?? false,
 			'isInfluencer' => false
 		];
 	}

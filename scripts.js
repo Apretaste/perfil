@@ -24,7 +24,6 @@ var levels = [
 		maxExperience: 299,
 		benefits: ['Posibilidad de canjear recargas', 'Doble créditos al canjear un cupón']
 	},
-
 	{
 		name: "Rubí",
 		img: 'level-rubi.png',
@@ -61,6 +60,47 @@ var levels = [
 		maxExperience: 1000,
 		benefits: ['Beneficios anteriores', 'Acceso al "Club Diamante"', '§1 de crédito cada mes']
 	},
+];
+
+// list of social links
+var socialLinks = [
+	{
+		name: 'facebook',
+		icon: 'fab fa-facebook-f',
+		text: 'Escriba su identificador de perfil en Facebook. Aparece en la barra de búsqueda cuando abre su muro desde el navegador, y puede que sea un número.',
+		caption: 'facebook.com/',
+		link: 'https://www.facebook.com/',
+	},{
+		name: 'twitter',
+		icon: 'fab fa-twitter',
+		text: 'Escriba su @username en Twitter.',
+		caption: 'twitter.com/',
+		link: 'https://twitter.com/',
+	},{
+		name: 'instagram',
+		icon: 'fab fa-instagram',
+		text: 'Escriba su nombre de usuario en Instagram.',
+		caption: 'instagram.com/',
+		link: 'https://instagram.com/',
+	},{
+		name: 'telegram',
+		icon: 'fab fa-telegram-plane',
+		text: 'Escriba su @username en Telegram, no su teléfono. Si no tiene un @username, créeselo antes.',
+		caption: '@',
+		link: 'https://t.me/',
+	},{
+		name: 'whatsapp',
+		icon: 'fab fa-whatsapp',
+		text: 'Escriba el número de teléfono que usa en whatsapp, comenzando por el prefijo del país. Este número será público y otros podrán verlo. No agregue su número si desea mantener su anonimato.',
+		caption: '+',
+		link: 'https://api.whatsapp.com/send?phone=',
+	},{
+		name: 'website',
+		icon: 'fas fa-globe',
+		text: 'Agregue su website, comenzando por http.',
+		caption: '',
+		link: '',
+	}
 ];
 
 var props = {
@@ -871,7 +911,6 @@ if (!Object.keys) {
 	}();
 }
 
-
 // save changes to the origin
 function changeOrigin() {
 	var origin = $('#origin').val();
@@ -883,4 +922,85 @@ function changeOrigin() {
 	});
 
 	showToast('¡Gracias por opinar!');
+}
+
+// open the social modal to update
+function updateSocialOpen(type) {
+	// select type info
+	var social = getSocialLink(type);
+
+	// update labels
+	$('#updateSocialModal .social-icon').removeClass('fab fas fa-facebook-f fa-twitter fa-instagram fa-telegram-plane fa-whatsapp fa-globe').addClass(social.icon);
+	$('#updateSocialModal .social-text').html(social.text);
+	$('#social').attr('data-type', type);
+
+	// open the modal
+	M.Modal.getInstance($('#updateSocialModal')).open();
+
+	// focus on the social input
+	$('#social').focus();
+}
+
+// submit the social modal
+function updateSocial() {
+	// get social values
+	var type = $('#social').attr('data-type');
+	var value = $('#social').val().trim();
+
+	// do not let pass blank values or with spaces
+	if(value.length <= 3 || /\s/.test(value)) {
+		showToast('Su valor parece inválido');
+		return false;
+	}
+
+	// validate websites
+	if(type == 'website') {
+		if(!isValidURL(value)) {
+			showToast('Su website es inválida');
+			return false;
+		}
+	}
+
+	// clean special chars if no website
+	if(type != 'website') {
+		value = value.replace(/[^\w\s]/gi, '');
+	}
+
+	// select type info
+	var social = getSocialLink(type);
+
+	// change the link on the component
+	$('.' + type + '-link').html(social.caption + value).removeClass('grey-text').addClass('green-text');
+
+	// clean the input
+	$('#social').val('');
+
+	// save the link
+	apretaste.send({
+		"command": "PERFIL UPDATE",
+		"data": JSON.parse('{"'+type+'":"'+value+'"}'),
+		"showLoading": false,
+		"redirect": false
+	});
+
+	// display confirmation
+	showToast('Vínculo social guardado');
+}
+
+// get a social link from the list
+function getSocialLink(name) {
+	for (var i = socialLinks.length - 1; i >= 0; i--) {
+		if(socialLinks[i].name == name) return socialLinks[i];
+	}
+}
+
+// check if an URL is valid
+function isValidURL(str) {
+	var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+		'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+		'((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+		'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+		'(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+		'(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+	return !!pattern.test(str);
 }
