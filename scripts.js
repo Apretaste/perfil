@@ -31,7 +31,7 @@ var levels = [
 		titleColor: '#e20a0a',
 		experience: 300,
 		maxExperience: 499,
-		benefits: ['Beneficios anteriores', '5 tickets gratis para la rifa mensual (Al inicio de cada mes)', 'Doble crédito al completar retos']
+		benefits: ['Beneficios anteriores', 'Doble crédito al completar retos']
 	},
 	{
 		name: "Ópalo",
@@ -947,8 +947,8 @@ function updateSocial() {
 	var type = $('#social').attr('data-type');
 	var value = $('#social').val().trim();
 
-	// do not let pass blank values or with spaces
-	if(value.length <= 3 || /\s/.test(value)) {
+	// do not let pass values with spaces
+	if(/\s/.test(value)) {
 		showToast('Su valor parece inválido');
 		return false;
 	}
@@ -966,11 +966,13 @@ function updateSocial() {
 		value = value.replace(/[^\w\s]/gi, '');
 	}
 
-	// select type info
-	var social = getSocialLink(type);
-
 	// change the link on the component
-	$('.' + type + '-link').html(social.caption + value).removeClass('grey-text').addClass('green-text');
+	if(value.length > 0) {
+		var social = getSocialLink(type);
+		$('.' + type + '-link').html(social.caption + value).removeClass('grey-text').addClass('green-text');
+	} else {
+		$('.' + type + '-link').html('Agregar cuenta').removeClass('green-text').addClass('grey-text');		
+	}
 
 	// clean the input
 	$('#social').val('');
