@@ -3,6 +3,8 @@
 // Variables
 
 var selectedColor;
+var currentUser = null;
+var currentUsername = null;
 
 // list of levels
 var levels = [
@@ -541,8 +543,6 @@ function addFriendModalOpen() {
 	M.Modal.getInstance($('#addFriendModal')).open();
 }
 
-var currentUser;
-
 function setCurrentUsername(username) {
 	$('.username').html('@' + username);
 }
@@ -1005,4 +1005,21 @@ function isValidURL(str) {
 		'(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
 		'(\\#[-a-z\\d_]*)?$','i'); // fragment locator
 	return !!pattern.test(str);
+}
+
+
+function blockUser(id) {
+	apretaste.send({
+		command: 'amigos bloquear',
+		data: {id: id},
+		redirect: false,
+		callback: {
+			name: 'blockUserCallback',
+			data: id
+		}
+	});
+}
+
+function blockUserCallback(id) {
+	apretaste.send({command: 'PERFIL', data: {id: id}});
 }

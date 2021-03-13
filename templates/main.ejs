@@ -87,7 +87,7 @@
 			</a>
 			<ul>
 				<li>
-					<a onclick="apretaste.send({command: 'AMIGOS BLOQUEAR', data:{id: profile.id}, redirect: false});" class="btn-floating green">
+					<a href="#blockModal" class="btn-floating green modal-trigger">
 						<i class="material-icons">block</i>
 					</a>
 				</li>
@@ -195,7 +195,7 @@
 	</div>
 	<div class="modal-footer">
 		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
-		<a onclick="blockUser()" class="modal-close waves-effect waves-red btn-flat red-text" style="font-weight: 500">Bloquear</a>
+		<a onclick="blockUser(<%= profile.id %>);" class="modal-close waves-effect waves-red btn-flat red-text" style="font-weight: 500">Bloquear</a>
 	</div>
 </div>
 
@@ -210,5 +210,15 @@
 	<div class="modal-footer">
 		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
 		<a onclick="updateSocial()" class="modal-close btn-flat green-text">Enviar</a>
+	</div>
+</div>
+
+<div id="blockModal" class="modal">
+	<div class="modal-content">
+		<p>¿Esta segúro de bloquear a <b class="username">@<%= profile.username %></b>?</p>
+	</div>
+	<div class="modal-footer">
+		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+		<a onclick="blockUser()" class="modal-close waves-effect waves-red btn-flat red-text" style="font-weight: 500">Bloquear</a>
 	</div>
 </div>
