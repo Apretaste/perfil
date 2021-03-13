@@ -79,12 +79,15 @@
 		<% if(ownProfile){ %>
 			<a class="btn-floating btn-large waves-effect waves-light" onclick="openEditProfile()"><i class="material-icons">edit</i></a>
 		<% } else if(type == 'friends') { %>
+			<a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
+				<i class="material-icons">arrow_back</i>
+			</a>
 			<a class="btn-floating btn-large green">
 				<i class="large material-icons">more_horiz</i>
 			</a>
 			<ul>
 				<li>
-					<a onclick="apretaste.send({command: 'AMIGOS BLOQUEAR', data:{id: profile.id}})" class="btn-floating green">
+					<a onclick="apretaste.send({command: 'AMIGOS BLOQUEAR', data:{id: profile.id}, redirect: false});" class="btn-floating green">
 						<i class="material-icons">block</i>
 					</a>
 				</li>
@@ -99,9 +102,7 @@
 					</a>
 				</li>
 			</ul>
-			<a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
-				<i class="material-icons">arrow_back</i>
-			</a>
+
 		<% } else if(type == 'waitingForMe') { %>
 			<a class="btn-floating waves-effect waves-light grey third">
 				<i class="material-icons" onclick="acceptModalOpen('<%= profile.id %>', '<%= profile.username %>')">person_add</i>
