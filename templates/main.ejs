@@ -124,15 +124,29 @@
 				<i class="material-icons red-text" onclick="cancelRequestModalOpen('<%= profile.id %>', '<%= profile.username %>')">delete</i>
 			</a>
 		<% } else { %>
-			<a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light grey third">
-				<i class="material-icons">assignment</i>
-			</a>
 			<a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
 				<i class="material-icons">arrow_back</i>
 			</a>
-			<a onclick="addFriendModalOpen()" class="btn-floating btn-large waves-effect waves-light">
-				<i class="material-icons">person_add</i>
+			<a class="btn-floating btn-large green">
+				<i class="large material-icons">more_horiz</i>
 			</a>
+			<ul>
+				<li>
+					<a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light grey third">
+						<i class="material-icons">assignment</i>
+					</a>
+				</li>
+				<li>
+					<a href="#blockModal" class="btn-floating green modal-trigger">
+						<i class="material-icons">block</i>
+					</a>
+				</li>
+				<li>
+					<a onclick="addFriendModalOpen()" class="btn-floating btn-large waves-effect waves-light">
+						<i class="material-icons">person_add</i>
+					</a>
+				</li>
+			</ul>
 		<% } %>
 	</div>
 </div>
