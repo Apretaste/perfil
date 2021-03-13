@@ -205,7 +205,7 @@
 
 <div id="blockModal" class="modal">
 	<div class="modal-content">
-		<p>¿Esta segúro de bloquear a <b class="username">@username</b>?</p>
+		<p>¿Esta segúro de bloquear a <b class="username">@<%= profile.username %></b></b>?</p>
 	</div>
 	<div class="modal-footer">
 		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
@@ -224,15 +224,5 @@
 	<div class="modal-footer">
 		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
 		<a onclick="updateSocial()" class="modal-close btn-flat green-text">Enviar</a>
-	</div>
-</div>
-
-<div id="blockModal" class="modal">
-	<div class="modal-content">
-		<p>¿Esta segúro de bloquear a <b class="username">@<%= profile.username %></b>?</p>
-	</div>
-	<div class="modal-footer">
-		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
-		<a onclick="blockUser()" class="modal-close waves-effect waves-red btn-flat red-text" style="font-weight: 500">Bloquear</a>
 	</div>
 </div>
