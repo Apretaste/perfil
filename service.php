@@ -66,8 +66,7 @@ class Service
 				}
 
 				// check if current user blocked the user to lookup, or is blocked by
-				$blocks = Chats::isBlocked($request->person->id, $profile->id);
-				if ($blocks->blocked || $blocks->blockedByMe || $request->person->isBlocked($profile->id)) {
+				if ($request->person->isBlocked($profile->id)) {
 					return $response->setTemplate('message.ejs', [
 						'header' => 'Perfil bloqueado',
 						'icon' => 'sentiment_very_dissatisfied',
@@ -451,18 +450,7 @@ class Service
 	public function _bloquear(Request $request, Response $response)
 	{
 		$person = Person::find($request->input->data->username);
-		$fromId = $request->person->id;
-
-		if ($person) {
-			$r = Database::query("SELECT * FROM relations WHERE user1='$fromId' AND user2='$person->id'");
-			if (isset($r[0])) {
-				Database::query("UPDATE relations SET confirmed=1 WHERE user1='$fromId' AND user2='$person->id' AND `type`='blocked'");
-			} else {
-				Database::query("INSERT INTO `relations`(user1,user2,`type`,confirmed) VALUES ('$fromId','$person->id','blocked',1)");
-			}
-		}
-
-		$this->_main($request, $response);
+		$request->person->blockPerson($person->id);
 	}
 
 	/**
@@ -477,14 +465,7 @@ class Service
 	public function _desbloquear(Request $request, Response $response)
 	{
 		$person = Person::find($request->input->data->username);
-		$fromId = $request->person->id;
-		if ($person) {
-			Database::query("
-				UPDATE relations SET confirmed=0
-				WHERE user1='$fromId'
-				AND user2='$person->id' AND `type`='blocked'");
-		}
-		$this->_main($request, $response);
+		$request->person->unblockPerson($person->id);
 	}
 
 	/**

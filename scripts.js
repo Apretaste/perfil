@@ -1007,7 +1007,6 @@ function isValidURL(str) {
 	return !!pattern.test(str);
 }
 
-
 function blockUser(id) {
 	apretaste.send({
 		command: 'amigos bloquear',
