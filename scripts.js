@@ -615,6 +615,16 @@ function rejectFriendCallback(message) {
 	);
 }
 
+var currentUser;
+var currentUsername;
+
+function deleteModalOpen(id, username) {
+	currentUser = id;
+	currentUsername = username;
+	$('.username').html('@' + username);
+	M.Modal.getInstance($('#deleteModal')).open();
+}
+
 function deleteFriend() {
 	apretaste.send({
 		command: 'amigos eliminar',
