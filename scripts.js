@@ -582,22 +582,9 @@ function addFriend() {
 	});
 }
 
-function addFriendCallback() {
+function addFriendCallback(data) {
 	showToast('Solicitud enviada');
-	$('.actions').html(
-		'<a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light grey third">\n' +
-		'                <i class="material-icons">assignment</i>\n' +
-		'</a>\n' +
-		'<a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">\n' +
-		'    <i class="material-icons">arrow_back</i>\n' +
-		'</a>\n' +
-		'<a class="btn-floating btn-large waves-effect waves-light">\n' +
-		'    <i class="material-icons red-text"\n' +
-		'       onclick="cancelRequestModalOpen(\'' + profile.id + '\', \'' + profile.username + '\')">\n' +
-		'        delete\n' +
-		'    </i>\n' +
-		'</a>'
-	);
+	apretaste.send({command: 'perfil', data});
 }
 
 function rejectFriend(message) {
