@@ -61,7 +61,10 @@ class Service
 					return $response->setTemplate('message.ejs', [
 						'header' => 'Shadow-Mode',
 						'icon' => 'visibility_off',
-						'text' => 'La magia oscura de un amuleto rodea este perfil y te impide verlo. Por mucho que intentes romperlo, el hechizo del druida es poderoso.'
+						'text' => 'La magia oscura de un amuleto rodea este perfil y te impide verlo. Por mucho que intentes romperlo, el hechizo del druida es poderoso.',
+						'button' => (object)[
+							'back' => true
+						]
 					]);
 				}
 
@@ -70,7 +73,13 @@ class Service
 					return $response->setTemplate('message.ejs', [
 						'header' => 'Perfil bloqueado',
 						'icon' => 'sentiment_very_dissatisfied',
-						'text' => 'Esta persona le ha bloqueado, o usted ha bloqueado a esta persona, por lo tanto no puede revisar su perfil.'
+						'text' => 'Esta persona le ha bloqueado, o usted ha bloqueado a esta persona, por lo tanto no puede revisar su perfil.',
+						'button' => (object)[
+							'back' => false,
+							'caption' => 'Mis amigos',
+							'command' => 'AMIGOS',
+							'data' => (object) []
+						]
 					]);
 				}
 			}
@@ -85,7 +94,10 @@ class Service
 			return $response->setTemplate('message.ejs', [
 				'header' => 'El perfil no existe',
 				'icon' => 'sentiment_very_dissatisfied',
-				'text' => 'Lo sentimos, pero el perfil que usted busca no pudo ser encontrado. Puede que el nombre de usuario haya cambiado o la persona haya salido de la app.'
+				'text' => 'Lo sentimos, pero el perfil que usted busca no pudo ser encontrado. Puede que el nombre de usuario haya cambiado o la persona haya salido de la app.',
+				'button' => (object)[
+					'back' => true
+				]
 			]);
 		}
 
