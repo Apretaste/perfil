@@ -141,13 +141,13 @@
 					</a>
 				</li>
 				<li>
-					<a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
-						<i class="material-icons">arrow_back</i>
+					<a class="btn-floating btn-large waves-effect waves-light">
+						<i class="material-icons red-text" onclick="cancelRequestModalOpen('<%= profile.id %>', '<%= profile.username %>')">delete</i>
 					</a>
 				</li>
 				<li>
-					<a class="btn-floating btn-large waves-effect waves-light">
-						<i class="material-icons red-text" onclick="cancelRequestModalOpen('<%= profile.id %>', '<%= profile.username %>')">delete</i>
+					<a href="#blockModal" class="btn-floating modal-trigger red">
+						<i class="material-icons">block</i>
 					</a>
 				</li>
 			</ul>
