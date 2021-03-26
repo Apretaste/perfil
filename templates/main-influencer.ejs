@@ -76,32 +76,30 @@
 
 			<% if(type == 'friends') { %>
 				<li>
-					<a class="btn-floating red " onclick="deleteModalOpen('<%= friend.id %>', '<%= friend.username %>')">
+					<a class="btn-floating red " onclick="deleteModalOpen()">
 						<i class="fa fa-times-circle" ></i>
 					</a>
 					<a class="btn-floating green" onclick="pizarraSearch()">
-						<i class="material-icons">
-							assignment
-						</i>
+						<i class="fa fa-hashtag material-icons"></i>
 					</a>
 				</li>
 			<% } else if(type == 'waitingForMe') { %>
 				<li>
 					<a class="btn-floating green"
-					   onclick="acceptModalOpen('<%= profile.id %>', '<%= profile.username %>')">
+					   onclick="acceptModalOpen()">
 						<i class="material-icons">person_add</i>
 					</a>
 				</li>
 				<li>
 					<a class="btn-floating red"
-					   onclick="rejectModalOpen('<%= profile.id %>', '<%= profile.username %>')">
+					   onclick="rejectModalOpen()">
 						<i class="material-icons">delete</i>
 					</a>
 				</li>
 			<% } else { %>
 				<li>
 					<a class="btn-floating green" onclick="pizarraSearch()">
-						<i class="material-icons">assignment</i>
+						<i class="fa fa-hashtag material-icons"></i>
 					</a>
 				</li>
 			<% } %>
@@ -125,7 +123,7 @@
 			</li>
 			>
 			<li>
-				<a class="btn-floating red" href="#!" onclick="deleteModalOpen('<%= profile.id %>', '<%= profile.username %>')">
+				<a class="btn-floating red" href="#!" onclick="deleteModalOpen()">
 					<i class="fa fa-times"></i>
 				</a>
 			</li>
@@ -139,29 +137,29 @@
 			<% if(type == 'friends') { %>
 				<li>
 					<a class="btn-floating green" onclick="pizarraSearch()">
-						<i class="material-icons">assignment</i>
+						<i class="fa fa-hashtag material-icons"></i>
 					</a>
 				</li>
 				<li>
 					<a class="btn-floating green" onclick="openChat()">
-						<i class="material-icons">chat</i>
+						<i class="fa fa-comments material-icons"></i>
 					</a>
 				</li>
 			<% } else if(type == 'waitingForMe') { %>
 				<li>
-					<a class="btn-floating green" onclick="acceptModalOpen('<%= profile.id %>', '<%= profile.username %>')">
+					<a class="btn-floating green" onclick="acceptModalOpen()">
 						<i class="material-icons">person_add</i>
 					</a>
 				</li>
 				<li>
-					<a class="btn-floating red" onclick="rejectModalOpen('<%= profile.id %>', '<%= profile.username %>')">
+					<a class="btn-floating red" onclick="rejectModalOpen()">
 						<i class="material-icons">delete</i>
 					</a>
 				</li>
 			<% } else { %>
 				<li>
 					<a class="btn-floating green" onclick="pizarraSearch()">
-						<i class="material-icons">assignment</i>
+						<i class="fa fa-hashtag material-icons"></i>
 					</a>
 				</li>
 				<li>
