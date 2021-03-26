@@ -3,8 +3,6 @@
 // Variables
 
 var selectedColor;
-var currentUser = null;
-var currentUsername = null;
 
 // list of levels
 var levels = [
@@ -477,7 +475,7 @@ function openChat() {
 
 function pizarraSearch() {
 	apretaste.send({
-		command: 'pizarra global',
+		command: 'pizarra popular',
 		data: {
 			search: '@' + profile.username
 		}
@@ -543,31 +541,19 @@ function addFriendModalOpen() {
 	M.Modal.getInstance($('#addFriendModal')).open();
 }
 
-function setCurrentUsername(username) {
-	$('.username').html('@' + username);
-}
-
-function acceptModalOpen(id, username) {
-	currentUser = id;
-	setCurrentUsername(username);
+function acceptModalOpen() {
 	M.Modal.getInstance($('#acceptFriendModal')).open();
 }
 
-function rejectModalOpen(id, username) {
-	currentUser = id;
-	setCurrentUsername(username);
+function rejectModalOpen() {
 	M.Modal.getInstance($('#rejectModal')).open();
 }
 
-function cancelRequestModalOpen(id, username) {
-	currentUser = id;
-	setCurrentUsername(username);
+function cancelRequestModalOpen() {
 	M.Modal.getInstance($('#cancelRequestModal')).open();
 }
 
-function blockModalOpen(id, username) {
-	currentUser = id;
-	setCurrentUsername(username);
+function blockModalOpen() {
 	M.Modal.getInstance($('#blockModal')).open();
 }
 
@@ -590,7 +576,7 @@ function addFriendCallback(data) {
 function rejectFriend(message) {
 	apretaste.send({
 		command: 'amigos rechazar',
-		data: {id: currentUser},
+		data: {id: profile.id},
 		redirect: false,
 		callback: {
 			name: 'rejectFriendCallback',
@@ -615,20 +601,14 @@ function rejectFriendCallback(message) {
 	);
 }
 
-var currentUser;
-var currentUsername;
-
-function deleteModalOpen(id, username) {
-	currentUser = id;
-	currentUsername = username;
-	$('.username').html('@' + username);
+function deleteModalOpen() {
 	M.Modal.getInstance($('#deleteModal')).open();
 }
 
 function deleteFriend() {
 	apretaste.send({
 		command: 'amigos eliminar',
-		data: {id: currentUser},
+		data: {id: profile.id},
 		redirect: false,
 		callback: {
 			name: 'rejectFriendCallback',

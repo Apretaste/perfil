@@ -98,12 +98,12 @@
 				</li>
 				<li>
 					<a onclick="pizarraSearch()" class="btn-floating green">
-						<i class="material-icons">assignment</i>
+						<i class="fa fa-hashtag material-icons"></i>
 					</a>
 				</li>
 				<li>
 					<a onclick="openChat()" class="btn-floating green">
-						<i class="material-icons">chat</i>
+						<i class="fa fa-comments material-icons"></i>
 					</a>
 				</li>
 			</ul>
@@ -118,7 +118,7 @@
 			<ul>
 				<li>
 					<a class="btn-floating waves-effect waves-light grey third">
-						<i class="material-icons" onclick="acceptModalOpen('<%= profile.id %>', '<%= profile.username %>')">person_add</i>
+						<i class="material-icons" onclick="acceptModalOpen()">person_add</i>
 					</a>
 				</li>
 				<li>
@@ -128,7 +128,7 @@
 				</li>
 				<li>
 					<a class="btn-floating btn-large waves-effect waves-light red">
-						<i class="material-icons red-text" onclick="rejectModalOpen('<%= profile.id %>', '<%= profile.username %>')">delete</i>
+						<i class="material-icons red-text" onclick="rejectModalOpen()">delete</i>
 					</a>
 				</li>
 			</ul>
@@ -142,12 +142,12 @@
 			<ul>
 				<li>
 					<a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light grey">
-						<i class="material-icons">assignment</i>
+						<i class="fa fa-hashtag material-icons"></i>
 					</a>
 				</li>
 				<li>
 					<a class="btn-floating waves-effect waves-light">
-						<i class="fa fa-times red" onclick="cancelRequestModalOpen('<%= profile.id %>', '<%= profile.username %>')"></i>
+						<i class="fa fa-times red" onclick="cancelRequestModalOpen()"></i>
 					</a>
 				</li>
 				<li>
@@ -171,7 +171,7 @@
 				</li>
 				<li>
 					<a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light">
-						<i class="material-icons">assignment</i>
+						<i class="fa fa-hashtag material-icons"></i>
 					</a>
 				</li>
 				<li>
@@ -188,7 +188,7 @@
 
 <div id="addFriendModal" class="modal">
 	<div class="modal-content">
-		<p>¿Agregar a <b class="username">@<%= profile.username %></b> a sus amigos?</p>
+		<p>¿Agregar a <b>@<%= profile.username %></b> a sus amigos?</p>
 	</div>
 	<div class="modal-footer">
 		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
@@ -198,7 +198,7 @@
 
 <div id="acceptFriendModal" class="modal">
 	<div class="modal-content">
-		<p>¿Aceptar solicitud de amistad de <b class="username">@username</b>?</p>
+		<p>¿Aceptar solicitud de amistad de <b>@<%= profile.username %></b>?</p>
 	</div>
 	<div class="modal-footer">
 		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
@@ -208,7 +208,7 @@
 
 <div id="deleteModal" class="modal">
 	<div class="modal-content">
-		<p>¿Esta seguro de eliminar a <b class="username">@amigo</b> de sus amigos?</p>
+		<p>¿Está seguro de sacar a <b>@<%= profile.username %></b> de su lista de amigos?</p>
 	</div>
 	<div class="modal-footer">
 		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
@@ -218,7 +218,7 @@
 
 <div id="rejectModal" class="modal">
 	<div class="modal-content">
-		<p>¿Rechazar solicitud de amistad de <b class="username">@username</b>?</p>
+		<p>¿Rechazar solicitud de amistad de <b>@<%= profile.username %></b>?</p>
 	</div>
 	<div class="modal-footer">
 		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
@@ -228,7 +228,7 @@
 
 <div id="cancelRequestModal" class="modal">
 	<div class="modal-content">
-		<p>¿Cancelar solicitud de amistad para <b class="username">@username</b>?</p>
+		<p>¿Cancelar solicitud de amistad para <b>@<%= profile.username %></b>?</p>
 	</div>
 	<div class="modal-footer">
 		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Atrás</a>
@@ -238,7 +238,7 @@
 
 <div id="blockModal" class="modal">
 	<div class="modal-content">
-		<p>¿Esta segúro de bloquear a <b class="username">@<%= profile.username %></b></b>?</p>
+		<p>¿Está seguro de bloquear <b>@<%= profile.username %></b>? Este usuario no podrá enviarle más solitudes de amistad, ni mencionarle ni verá sus publicaciones</p>
 	</div>
 	<div class="modal-footer">
 		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
