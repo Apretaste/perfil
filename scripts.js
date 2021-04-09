@@ -70,31 +70,31 @@ var socialLinks = [
 		text: 'Escriba su identificador de perfil en Facebook. Aparece en la barra de búsqueda cuando abre su muro desde el navegador, y puede que sea un número.',
 		caption: 'facebook.com/',
 		link: 'https://www.facebook.com/',
-	},{
+	}, {
 		name: 'twitter',
 		icon: 'fab fa-twitter',
 		text: 'Escriba su @username en Twitter.',
 		caption: 'twitter.com/',
 		link: 'https://twitter.com/',
-	},{
+	}, {
 		name: 'instagram',
 		icon: 'fab fa-instagram',
 		text: 'Escriba su nombre de usuario en Instagram.',
 		caption: 'instagram.com/',
 		link: 'https://instagram.com/',
-	},{
+	}, {
 		name: 'telegram',
 		icon: 'fab fa-telegram-plane',
 		text: 'Escriba su @username en Telegram, no su teléfono. Si no tiene un @username, créeselo antes.',
 		caption: '@',
 		link: 'https://t.me/',
-	},{
+	}, {
 		name: 'whatsapp',
 		icon: 'fab fa-whatsapp',
 		text: 'Escriba el número de teléfono que usa en whatsapp, comenzando por el prefijo del país. Este número será público y otros podrán verlo. No agregue su número si desea mantener su anonimato.',
 		caption: '+',
 		link: 'https://api.whatsapp.com/send?phone=',
-	},{
+	}, {
 		name: 'website',
 		icon: 'fas fa-globe',
 		text: 'Agregue su website, comenzando por http.',
@@ -570,7 +570,7 @@ function addFriend() {
 
 function addFriendCallback(data) {
 	showToast('Solicitud enviada');
-	apretaste.send({command: 'perfil', data});
+	apretaste.send({command: 'perfil', data: {id: profile.id}});
 }
 
 function rejectFriend(message) {
@@ -662,7 +662,7 @@ function sendDonation() {
 	if (amount > parseFloat(myCredit)) {
 		showToast('No tienes suficiente crédito');
 		return;
-	} else if(amount < 0.1){
+	} else if (amount < 0.1) {
 		showToast('El minimo a donar es §0.1');
 		return;
 	}
@@ -925,30 +925,30 @@ function updateSocial() {
 	var value = $('#social').val().trim();
 
 	// do not let pass values with spaces
-	if(/\s/.test(value)) {
+	if (/\s/.test(value)) {
 		showToast('Su valor parece inválido');
 		return false;
 	}
 
 	// validate websites
-	if(type == 'website') {
-		if(!isValidURL(value)) {
+	if (type == 'website') {
+		if (!isValidURL(value)) {
 			showToast('Su website es inválida');
 			return false;
 		}
 	}
 
 	// clean special chars if no website
-	if(type != 'website') {
+	if (type != 'website') {
 		value = value.replace(/[^\w\s]/gi, '');
 	}
 
 	// change the link on the component
-	if(value.length > 0) {
+	if (value.length > 0) {
 		var social = getSocialLink(type);
 		$('.' + type + '-link').html(social.caption + value).removeClass('grey-text').addClass('green-text');
 	} else {
-		$('.' + type + '-link').html('Agregar cuenta').removeClass('green-text').addClass('grey-text');		
+		$('.' + type + '-link').html('Agregar cuenta').removeClass('green-text').addClass('grey-text');
 	}
 
 	// clean the input
@@ -957,7 +957,7 @@ function updateSocial() {
 	// save the link
 	apretaste.send({
 		"command": "PERFIL UPDATE",
-		"data": JSON.parse('{"'+type+'":"'+value+'"}'),
+		"data": JSON.parse('{"' + type + '":"' + value + '"}'),
 		"showLoading": false,
 		"redirect": false
 	});
@@ -969,18 +969,18 @@ function updateSocial() {
 // get a social link from the list
 function getSocialLink(name) {
 	for (var i = socialLinks.length - 1; i >= 0; i--) {
-		if(socialLinks[i].name == name) return socialLinks[i];
+		if (socialLinks[i].name == name) return socialLinks[i];
 	}
 }
 
 // check if an URL is valid
 function isValidURL(str) {
-	var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-		'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-		'((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-		'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-		'(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-		'(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+	var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+		'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+		'((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+		'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+		'(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+		'(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
 	return !!pattern.test(str);
 }
 
