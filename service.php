@@ -245,7 +245,7 @@ class Service
 		if (empty($image)) return $this->_imagenes($request, $response);
 
 		// get the full path to the image
-		$file = Bucket::download("profile", $image->file);
+		$file = Bucket::download("perfil", $image->file);
 
 		// create content for the view
 		$content = [
@@ -307,7 +307,7 @@ class Service
 		$images = [];
 		foreach ($imagesList as $image) {
 			$image->file .= '.jpg'; // update img for the view
-			$imgPath = Bucket::download('profile', $image->file);
+			$imgPath = Bucket::download('perfil', $image->file);
 			$images[] = Images::thumbnail($imgPath);
 		}
 
@@ -400,7 +400,7 @@ class Service
 
 			$filePath = Images::saveBase64Image($picture, TEMP_PATH . $fileName);
 
-			Bucket::save("profile", $filePath, $fileName);
+			Bucket::save("perfil", $filePath, $fileName);
 
 			// save changes on the database
 			Database::query("INSERT INTO person_images(id_person, file) VALUES('{$request->person->id}', '$fileName')");
