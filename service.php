@@ -406,7 +406,8 @@ class Service
 			}
 
 			$filePath = Images::saveBase64Image($picture, TEMP_PATH . $fileName);
-
+			$fileName = basename($filePath);
+			if (stripos($fileName, '.') === false) $fileName .= '.jpg';
 			Bucket::save("perfil", $filePath, $fileName);
 
 			// save changes on the database
