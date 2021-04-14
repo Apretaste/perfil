@@ -247,6 +247,7 @@ class Service
 		// get the full path to the image
 		try {
 			$file = Bucket::download("perfil", $image->file);
+			if (stripos($file, '.') === false) $file .= '.jpg';
 		} catch(Exception $e) {
 
 		}
@@ -313,9 +314,8 @@ class Service
 			$image->file .= '.jpg'; // update img for the view
 			try {
 				$imgPath = Bucket::download('perfil', $image->file);
+				$images[] = Images::thumbnail($imgPath);
 			} catch(Exception $e) {}
-
-			$images[] = Images::thumbnail($imgPath);
 		}
 
 		// create the content
