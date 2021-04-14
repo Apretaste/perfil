@@ -245,7 +245,11 @@ class Service
 		if (empty($image)) return $this->_imagenes($request, $response);
 
 		// get the full path to the image
-		$file = Bucket::download("perfil", $image->file);
+		try {
+			$file = Bucket::download("perfil", $image->file);
+		} catch(Exception $e) {
+
+		}
 
 		// create content for the view
 		$content = [
@@ -307,7 +311,10 @@ class Service
 		$images = [];
 		foreach ($imagesList as $image) {
 			$image->file .= '.jpg'; // update img for the view
-			$imgPath = Bucket::download('perfil', $image->file);
+			try {
+				$imgPath = Bucket::download('perfil', $image->file);
+			} catch(Exception $e) {}
+
 			$images[] = Images::thumbnail($imgPath);
 		}
 
