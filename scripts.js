@@ -997,5 +997,5 @@ function blockUser(id) {
 }
 
 function blockUserCallback(id) {
-	apretaste.send({command: 'PERFIL', data: {id: id}});
+	apretaste.send({command: 'AMIGOS BLOCKED', useCache: false});
 }
