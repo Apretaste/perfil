@@ -1,5 +1,6 @@
 <?php
 
+use Apretaste\Bucket;
 use Apretaste\Chats;
 use Apretaste\Level;
 use Apretaste\Money;
@@ -244,7 +245,12 @@ class Service
 		if (empty($image)) return $this->_imagenes($request, $response);
 
 		// get the full path to the image
-		$file = SHARED_PUBLIC_PATH . "profile/{$image->file}.jpg";
+		try {
+			$file = Bucket::download("perfil", $image->file);
+			if (stripos($file, '.') === false) $file .= '.jpg';
+		} catch(Exception $e) {
+
+		}
 
 		// create content for the view
 		$content = [
@@ -305,9 +311,12 @@ class Service
 		// thumbnail the images
 		$images = [];
 		foreach ($imagesList as $image) {
-			$image->file = $image->file . '.jpg'; // update img for the view
-			$imgPath = SHARED_PUBLIC_PATH . 'profile/' . $image->file;
-			$images[] = Images::thumbnail($imgPath);
+			if (stripos($image->file, '.') === false) $image->file .= '.jpg'; // update img for the view
+
+			try {
+				$imgPath = Bucket::download('perfil', $image->file);
+				$images[] = Images::thumbnail($imgPath);
+			} catch(Exception $e) {}
 		}
 
 		// create the content
@@ -392,15 +401,15 @@ class Service
 		if ($picture || $pictureName) {
 			// get the image name and path
 			$fileName = Utils::randomHash();
-			$filePath = SHARED_PUBLIC_PATH . "/profile/$fileName.jpg";
 
-			if ($picture) {
-				// save and optimize the image on the user folder
-				Images::saveBase64Image($picture, $filePath);
-			} elseif ($pictureName) {
-				$tempPicturePath = $request->input->files[$pictureName];
-				rename($tempPicturePath, $filePath);
+			if (!$picture) {
+				$picture = base64_encode(file_get_contents($request->input->files[$pictureName]));
 			}
+
+			$filePath = Images::saveBase64Image($picture, TEMP_PATH . $fileName);
+			$fileName = basename($filePath);
+			if (stripos($fileName, '.') === false) $fileName .= '.jpg';
+			Bucket::save("perfil", $filePath, $fileName);
 
 			// save changes on the database
 			Database::query("INSERT INTO person_images(id_person, file) VALUES('{$request->person->id}', '$fileName')");
