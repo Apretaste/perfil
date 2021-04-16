@@ -436,6 +436,11 @@ class Service
 			Challenges::complete('complete-profile', $request->person->id);
 		}
 
+		// notify to friends
+		Notifications::alertMyFriends($request->person->id,
+						"Tu amigo @{$request->person->username} ha publicado una nueva foto en su galería",
+						'info_outline', "{command: \"PERFIL IMAGENES\", data:{id: {$request->person->id}}}");
+
 		Challenges::complete('update-profile-picture', $request->person->id);
 	}
 
