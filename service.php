@@ -91,7 +91,6 @@ class Service
 
 		// check if the person exist. If not, message the requestor
 		if (!$profile) {
-			$response->setLayout('perfil.ejs');
 			return $response->setTemplate('message.ejs', [
 				'header' => 'El perfil no existe',
 				'icon' => 'sentiment_very_dissatisfied',
