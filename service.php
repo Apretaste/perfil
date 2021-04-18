@@ -356,10 +356,18 @@ class Service
 		$isCreator = Database::queryFirst("SELECT username, is_influencer FROM person WHERE id='$influencer'");
 		if ($isCreator && $isCreator->is_influencer) {
 			try {
+
+				// transfer credit
 				Money::transfer($request->person->id, $influencer, $amount, 'DONATION');
-				Notifications::alert(
-					$influencer, "@{$request->person->username} te ha donado §$amount",
-					'attach_money', '{"command":"PERFIL", "data":{"username":"'.$request->person->username.'"}}'
+
+				// send notification
+				Notifications::alert($influencer, "@{$request->person->username} te ha donado §$amount", 'attach_money',
+					(object) [
+						'command' => 'PERFIL',
+						'data' => [
+							'id' => $request->person->id
+						]
+					]
 				);
 
 				$response->setTemplate('message.ejs', [
