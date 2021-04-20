@@ -1,22 +1,22 @@
 <?php
 
-use Apretaste\Bucket;
+use Apretaste\Core;
+use Apretaste\Alert;
 use Apretaste\Chats;
+use Apretaste\Utils;
 use Apretaste\Level;
 use Apretaste\Money;
+use Apretaste\Images;
+use Apretaste\Bucket;
 use Apretaste\Person;
 use Apretaste\Amulets;
 use Apretaste\Request;
 use Apretaste\Response;
+use Apretaste\Database;
 use Apretaste\Tutorial;
 use Apretaste\Challenges;
 use Apretaste\Notifications;
-use Framework\Core;
-use Framework\Utils;
-use Framework\Alert;
-use Framework\Images;
-use Framework\Database;
-use Framework\GoogleAnalytics;
+use Apretaste\GoogleAnalytics;
 use Kreait\Firebase\Exception\FirebaseException;
 use Kreait\Firebase\Exception\MessagingException;
 
@@ -91,7 +91,6 @@ class Service
 
 		// check if the person exist. If not, message the requestor
 		if (!$profile) {
-			$response->setLayout('perfil.ejs');
 			return $response->setTemplate('message.ejs', [
 				'header' => 'El perfil no existe',
 				'icon' => 'sentiment_very_dissatisfied',
@@ -311,11 +310,18 @@ class Service
 		// thumbnail the images
 		$images = [];
 		foreach ($imagesList as $image) {
-			if (stripos($image->file, '.') === false) $image->file .= '.jpg'; // update img for the view
+			// update img for the view
+			if (stripos($image->file, '.') === false) $image->file .= '.jpg';
 
 			try {
-				$imgPath = Bucket::download('perfil', $image->file);
-				$images[] = Images::thumbnail($imgPath);
+				// download from bucket
+				$imgPath = Bucket::getFilePathByEnvironment('perfil', $image->file);
+
+				// optimize of email and app
+				if (APP_ENVIRONMENT != 'http') $imgPath = Images::thumbnail($imgPath);
+
+				// add to the list of images
+				$images[] = $imgPath;
 			} catch(Exception $e) {}
 		}
 
@@ -330,7 +336,6 @@ class Service
 		$response->setLayout('perfil.ejs');
 		$response->setTemplate('images.ejs', $content, $images);
 	}
-
 
 	/**
 	 * Donate some credits to a content creator
@@ -356,10 +361,18 @@ class Service
 		$isCreator = Database::queryFirst("SELECT username, is_influencer FROM person WHERE id='$influencer'");
 		if ($isCreator && $isCreator->is_influencer) {
 			try {
+
+				// transfer credit
 				Money::transfer($request->person->id, $influencer, $amount, 'DONATION');
-				Notifications::alert(
-					$influencer, "@{$request->person->username} te ha donado §$amount",
-					'attach_money', '{"command":"PERFIL", "data":{"username":"'.$request->person->username.'"}}'
+
+				// send notification
+				Notifications::alert($influencer, "@{$request->person->username} te ha donado §$amount", 'attach_money',
+					(object) [
+						'command' => 'PERFIL',
+						'data' => [
+							'id' => $request->person->id
+						]
+					]
 				);
 
 				$response->setTemplate('message.ejs', [
@@ -435,6 +448,11 @@ class Service
 		if (isset($request->person->completion) && $request->person->completion > 70) {
 			Challenges::complete('complete-profile', $request->person->id);
 		}
+
+		// notify to friends
+		Notifications::alertMyFriends($request->person->id,
+						"Tu amigo @{$request->person->username} ha publicado una nueva foto en su galería",
+						'info_outline', "{command: \"PERFIL IMAGENES\", data:{id: {$request->person->id}}}");
 
 		Challenges::complete('update-profile-picture', $request->person->id);
 	}
