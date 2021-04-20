@@ -246,7 +246,7 @@ class Service
 		// get the full path to the image
 		try {
 			$file = Bucket::getPathByEnvironment("perfil", $image->file);
-			if (stripos($file, '.') === false) $file .= '.jpg';
+			if (stripos($image->file, '.') === false) $file .= '.jpg';
 		} catch(Exception $e) { }
 
 		// create content for the view
