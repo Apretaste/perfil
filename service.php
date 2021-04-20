@@ -245,11 +245,9 @@ class Service
 
 		// get the full path to the image
 		try {
-			$file = Bucket::download("perfil", $image->file);
+			$file = Bucket::getPathByEnvironment("perfil", $image->file);
 			if (stripos($file, '.') === false) $file .= '.jpg';
-		} catch(Exception $e) {
-
-		}
+		} catch(Exception $e) { }
 
 		// create content for the view
 		$content = [
@@ -315,7 +313,7 @@ class Service
 
 			try {
 				// download from bucket
-				$imgPath = Bucket::getFilePathByEnvironment('perfil', $image->file);
+				$imgPath = Bucket::getPathByEnvironment('perfil', $image->file);
 
 				// optimize of email and app
 				if (APP_ENVIRONMENT != 'http') $imgPath = Images::thumbnail($imgPath);
