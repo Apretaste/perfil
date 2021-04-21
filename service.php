@@ -311,16 +311,14 @@ class Service
 			// update img for the view
 			if (stripos($image->file, '.') === false) $image->file .= '.jpg';
 
-			try {
-				// download from bucket
-				$imgPath = Bucket::getPathByEnvironment('perfil', $image->file);
+			// download from bucket
+			$imgPath = Bucket::getPathByEnvironment('perfil', $image->file);
 
-				// optimize of email and app
-				if (APP_ENVIRONMENT != 'http') $imgPath = Images::thumbnail($imgPath);
+			// optimize of email and app
+			if (APP_ENVIRONMENT != 'http') $imgPath = Images::thumbnail($imgPath);
 
-				// add to the list of images
-				$images[] = $imgPath;
-			} catch(Exception $e) {}
+			// add to the list of images
+			$images[] = $imgPath;
 		}
 
 		// create the content
