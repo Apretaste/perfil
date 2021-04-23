@@ -245,6 +245,7 @@ class Service
 
 		// get the full path to the image
 		try {
+			if (stripos($image->file, '.') === false) $image->file .= '.jpg';
 			$file = Bucket::download("perfil", $image->file);
 			if (stripos($file, '.') === false) $file .= '.jpg';
 		} catch(Exception $e) {
