@@ -1,256 +1,293 @@
 <div id="img-pre" class="green apretaste"></div>
 
 <!-- AVATAR -->
-<div class="person-avatar circle" id="profile-avatar" face="<%= profile.avatar %>" color="<%= profile.avatarColor %>" size="<%= ($(window).height() / 4) + 8 %>"></div>
+<div class="person-avatar circle" id="profile-avatar" face="<%= profile.avatar %>" color="<%= profile.avatarColor %>"
+     size="<%= ($(window).height() / 4) + 8 %>"></div>
 
 <div class="row profile-info">
-	<!-- INFO -->
-	<div class="col s12">
-		<div class="center-align">
-			<h4 class="<%= profile.gender %>">@<%= profile.username %></h4>
-			<span class="chip clear" style="font-size: 1.35rem; margin-right: 8px;">
+    <!-- INFO -->
+    <div class="col s12">
+        <div class="center-align">
+            <h4 class="<%= profile.gender %>">@<%= profile.username %></h4>
+            <span class="chip clear" style="font-size: 1.35rem; margin-right: 8px;">
 				<i class="fa fa-user-friends"></i>&nbsp;<%= profile.friendList.length %>
 			</span>
-			<span class="chip clear" style="font-size: 1.35rem">
+            <span class="chip clear" style="font-size: 1.35rem">
 				<i class="fa fa-trophy"></i>&nbsp;#<%= profile.ranking %>
 			</span>
-		</div>
-	</div>
+        </div>
+    </div>
 
-	<!-- LEVEL -->
-	<% var userLevel = getUserLevel(profile.experience) %>
-	<div class="col s12 valign-wrapper">
-		<img src="{{APP_SERVICE_PATH}}/images/<%= userLevel.img %>" class="gem">
-		<div style="height: 32px; display: inline-block; width: calc(100% - 42px); margin-left: 5px;">
+    <!-- LEVEL -->
+    <% var userLevel = getUserLevel(profile.experience) %>
+    <div class="col s12 valign-wrapper">
+        <img src="{{APP_SERVICE_PATH}}/images/<%= userLevel.img %>" class="gem">
+        <div style="height: 32px; display: inline-block; width: calc(100% - 42px); margin-left: 5px;">
 			<span>
 				<b>
 					<span class="chip tiny clear" style="font-size: 1rem">
 						<i class="fa fa-bolt"></i>&nbsp;<%= profile.experience %>&nbsp;<%= userLevel.name %>
 					</span>
 				</b>
-				<% if(ownProfile){ %>
-					<i class="right far fa-question-circle" style="color: <%= userLevel.titleColor %>"
-					   onclick="openLevelsHelp()"></i>
-				<% } %>
-			</span>
-			<div class="progress" style="margin: 2px 0; background-color: lightgray;">
-				<div class="determinate"
-					 style="width: <%= userLevel.percent %>%; background-color: <%= userLevel.color %>"></div>
-			</div>
-		</div>
-	</div>
+                <% if(ownProfile){ %>
+                    <i class="right far fa-question-circle" style="color: <%= userLevel.titleColor %>"
+                       onclick="openLevelsHelp()"></i>
+                <% } %>
+            </span>
+            <div class="progress" style="margin: 2px 0; background-color: lightgray;">
+                <div class="determinate"
+                     style="width: <%= userLevel.percent %>%; background-color: <%= userLevel.color %>"></div>
+            </div>
+        </div>
+    </div>
 
-	<!-- ABOUT ME -->
-	<div class="col s12">
-		<p style="margin: 1em 5px"><%= profile.aboutMe %></p>
-	</div>
+    <!-- ABOUT ME -->
+    <div class="col s12">
+        <p style="margin: 1em 5px"><%= profile.aboutMe %></p>
+    </div>
 
-	<!-- SOCIAL MEDIA -->
-	<% if(!emptySocialLinks || ownProfile) { %>
-		<div class="col s12">
-			<ul class="collection one-line single">
-				<% socialLinks.forEach(function(item) { %>
-					<% if(ownProfile || profile[item.name]) { %>
-						<li class="collection-item avatar">
-							<i class="<%= item.icon %> circle green lighten-3"></i>
-							<% if(profile[item.name]) { %>
-								<p class="green-text lighten-4 <%= item.name %>-link"><%= item.caption %><%= profile[item.name] %></p>
-							<% } else { %>
-								<p class="grey-text lighten-4 <%= item.name %>-link">Agregar cuenta</p>
-							<% } %>
-							<% if(ownProfile) { %>
-								<a href="#!" onclick="updateSocialOpen('<%= item.name %>')" class="secondary-content green-text lighten-4"><i class="fas fa-pen"></i></a>
-							<% } else { %>
-								<a href="<%= item.link %><%= profile[item.name] %>" target="_blank" class="secondary-content green-text lighten-4"><i class="fas fa-arrow-right"></i></a>
-							<% } %>
-						</li>
-					<% } %>
-				<% }) %> 
-			</ul>
-		</div>
-	<% } %>
+    <!-- SOCIAL MEDIA -->
+    <% if(!emptySocialLinks || ownProfile) { %>
+        <div class="col s12">
+            <ul class="collection one-line single">
+                <% socialLinks.forEach(function(item) { %>
+                    <% if(ownProfile || profile[item.name]) { %>
+                        <li class="collection-item avatar">
+                            <i class="<%= item.icon %> circle green lighten-3"></i>
+                            <% if(profile[item.name]) { %>
+                                <p class="green-text lighten-4 <%= item.name %>-link"><%= item.caption %><%= profile[item.name] %></p>
+                            <% } else { %>
+                                <p class="grey-text lighten-4 <%= item.name %>-link">Agregar cuenta</p>
+                            <% } %>
+                            <% if(ownProfile) { %>
+                                <a href="#!" onclick="updateSocialOpen('<%= item.name %>')"
+                                   class="secondary-content green-text lighten-4"><i class="fas fa-pen"></i></a>
+                            <% } else { %>
+                                <a href="<%= item.link %><%= profile[item.name] %>" target="_blank"
+                                   class="secondary-content green-text lighten-4"><i class="fas fa-arrow-right"></i></a>
+                            <% } %>
+                        </li>
+                    <% } %>
+                <% }) %>
+            </ul>
+        </div>
+    <% } %>
 </div>
 
 <!-- BUTTONS -->
 
 <div class="col s12">
-	<div class="bottom-space"></div>
-	<div class="fixed-action-btn actions">
-		<% if(ownProfile){ %>
-			<a class="btn-floating btn-large waves-effect waves-light" onclick="openEditProfile()"><i class="material-icons">edit</i></a>
-		<% } else if(type == 'friends') { %>
-			<a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
-				<i class="material-icons">arrow_back</i>
-			</a>
-			<a class="btn-floating btn-large green">
-				<i class="large material-icons">more_horiz</i>
-			</a>
-			<ul>
-				<li>
-					<a href="#blockModal" class="btn-floating modal-trigger red">
-						<i class="material-icons">block</i>
-					</a>
-				</li>
-				<li>
-					<a href="#!" onclick="deleteModalOpen(<%= profile.id %>, '<%= profile.username %>');" class="btn-floating modal-trigger red">
-						<i class="fa fa-times"></i>
-					</a>
-				</li>
-				<li>
-					<a onclick="pizarraSearch()" class="btn-floating green">
-						<i class="fa fa-hashtag material-icons"></i>
-					</a>
-				</li>
-				<li>
-					<a onclick="openChat()" class="btn-floating green">
-						<i class="fa fa-comments material-icons"></i>
-					</a>
-				</li>
-			</ul>
+    <div class="bottom-space"></div>
+    <div class="fixed-action-btn actions">
+        <% if(ownProfile){ %>
+            <a onclick="shareProfile()" class="btn-floating green third">
+                <i class="fa fa-share material-icons"></i>
+            </a>
+            <a class="btn-floating waves-effect waves-light grey second" onclick="apretaste.back()">
+                <i class="material-icons">arrow_back</i>
+            </a>
+            <a class="btn-floating btn-large waves-effect waves-light" onclick="openEditProfile()">
+                <i class="material-icons">edit</i>
+            </a>
+        <% } else if(type == 'friends') { %>
+            <a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
+                <i class="material-icons">arrow_back</i>
+            </a>
+            <a class="btn-floating btn-large green">
+                <i class="large material-icons">more_horiz</i>
+            </a>
+            <ul>
+                <li>
+                    <a href="#blockModal" class="btn-floating modal-trigger red">
+                        <i class="material-icons">block</i>
+                    </a>
+                </li>
+                <li>
+                    <a href="#!" onclick="deleteModalOpen(<%= profile.id %>, '<%= profile.username %>');"
+                       class="btn-floating modal-trigger red">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </li>
+                <li>
+                    <a onclick="shareProfile()" class="btn-floating green">
+                        <i class="fa fa-share material-icons"></i>
+                    </a>
+                </li>
+                <li>
+                    <a onclick="pizarraSearch()" class="btn-floating green">
+                        <i class="fa fa-hashtag material-icons"></i>
+                    </a>
+                </li>
+                <li>
+                    <a onclick="openChat()" class="btn-floating green">
+                        <i class="fa fa-comments material-icons"></i>
+                    </a>
+                </li>
+            </ul>
 
-		<% } else if(type == 'waitingForMe') { %>
-			<a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
-				<i class="material-icons">arrow_back</i>
-			</a>
-			<a class="btn-floating btn-large green">
-				<i class="large material-icons">more_horiz</i>
-			</a>
-			<ul>
-				<li>
-					<a class="btn-floating waves-effect waves-light grey">
-						<i class="material-icons" onclick="acceptModalOpen()">person_add</i>
-					</a>
-				</li>
-				<li>
-					<a class="btn-floating waves-effect waves-light red">
-						<i class="fa fa-times" onclick="rejectModalOpen()"></i>
-					</a>
-				</li>
-			</ul>
-		<% }else if(type == 'waiting') { %>
-			<a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
-				<i class="material-icons">arrow_back</i>
-			</a>
-			<a class="btn-floating btn-large green">
-				<i class="large material-icons">more_horiz</i>
-			</a>
-			<ul>
-				<li>
-					<a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light grey">
-						<i class="fa fa-hashtag material-icons"></i>
-					</a>
-				</li>
-				<li>
-					<a class="btn-floating waves-effect waves-light">
-						<i class="fa fa-times red" onclick="cancelRequestModalOpen()"></i>
-					</a>
-				</li>
-				<li>
-					<a href="#blockModal" class="btn-floating modal-trigger red">
-						<i class="material-icons">block</i>
-					</a>
-				</li>
-			</ul>
-		<% } else { %>
-			<a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
-				<i class="material-icons">arrow_back</i>
-			</a>
-			<a class="btn-floating btn-large green">
-				<i class="large material-icons">more_horiz</i>
-			</a>
-			<ul>
-				<li>
-					<a href="#blockModal" class="btn-floating red modal-trigger">
-						<i class="material-icons">block</i>
-					</a>
-				</li>
-				<li>
-					<a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light">
-						<i class="fa fa-hashtag material-icons"></i>
-					</a>
-				</li>
-				<li>
-					<a onclick="addFriendModalOpen()" class="btn-floating waves-effect waves-light">
-						<i class="material-icons">person_add</i>
-					</a>
-				</li>
-			</ul>
-		<% } %>
-	</div>
+        <% } else if(type == 'waitingForMe') { %>
+            <a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
+                <i class="material-icons">arrow_back</i>
+            </a>
+            <a class="btn-floating btn-large green">
+                <i class="large material-icons">more_horiz</i>
+            </a>
+            <ul>
+                <li>
+                    <a onclick="shareProfile()" class="btn-floating green">
+                        <i class="fa fa-share material-icons"></i>
+                    </a>
+                </li>
+                <li>
+                    <a class="btn-floating waves-effect waves-light grey">
+                        <i class="material-icons" onclick="acceptModalOpen()">person_add</i>
+                    </a>
+                </li>
+                <li>
+                    <a class="btn-floating waves-effect waves-light red">
+                        <i class="fa fa-times" onclick="rejectModalOpen()"></i>
+                    </a>
+                </li>
+            </ul>
+        <% }else if(type == 'waiting') { %>
+            <a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
+                <i class="material-icons">arrow_back</i>
+            </a>
+            <a class="btn-floating btn-large green">
+                <i class="large material-icons">more_horiz</i>
+            </a>
+            <ul>
+                <li>
+                    <a onclick="shareProfile()" class="btn-floating green">
+                        <i class="fa fa-share material-icons"></i>
+                    </a>
+                </li>
+                <li>
+                    <a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light grey">
+                        <i class="fa fa-hashtag material-icons"></i>
+                    </a>
+                </li>
+                <li>
+                    <a class="btn-floating waves-effect waves-light">
+                        <i class="fa fa-times red" onclick="cancelRequestModalOpen()"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="#blockModal" class="btn-floating modal-trigger red">
+                        <i class="material-icons">block</i>
+                    </a>
+                </li>
+            </ul>
+        <% } else { %>
+            <a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
+                <i class="material-icons">arrow_back</i>
+            </a>
+            <a class="btn-floating btn-large green">
+                <i class="large material-icons">more_horiz</i>
+            </a>
+            <ul>
+                <li>
+                    <a href="#blockModal" class="btn-floating red modal-trigger">
+                        <i class="material-icons">block</i>
+                    </a>
+                </li>
+                <li>
+                    <a onclick="shareProfile()" class="btn-floating green">
+                        <i class="fa fa-share material-icons"></i>
+                    </a>
+                </li>
+                <li>
+                    <a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light">
+                        <i class="fa fa-hashtag material-icons"></i>
+                    </a>
+                </li>
+                <li>
+                    <a onclick="addFriendModalOpen()" class="btn-floating waves-effect waves-light">
+                        <i class="material-icons">person_add</i>
+                    </a>
+                </li>
+            </ul>
+        <% } %>
+    </div>
 </div>
 
 <!-- MODALS -->
 
 <div id="addFriendModal" class="modal">
-	<div class="modal-content">
-		<p>¿Agregar a <b>@<%= profile.username %></b> a sus amigos?</p>
-	</div>
-	<div class="modal-footer">
-		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
-		<a onclick="addFriend()" class="waves-effect waves-green btn-flat green-text modal-close">Agregar</a>
-	</div>
+    <div class="modal-content">
+        <p>¿Agregar a <b>@<%= profile.username %></b> a sus amigos?</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+        <a onclick="addFriend()" class="waves-effect waves-green btn-flat green-text modal-close">Agregar</a>
+    </div>
 </div>
 
 <div id="acceptFriendModal" class="modal">
-	<div class="modal-content">
-		<p>¿Aceptar solicitud de amistad de <b>@<%= profile.username %></b>?</p>
-	</div>
-	<div class="modal-footer">
-		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
-		<a onclick="addFriend('Solicitud aceptada')" class="waves-effect waves-green btn-flat green-text modal-close">Aceptar</a>
-	</div>
+    <div class="modal-content">
+        <p>¿Aceptar solicitud de amistad de <b>@<%= profile.username %></b>?</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+        <a onclick="addFriend('Solicitud aceptada')" class="waves-effect waves-green btn-flat green-text modal-close">Aceptar</a>
+    </div>
 </div>
 
 <div id="deleteModal" class="modal">
-	<div class="modal-content">
-		<p>¿Está seguro de sacar a <b>@<%= profile.username %></b> de su lista de amigos?</p>
-	</div>
-	<div class="modal-footer">
-		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
-		<a onclick="deleteFriend()" class="modal-close waves-effect waves-red btn-flat red-text" style="font-weight: 500">Eliminar</a>
-	</div>
+    <div class="modal-content">
+        <p>¿Está seguro de sacar a <b>@<%= profile.username %></b> de su lista de amigos?</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+        <a onclick="deleteFriend()" class="modal-close waves-effect waves-red btn-flat red-text"
+           style="font-weight: 500">Eliminar</a>
+    </div>
 </div>
 
 <div id="rejectModal" class="modal">
-	<div class="modal-content">
-		<p>¿Rechazar solicitud de amistad de <b>@<%= profile.username %></b>?</p>
-	</div>
-	<div class="modal-footer">
-		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
-		<a onclick="rejectFriend('Solicitud rechazada')" class="modal-close waves-effect waves-red btn-flat red-text" style="font-weight: 500">Rechazar</a>
-	</div>
+    <div class="modal-content">
+        <p>¿Rechazar solicitud de amistad de <b>@<%= profile.username %></b>?</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+        <a onclick="rejectFriend('Solicitud rechazada')" class="modal-close waves-effect waves-red btn-flat red-text"
+           style="font-weight: 500">Rechazar</a>
+    </div>
 </div>
 
 <div id="cancelRequestModal" class="modal">
-	<div class="modal-content">
-		<p>¿Cancelar solicitud de amistad para <b>@<%= profile.username %></b>?</p>
-	</div>
-	<div class="modal-footer">
-		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Atrás</a>
-		<a onclick="rejectFriend('Solicitud cancelada')" class="modal-close waves-effect waves-red btn-flat red-text" style="font-weight: 500">Cancelar solicitud</a>
-	</div>
+    <div class="modal-content">
+        <p>¿Cancelar solicitud de amistad para <b>@<%= profile.username %></b>?</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Atrás</a>
+        <a onclick="rejectFriend('Solicitud cancelada')" class="modal-close waves-effect waves-red btn-flat red-text"
+           style="font-weight: 500">Cancelar solicitud</a>
+    </div>
 </div>
 
 <div id="blockModal" class="modal">
-	<div class="modal-content">
-		<p>¿Está seguro de bloquear <b>@<%= profile.username %></b>? Este usuario no podrá enviarle más solitudes de amistad, ni mencionarle ni verá sus publicaciones</p>
-	</div>
-	<div class="modal-footer">
-		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
-		<a onclick="blockUser(<%= profile.id %>);" class="modal-close waves-effect waves-red btn-flat red-text" style="font-weight: 500">Bloquear</a>
-	</div>
+    <div class="modal-content">
+        <p>¿Está seguro de bloquear <b>@<%= profile.username %></b>? Este usuario no podrá enviarle más solitudes de
+            amistad, ni mencionarle ni verá sus publicaciones</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+        <a onclick="blockUser(<%= profile.id %>);" class="modal-close waves-effect waves-red btn-flat red-text"
+           style="font-weight: 500">Bloquear</a>
+    </div>
 </div>
 
 <div id="updateSocialModal" class="modal">
-	<div class="modal-content">
-		<div class="input-field">
-			<i class="fab social-icon circle prefix"></i>
-			<input id="social" type="text" value="" data-type=""/>
-		</div>
-		<p class="social-text grey-text"></p>
-	</div>
-	<div class="modal-footer">
-		<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
-		<a onclick="updateSocial()" class="modal-close btn-flat green-text">Enviar</a>
-	</div>
+    <div class="modal-content">
+        <div class="input-field">
+            <i class="fab social-icon circle prefix"></i>
+            <input id="social" type="text" value="" data-type=""/>
+        </div>
+        <p class="social-text grey-text"></p>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+        <a onclick="updateSocial()" class="modal-close btn-flat green-text">Enviar</a>
+    </div>
 </div>

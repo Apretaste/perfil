@@ -533,6 +533,13 @@ function getReadableProp(prop) {
 	else return profile[prop];
 }
 
+function shareProfile() {
+	apretaste.share({
+		title: 'Mira el perfil de @' + profile.username + ' en Apretaste',
+		link: 'https://www.apretaste.org/profile/' + profile.username
+	});
+}
+
 function openDonationModal() {
 	M.Modal.getInstance($('#donationModal')).open();
 }
