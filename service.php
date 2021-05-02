@@ -307,8 +307,6 @@ class Service
 		// thumbnail the images
 		$images = [];
 		foreach ($imagesList as $image) {
-			if (stripos($image->file, '.') === false) $image->file .= '.jpg'; // update img for the view
-
 			try {
 				$imgPath = Bucket::download('perfil', $image->file);
 				$images[] = Images::thumbnail($imgPath);
