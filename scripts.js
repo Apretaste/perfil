@@ -684,20 +684,36 @@ function showToast(text) {
 	M.toast({html: text});
 }
 
-function deleteImage() {
+function deleteImage(id, e) {
+	// confirm deletion
+	var areYouSure = confirm('¿Está seguro de eliminar esta imagen?');
+	if(!areYouSure) return false;
+
+	// change in the backend
 	apretaste.send({
-		'command': 'PERFIL BORRAR',
-		'data': {'id': id}
+		command: 'PERFIL BORRAR',
+		data: {id: id}
 	});
+
+	// delete element from the view
+	$(e).parents('.galleryImage').remove();
 }
 
-function selectDefaultImage() {
+function selectDefaultImage(id, e) {
+	// change in the backend
 	apretaste.send({
-		'command': 'PERFIL FOTO',
-		'data': {'id': id},
-		'redirect': false,
-		'callback': {'name': 'showToast', 'data': 'Imagen principal cambiada'}
+		command: 'PERFIL FOTO',
+		data: {id: id},
+		redirect: false
 	});
+
+	// change star
+	$('.fa-star').removeClass('yellow-text');
+	$(e).find('.fa-star').addClass('yellow-text');
+	$(e).parents('.galleryImage').find('.trash').remove();
+
+	// show toast
+	showToast('Imagen principal cambiada');
 }
 
 function changeColor(color) {

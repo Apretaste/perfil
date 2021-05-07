@@ -53,7 +53,7 @@ class Service
 
 				// run powers for amulet DETECTIVE
 				if (Amulets::isActive(Amulets::DETECTIVE, $profile->id)) {
-					$msg = "Los poderes del amuleto del Druida te avisan: @{$request->person->username} está revisando tu perfil";
+					$msg = "@{$request->person->username} está revisando tu perfil";
 					Notifications::alert($profile->id, $msg, 'pageview', "{command:'PERFIL', data:{username:'@{$request->person->username}'}}");
 				}
 
@@ -226,42 +226,6 @@ class Service
 	}
 
 	/**
-	 * Display an image in the gallery
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 * @throws Alert
-	 */
-	public function _ver(Request $request, Response $response)
-	{
-		$id = $request->input->data->id;
-
-		// get the image to display
-		$image = ($id !== 'last') ?
-			Database::queryFirst("SELECT * FROM person_images WHERE id='$id'") :
-			Database::queryFirst("SELECT * FROM person_images WHERE id_person='{$request->person->id}' ORDER BY id DESC LIMIT 1");
-
-		if (empty($image)) return $this->_imagenes($request, $response);
-
-		// get the full path to the image
-		try {
-			$file = Bucket::getPathByEnvironment("perfil", $image->file);
-			if (stripos($image->file, '.') === false) $file .= '.jpg';
-		} catch(Exception $e) { }
-
-		// create content for the view
-		$content = [
-			"id" => $image->id,
-			"isDefault" => $image->default,
-			"file" => $image->file,
-			"idPerson" => $image->id_person,
-			'ownProfile' => $image->id_person == $request->person->id];
-
-		// send data to the view
-		$response->setTemplate('displayImage.ejs', $content, [$file]);
-	}
-
-	/**
 	 * Delete an image from the gallery
 	 *
 	 * @param Request $request
@@ -303,22 +267,12 @@ class Service
 		$ownProfile = $request->person->id == $id;
 
 		// get the list of images for the person
-		$imagesList = Database::query("SELECT id, file, `default` FROM person_images WHERE id_person='$id' AND active=1");
+		$imagesList = Database::query("SELECT id, file, `default` FROM person_images WHERE id_person=$id AND active=1");
 
-		// thumbnail the images
+		// get the images array
 		$images = [];
 		foreach ($imagesList as $image) {
-			// update img for the view
-			if (stripos($image->file, '.') === false) $image->file .= '.jpg';
-
-			// download from bucket
-			$imgPath = Bucket::getPathByEnvironment('perfil', $image->file);
-
-			// optimize of email and app
-			if (APP_ENVIRONMENT != 'http') $imgPath = Images::thumbnail($imgPath);
-
-			// add to the list of images
-			$images[] = $imgPath;
+			$images[] = Bucket::getPathByEnvironment('perfil', $image->file);
 		}
 
 		// create the content
@@ -447,7 +401,7 @@ class Service
 
 		// notify to friends
 		Notifications::alertMyFriends($request->person->id,
-						"Tu amigo @{$request->person->username} ha publicado una nueva foto en su galería",
+						"@{$request->person->username} ha publicado una nueva foto en su galería",
 						'info_outline', "{command: \"PERFIL IMAGENES\", data:{id: {$request->person->id}}}");
 
 		Challenges::complete('update-profile-picture', $request->person->id);
