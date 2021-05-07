@@ -269,12 +269,10 @@ class Service
 		// get the list of images for the person
 		$imagesList = Database::query("SELECT id, file, `default` FROM person_images WHERE id_person=$id AND active=1");
 
-		// thumbnail the images
+		// get the images array
 		$images = [];
 		foreach ($imagesList as $image) {
-			try {
-				$images[] = Bucket::download('perfil', $image->file);
-			} catch(Exception $e) {}
+			$images[] = Bucket::getPathByEnvironment('perfil', $image->file);
 		}
 
 		// create the content
