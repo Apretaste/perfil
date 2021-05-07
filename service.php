@@ -226,41 +226,6 @@ class Service
 	}
 
 	/**
-	 * Display an image in the gallery
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 * @throws Alert
-	 */
-	public function _ver(Request $request, Response $response)
-	{
-		$id = $request->input->data->id;
-
-		// get the image to display
-		$image = ($id !== 'last') ?
-			Database::queryFirst("SELECT * FROM person_images WHERE id='$id'") :
-			Database::queryFirst("SELECT * FROM person_images WHERE id_person='{$request->person->id}' ORDER BY id DESC LIMIT 1");
-
-		if (empty($image)) return $this->_imagenes($request, $response);
-
-		// get the full path to the image
-		try {
-			$file = Bucket::download("perfil", $image->file);
-		} catch(Exception $e) { }
-
-		// create content for the view
-		$content = [
-			"id" => $image->id,
-			"isDefault" => $image->default,
-			"file" => $image->file,
-			"idPerson" => $image->id_person,
-			'ownProfile' => $image->id_person == $request->person->id];
-
-		// send data to the view
-		$response->setTemplate('displayImage.ejs', $content, [$file]);
-	}
-
-	/**
 	 * Delete an image from the gallery
 	 *
 	 * @param Request $request
@@ -302,14 +267,13 @@ class Service
 		$ownProfile = $request->person->id == $id;
 
 		// get the list of images for the person
-		$imagesList = Database::query("SELECT id, file, `default` FROM person_images WHERE id_person='$id' AND active=1");
+		$imagesList = Database::query("SELECT id, file, `default` FROM person_images WHERE id_person=$id AND active=1");
 
 		// thumbnail the images
 		$images = [];
 		foreach ($imagesList as $image) {
 			try {
-				$imgPath = Bucket::download('perfil', $image->file);
-				$images[] = Images::thumbnail($imgPath);
+				$images[] = Bucket::download('perfil', $image->file);
 			} catch(Exception $e) {}
 		}
 
