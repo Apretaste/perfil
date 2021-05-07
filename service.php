@@ -1,22 +1,22 @@
 <?php
 
-use Apretaste\Bucket;
+use Apretaste\Core;
+use Apretaste\Alert;
 use Apretaste\Chats;
+use Apretaste\Utils;
 use Apretaste\Level;
 use Apretaste\Money;
+use Apretaste\Images;
+use Apretaste\Bucket;
 use Apretaste\Person;
 use Apretaste\Amulets;
 use Apretaste\Request;
 use Apretaste\Response;
+use Apretaste\Database;
 use Apretaste\Tutorial;
 use Apretaste\Challenges;
 use Apretaste\Notifications;
-use Framework\Core;
-use Framework\Utils;
-use Framework\Alert;
-use Framework\Images;
-use Framework\Database;
-use Framework\GoogleAnalytics;
+use Apretaste\GoogleAnalytics;
 use Kreait\Firebase\Exception\FirebaseException;
 use Kreait\Firebase\Exception\MessagingException;
 
@@ -286,7 +286,6 @@ class Service
 		$response->setLayout('perfil.ejs');
 		$response->setTemplate('images.ejs', $content, $images);
 	}
-
 
 	/**
 	 * Donate some credits to a content creator
