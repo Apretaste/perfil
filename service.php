@@ -279,6 +279,9 @@ class Service
 		$content = [
 			'images' => $imagesList,
 			'ownProfile' => $ownProfile,
+			'profile' => (object) [
+				'id' => $id
+			],
 			'title' => 'Imágenes'
 		];
 
