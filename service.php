@@ -523,7 +523,7 @@ class Service
 	 */
 	public function _salir(Request $request, Response $response)
 	{
-		Database::query("UPDATE person SET status='SLEEP' WHERE id={$request->person->id}");
+		Database::query("UPDATE person SET status='SLEEP', last_logout = CURRENT_TIMESTAMP WHERE id={$request->person->id}");
 		Database::query("DELETE FROM tokens WHERE person_id={$request->person->id} AND token_type='apretaste:firebase'");
 	}
 
