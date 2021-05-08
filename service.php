@@ -539,7 +539,7 @@ class Service
 			'city' => $person->city,
 			'religion' => $person->religion,
 			'interests' => $person->interests,
-			'friendList' => $person->getFriends(),
+			'friendList' => $person->getFriendsCount(),
 			'experience' => $person->experience,
 			'ranking' => $person->weekRank,
 			'profile_tags' => $person->profile_tags ?? false,
