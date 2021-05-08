@@ -1,22 +1,22 @@
 <?php
 
-use Apretaste\Bucket;
+use Apretaste\Core;
+use Apretaste\Alert;
 use Apretaste\Chats;
+use Apretaste\Utils;
 use Apretaste\Level;
 use Apretaste\Money;
+use Apretaste\Images;
+use Apretaste\Bucket;
 use Apretaste\Person;
 use Apretaste\Amulets;
 use Apretaste\Request;
 use Apretaste\Response;
+use Apretaste\Database;
 use Apretaste\Tutorial;
 use Apretaste\Challenges;
 use Apretaste\Notifications;
-use Framework\Core;
-use Framework\Utils;
-use Framework\Alert;
-use Framework\Images;
-use Framework\Database;
-use Framework\GoogleAnalytics;
+use Apretaste\GoogleAnalytics;
 use Kreait\Firebase\Exception\FirebaseException;
 use Kreait\Firebase\Exception\MessagingException;
 
@@ -226,41 +226,6 @@ class Service
 	}
 
 	/**
-	 * Display an image in the gallery
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 * @throws Alert
-	 */
-	public function _ver(Request $request, Response $response)
-	{
-		$id = $request->input->data->id;
-
-		// get the image to display
-		$image = ($id !== 'last') ?
-			Database::queryFirst("SELECT * FROM person_images WHERE id='$id'") :
-			Database::queryFirst("SELECT * FROM person_images WHERE id_person='{$request->person->id}' ORDER BY id DESC LIMIT 1");
-
-		if (empty($image)) return $this->_imagenes($request, $response);
-
-		// get the full path to the image
-		try {
-			$file = Bucket::download("perfil", $image->file);
-		} catch(Exception $e) { }
-
-		// create content for the view
-		$content = [
-			"id" => $image->id,
-			"isDefault" => $image->default,
-			"file" => $image->file,
-			"idPerson" => $image->id_person,
-			'ownProfile' => $image->id_person == $request->person->id];
-
-		// send data to the view
-		$response->setTemplate('displayImage.ejs', $content, [$file]);
-	}
-
-	/**
 	 * Delete an image from the gallery
 	 *
 	 * @param Request $request
@@ -302,29 +267,25 @@ class Service
 		$ownProfile = $request->person->id == $id;
 
 		// get the list of images for the person
-		$imagesList = Database::query("SELECT id, file, `default` FROM person_images WHERE id_person='$id' AND active=1");
+		$imagesList = Database::query("SELECT id, file, `default` FROM person_images WHERE id_person=$id AND active=1");
 
-		// thumbnail the images
+		// get the images array
 		$images = [];
 		foreach ($imagesList as $image) {
-			try {
-				$imgPath = Bucket::download('perfil', $image->file);
-				$images[] = Images::thumbnail($imgPath);
-			} catch(Exception $e) {}
+			$images[] = Bucket::getPathByEnvironment('perfil', $image->file);
 		}
 
 		// create the content
 		$content = [
 			'images' => $imagesList,
 			'ownProfile' => $ownProfile,
-			'idPerson' => $id, 'title' => 'Imágenes'
+			'title' => 'Imágenes'
 		];
 
 		// send data to the view
 		$response->setLayout('perfil.ejs');
 		$response->setTemplate('images.ejs', $content, $images);
 	}
-
 
 	/**
 	 * Donate some credits to a content creator

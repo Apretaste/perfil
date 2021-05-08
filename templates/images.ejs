@@ -1,32 +1,52 @@
 <div id="gallery" style="margin-top: 2rem">
-    <% images.forEach(function (image) { %>
-        <div class="col s6 m4 galleryImage"
-             onclick="apretaste.send({'command': 'PERFIL VER', 'data': {'id': '<%= image.id %>'}})">
-            <% if(image.default == 1){ %>
-                <div class="default">
-                    <i class="material-icons">star</i>
-                </div>
-            <% } %>
-            <img src="{{APP_IMAGE_PATH}}/<%= image.file %>" class="responsive-img" width="100%"
-                 style="border-radius: 8px">
-        </div>
-    <% }) %>
+	<!-- List gallery items -->
+	<% images.forEach(function (image) { %>
+		<div class="col s6 m4 galleryImage">
+			<!-- image -->
+			<% var src = '{{APP_IMAGE_PATH}}/' + image.file %>
+			<img src="<%= src %>" onclick="apretaste.showImage('<%= src %>')">
 
-    <% if(images.length == 0){ %>
-        <div class="col s12 center-align">
-            <h1>¡Oops!</h1>
-            <i class="large material-icons">sentiment_very_dissatisfied</i>
-            <p style="margin:10px 0;">La galería de imágenes se encuentra vacía.</p>
-        </div>
-    <% } %>
+			<!-- actions -->
+			<% if(ownProfile){ %>
+				<div class="action-bar">
+					<% if(image.default == 1) { %>
+						<span class="fa-stack">
+							<i class="fas fa-circle grey-text fa-stack-2x"></i>
+							<i class="fas fa-star fa-stack-1x yellow-text"></i>
+						</span>
+					<% } else { %>
+						<span class="fa-stack" onclick="selectDefaultImage(<%= image.id %>, this)">
+							<i class="fas fa-circle grey-text fa-stack-2x"></i>
+							<i class="fas fa-star fa-stack-1x"></i>
+						</span>
+
+						<span class="fa-stack trash" onclick="deleteImage(<%= image.id %>, this)">
+							<i class="fas fa-circle grey-text fa-stack-2x"></i>
+							<i class="fas fa-trash fa-stack-1x"></i>
+						</span>
+					<% } %>
+				</div>
+			<% } %>
+		</div>
+	<% }) %>
+
+	<!-- If no images -->
+	<% if(images.length == 0){ %>
+		<div class="col s12 center-align">
+			<h1>¡Oops!</h1>
+			<i class="large material-icons">sentiment_very_dissatisfied</i>
+			<p style="margin:10px 0;">La galería de imágenes se encuentra vacía.</p>
+		</div>
+	<% } %>
 </div>
 
-<% if(ownProfile){ %>
-    <input id="picturefield" type="file" class="hide"/>
+<!-- Buttons -->
 
-    <div class="fixed-action-btn">
-        <a class="btn-floating btn-large waves-effect waves-light" href="#!"
-           onclick="uploadPicture()"><i
-                    class="fa fa-cloud-upload-alt"></i></a>
-    </div>
+<% if(ownProfile){ %>
+	<input id="picturefield" type="file" class="hide"/>
+
+	<div class="fixed-action-btn">
+		<a class="btn-floating btn-large waves-effect waves-light" href="#!"
+		   onclick="uploadPicture()"><i class="fa fa-cloud-upload-alt"></i></a>
+	</div>
 <% } %>
