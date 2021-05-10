@@ -65,20 +65,17 @@
 
 <% if(ownProfile){ %>
     <div class="fixed-action-btn">
-        <a onclick="shareProfile()" class="btn-floating grey third">
-            <i class="fa fa-share-alt material-icons"></i>
-        </a>
         <a class="btn-floating waves-effect waves-light grey second" onclick="apretaste.back()">
             <i class="material-icons">arrow_back</i>
         </a>
         <a class="btn-floating btn-large green">
-            <i class="large material-icons">more_horiz</i>
+            <i class="fa fa-ellipsis-h"></i>
         </a>
         <ul>
             <li>
                 <a class="btn-floating green"
                    onclick="apretaste.send({command: 'amigos listar', data: {id: profile.id}});">
-                    <i class="material-icons"> people </i>
+                    <i class="fa fa-user-friends"></i>
                 </a>
             </li>
 
@@ -88,26 +85,26 @@
                         <i class="fa fa-times-circle"></i>
                     </a>
                     <a class="btn-floating green" onclick="pizarraSearch()">
-                        <i class="fa fa-hashtag material-icons"></i>
+                        <i class="fa fa-hashtag"></i>
                     </a>
                 </li>
             <% } else if(type == 'waitingForMe') { %>
-                <li>
-                    <a class="btn-floating green"
-                       onclick="acceptModalOpen()">
-                        <i class="material-icons">person_add</i>
-                    </a>
-                </li>
                 <li>
                     <a class="btn-floating red"
                        onclick="rejectModalOpen()">
                         <i class="fa fa-times"></i>
                     </a>
                 </li>
+                <li>
+                    <a class="btn-floating green"
+                       onclick="acceptModalOpen()">
+                        <i class="fa fa-user-plus"></i>
+                    </a>
+                </li>
             <% } else { %>
                 <li>
                     <a class="btn-floating green" onclick="pizarraSearch()">
-                        <i class="fa fa-hashtag material-icons"></i>
+                        <i class="fa fa-hashtag"></i>
                     </a>
                 </li>
             <% } %>
@@ -120,64 +117,63 @@
         </a>
 
         <a class="btn-floating btn-large green">
-            <i class="large material-icons">more_horiz</i>
+            <i class="fa fa-ellipsis-h"></i>
         </a>
 
         <ul>
-            <li>
-                <a class="btn-floating green" onclick="openDonationModal()">
-                    <i class="material-icons">attach_money</i>
-                </a>
-            </li>
-            <li>
-                <a onclick="shareProfile()" class="btn-floating grey">
-                    <i class="fa fa-share-alt material-icons"></i>
-                </a>
-            </li>
             <li>
                 <a class="btn-floating red" onclick="deleteModalOpen()">
                     <i class="fa fa-times"></i>
                 </a>
             </li>
-
+            <li>
+                <a class="btn-floating green" onclick="openDonationModal()">
+                    <i class="fa fa-dollar-sign"></i>
+                </a>
+            </li>
+            <li>
+                <a onclick="shareProfile()" class="btn-floating green">
+                    <i class="fa fa-share-alt"></i>
+                </a>
+            </li>
             <li>
                 <a class="btn-floating green"
                    onclick="apretaste.send({command: 'amigos listar', data: {id: profile.id}});">
-                    <i class="material-icons">people</i>
+                    <i class="fa fa-user-friends"></i>
                 </a>
             </li>
 
             <% if(type == 'friends') { %>
                 <li>
                     <a class="btn-floating green" onclick="pizarraSearch()">
-                        <i class="fa fa-hashtag material-icons"></i>
+                        <i class="fa fa-hashtag"></i>
                     </a>
                 </li>
                 <li>
                     <a class="btn-floating green" onclick="openChat()">
-                        <i class="fa fa-comments material-icons"></i>
+                        <i class="fa fa-comments"></i>
                     </a>
                 </li>
             <% } else if(type == 'waitingForMe') { %>
                 <li>
-                    <a class="btn-floating green" onclick="acceptModalOpen()">
-                        <i class="material-icons">person_add</i>
+                    <a class="btn-floating red" onclick="rejectModalOpen()">
+                        <i class="fa fa-trash-alt"></i>
                     </a>
                 </li>
                 <li>
-                    <a class="btn-floating red" onclick="rejectModalOpen()">
-                        <i class="material-icons">delete</i>
+                    <a class="btn-floating green" onclick="acceptModalOpen()">
+                        <i class="fa fa-user-plus"></i>
                     </a>
                 </li>
             <% } else { %>
                 <li>
                     <a class="btn-floating green" onclick="pizarraSearch()">
-                        <i class="fa fa-hashtag material-icons"></i>
+                        <i class="fa fa-hashtag"></i>
                     </a>
                 </li>
                 <li>
                     <a class="btn-floating green" onclick="addFriendModalOpen()">
-                        <i class="material-icons">person_add</i>
+                        <i class="fa fa-user-plus"></i>
                     </a>
                 </li>
             <% } %>

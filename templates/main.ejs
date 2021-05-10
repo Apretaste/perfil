@@ -80,26 +80,27 @@
     <div class="bottom-space"></div>
     <div class="fixed-action-btn actions">
         <% if(ownProfile){ %>
-            <a onclick="shareProfile()" class="btn-floating third grey">
-                <i class="fa fa-share-alt material-icons"></i>
+            <a class="btn-floating waves-effect waves-light grey third" onclick="shareProfile()">
+                <i class="material-icons">share</i>
             </a>
+
             <a class="btn-floating waves-effect waves-light grey second" onclick="apretaste.back()">
                 <i class="material-icons">arrow_back</i>
             </a>
             <a class="btn-floating btn-large waves-effect waves-light" onclick="openEditProfile()">
-                <i class="material-icons">edit</i>
+                <i class="fa fa-edit"></i>
             </a>
         <% } else if(type == 'friends') { %>
             <a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
                 <i class="material-icons">arrow_back</i>
             </a>
             <a class="btn-floating btn-large green">
-                <i class="large material-icons">more_horiz</i>
+                <i class="fa fa-ellipsis-h"></i>
             </a>
             <ul>
                 <li>
                     <a href="#blockModal" class="btn-floating modal-trigger red">
-                        <i class="material-icons">block</i>
+                        <i class="fa fa-ban"></i>
                     </a>
                 </li>
                 <li>
@@ -109,18 +110,18 @@
                     </a>
                 </li>
                 <li>
-                    <a onclick="shareProfile()" class="btn-floating grey">
-                        <i class="fa fa-share-alt material-icons"></i>
+                    <a onclick="shareProfile()" class="btn-floating green">
+                        <i class="fa fa-share-alt"></i>
                     </a>
                 </li>
                 <li>
                     <a onclick="pizarraSearch()" class="btn-floating green">
-                        <i class="fa fa-hashtag material-icons"></i>
+                        <i class="fa fa-hashtag"></i>
                     </a>
                 </li>
                 <li>
                     <a onclick="openChat()" class="btn-floating green">
-                        <i class="fa fa-comments material-icons"></i>
+                        <i class="fa fa-comments"></i>
                     </a>
                 </li>
             </ul>
@@ -130,22 +131,22 @@
                 <i class="material-icons">arrow_back</i>
             </a>
             <a class="btn-floating btn-large green">
-                <i class="large material-icons">more_horiz</i>
+                <i class="fa fa-ellipsis-h"></i>
             </a>
             <ul>
                 <li>
-                    <a onclick="shareProfile()" class="btn-floating grey">
-                        <i class="fa fa-share-alt material-icons"></i>
-                    </a>
-                </li>
-                <li>
-                    <a class="btn-floating waves-effect waves-light grey">
-                        <i class="material-icons" onclick="acceptModalOpen()">person_add</i>
-                    </a>
-                </li>
-                <li>
                     <a class="btn-floating waves-effect waves-light red">
                         <i class="fa fa-times" onclick="rejectModalOpen()"></i>
+                    </a>
+                </li>
+                <li>
+                    <a onclick="shareProfile()" class="btn-floating green">
+                        <i class="fa fa-share-alt"></i>
+                    </a>
+                </li>
+                <li>
+                    <a class="btn-floating waves-effect waves-light green">
+                        <i class="fa fa-user-plus" onclick="acceptModalOpen()"></i>
                     </a>
                 </li>
             </ul>
@@ -154,27 +155,27 @@
                 <i class="material-icons">arrow_back</i>
             </a>
             <a class="btn-floating btn-large green">
-                <i class="large material-icons">more_horiz</i>
+                <i class="fa fa-ellipsis-h"></i>
             </a>
             <ul>
                 <li>
-                    <a onclick="shareProfile()" class="btn-floating grey">
-                        <i class="fa fa-share-alt material-icons"></i>
-                    </a>
-                </li>
-                <li>
-                    <a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light grey">
-                        <i class="fa fa-hashtag material-icons"></i>
-                    </a>
-                </li>
-                <li>
-                    <a class="btn-floating waves-effect waves-light">
-                        <i class="fa fa-times red" onclick="cancelRequestModalOpen()"></i>
+                    <a class="btn-floating waves-effect waves-light red">
+                        <i class="fa fa-times" onclick="cancelRequestModalOpen()"></i>
                     </a>
                 </li>
                 <li>
                     <a href="#blockModal" class="btn-floating modal-trigger red">
-                        <i class="material-icons">block</i>
+                        <i class="fa fa-ban"></i>
+                    </a>
+                </li>
+                <li>
+                    <a onclick="shareProfile()" class="btn-floating green">
+                        <i class="fa fa-share-alt"></i>
+                    </a>
+                </li>
+                <li>
+                    <a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light green">
+                        <i class="fa fa-hashtag"></i>
                     </a>
                 </li>
             </ul>
@@ -183,27 +184,27 @@
                 <i class="material-icons">arrow_back</i>
             </a>
             <a class="btn-floating btn-large green">
-                <i class="large material-icons">more_horiz</i>
+                <i class="fa fa-ellipsis-h"></i>
             </a>
             <ul>
                 <li>
                     <a href="#blockModal" class="btn-floating red modal-trigger">
-                        <i class="material-icons">block</i>
+                        <i class="fa fa-ban"></i>
                     </a>
                 </li>
                 <li>
-                    <a onclick="shareProfile()" class="btn-floating grey">
-                        <i class="fa fa-share-alt material-icons"></i>
+                    <a onclick="shareProfile()" class="btn-floating green">
+                        <i class="fa fa-share-alt"></i>
                     </a>
                 </li>
                 <li>
                     <a onclick="pizarraSearch()" class="btn-floating waves-effect waves-light">
-                        <i class="fa fa-hashtag material-icons"></i>
+                        <i class="fa fa-hashtag"></i>
                     </a>
                 </li>
                 <li>
                     <a onclick="addFriendModalOpen()" class="btn-floating waves-effect waves-light">
-                        <i class="material-icons">person_add</i>
+                        <i class="fa fa-user-plus"></i>
                     </a>
                 </li>
             </ul>

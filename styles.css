@@ -564,3 +564,8 @@ p {
 .speech-bubble-space {
 	margin-bottom: 20px;
 }
+
+/* MATERIAL ICONS OVERRIDE */
+.btn-floating:not(.btn-large) i:not(.material-icons) {
+	font-size: 1.2rem !important;
+}
