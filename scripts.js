@@ -483,8 +483,8 @@ function pizarraSearch() {
 }
 
 function openProfile() {
-	if (typeof idPerson != "undefined") {
-		apretaste.send({command: 'perfil', data: {id: idPerson}})
+	if (typeof profile.id != "undefined") {
+		apretaste.send({command: 'perfil', data: {id: profile.id}})
 	} else {
 		apretaste.send({command: 'perfil'})
 	}

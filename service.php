@@ -279,7 +279,10 @@ class Service
 		$content = [
 			'images' => $imagesList,
 			'ownProfile' => $ownProfile,
-			'idPerson' => $id, 'title' => 'Imágenes'
+			'profile' => (object) [
+				'id' => $id
+			],
+			'title' => 'Imágenes'
 		];
 
 		// send data to the view
@@ -484,7 +487,7 @@ class Service
 	 */
 	public function _salir(Request $request, Response $response)
 	{
-		Database::query("UPDATE person SET status='SLEEP' WHERE id={$request->person->id}");
+		Database::query("UPDATE person SET status='SLEEP', last_logout = CURRENT_TIMESTAMP WHERE id={$request->person->id}");
 		Database::query("DELETE FROM tokens WHERE person_id={$request->person->id} AND token_type='apretaste:firebase'");
 	}
 
@@ -539,7 +542,7 @@ class Service
 			'city' => $person->city,
 			'religion' => $person->religion,
 			'interests' => $person->interests,
-			'friendList' => $person->getFriends(),
+			'friendList' => $person->getFriendsCount(),
 			'experience' => $person->experience,
 			'ranking' => $person->weekRank,
 			'profile_tags' => $person->profile_tags ?? false,
