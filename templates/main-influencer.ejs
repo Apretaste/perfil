@@ -131,11 +131,17 @@
                     <i class="fa fa-dollar-sign"></i>
                 </a>
             </li>
-            <li>
-                <a onclick="shareProfile()" class="btn-floating green">
-                    <i class="fa fa-share-alt"></i>
-                </a>
-            </li>
+
+            <% var shareAvailable = typeof apretaste.shared != "undefined" %>
+
+            <% if(shareAvailable){ %>
+                <li>
+                    <a onclick="shareProfile()" class="btn-floating green">
+                        <i class="fa fa-share-alt"></i>
+                    </a>
+                </li>
+            <% } %>
+
             <li>
                 <a class="btn-floating green"
                    onclick="apretaste.send({command: 'amigos listar', data: {id: profile.id}});">
