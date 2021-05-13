@@ -63,6 +63,8 @@ class Service
 						'header' => 'Shadow-Mode',
 						'icon' => 'visibility_off',
 						'text' => 'La magia oscura de un amuleto rodea este perfil y te impide verlo. Por mucho que intentes romperlo, el hechizo del druida es poderoso.',
+						'blockOption' => true,
+						'profile' => $profile,
 						'button' => (object)[
 							'back' => true
 						]
@@ -75,6 +77,7 @@ class Service
 						'header' => 'Perfil bloqueado',
 						'icon' => 'sentiment_very_dissatisfied',
 						'text' => 'Esta persona le ha bloqueado, o usted ha bloqueado a esta persona, por lo tanto no puede revisar su perfil.',
+						'blockOption' => false,
 						'button' => (object)[
 							'back' => false,
 							'caption' => 'Mis amigos',
@@ -95,6 +98,7 @@ class Service
 				'header' => 'El perfil no existe',
 				'icon' => 'sentiment_very_dissatisfied',
 				'text' => 'Lo sentimos, pero el perfil que usted busca no pudo ser encontrado. Puede que el nombre de usuario haya cambiado o la persona haya salido de la app.',
+				'blockOption' => false,
 				'button' => (object)[
 					'back' => true
 				]
@@ -142,6 +146,7 @@ class Service
 			$response->setTemplate('message.ejs', [
 				'header' => 'Lo sentimos',
 				'icon' => 'sentiment_very_dissatisfied',
+				'blockOption' => false,
 				'text' => 'Los creadores de contenido no pueden editar su perfil directamente, contactanos para mas información.'
 			]);
 
@@ -306,6 +311,7 @@ class Service
 			$response->setTemplate('message.ejs', [
 				'header' => 'Crédito insuficiente',
 				'icon' => 'sentiment_very_dissatisfied',
+				'blockOption' => false,
 				'text' => "No tienes suficiente crédito, tu crédito actual es §{$request->person->credit}."
 			]);
 			return;
@@ -331,12 +337,14 @@ class Service
 				$response->setTemplate('message.ejs', [
 					'header' => 'Su donación se ha realizado',
 					'icon' => 'attach_money',
+					'blockOption' => false,
 					'text' => "Gracias por donar §$amount de crédito a @{$isCreator->username}. Estos fondos serán usados para llegar a más personas y hacer un trabajo de más calidad."
 				]);
 			} catch (Alert $alert) {
 				$response->setTemplate('message.ejs', [
 					'header' => 'Error al transferir',
 					'icon' => 'sentiment_very_dissatisfied',
+					'blockOption' => false,
 					'text' => $alert->message
 				]);
 			}
@@ -345,6 +353,7 @@ class Service
 			$response->setTemplate('message.ejs', [
 				'header' => 'Usuario invalido',
 				'icon' => 'sentiment_very_dissatisfied',
+				'blockOption' => false,
 				'text' => "El usuario al que intentas donar créditos no es un creador de contenido."
 			]);
 		}

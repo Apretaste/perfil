@@ -8,5 +8,22 @@
 		<% } else { %>
 			<a class="btn green" onclick="apretaste.send({command: '<%= button.command %>', data:<%= JSON.stringify(button.data) %>})"><%= button.caption %></a>
 		<% }%>
+		<% if(typeof profile !== 'undefined') { %>
+			<a href="#blockModal" class="btn red modal-trigger">
+				<i class="fa fa-ban"></i>
+			</a>
+
+			<div id="blockModal" class="modal">
+				<div class="modal-content">
+					<p>¿Está seguro de bloquear <b>@<%= profile.username %></b>? Este usuario no podrá enviarle más solitudes de
+						amistad, ni mencionarle ni verá sus publicaciones</p>
+				</div>
+				<div class="modal-footer">
+					<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+					<a onclick="blockUser(<%= profile.id %>);" class="modal-close waves-effect waves-red btn-flat red-text"
+					   style="font-weight: 500">Bloquear</a>
+				</div>
+			</div>
+		<% } %>
 	</div>
 </div>
