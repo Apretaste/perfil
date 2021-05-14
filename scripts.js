@@ -536,7 +536,7 @@ function getReadableProp(prop) {
 function shareProfile() {
 	apretaste.share({
 		title: 'Mira el perfil de @' + profile.username + ' en Apretaste',
-		link: 'https://apretaste.me/profile/' + profile.username
+		link: 'http://apretaste.me/profile/' + profile.username
 	});
 }
 
