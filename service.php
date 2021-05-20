@@ -49,13 +49,15 @@ class Service
 				}
 
 				// check if current user blocked the user to lookup, or is blocked by
-				if ($request->person->isBlocked($profile->id)) {
+				$relation = $request->person->getBlockedRelation($profile->id);
+				if ($relation) {
+					$youBlockTheUser = ((int)$relation->user1 === $request->person->id) || ((int)$relation->user2 === $request->person->id && (int) $relation->bi === 1);
 					return $response->setTemplate('message.ejs', [
 						'header' => 'Perfil bloqueado',
 						'icon' => 'sentiment_very_dissatisfied',
-						'text' => 'Esta persona le ha bloqueado, o usted ha bloqueado a esta persona, por lo tanto no puede revisar su perfil.',
-						'blockOption' => true,
-						'button' => (object)[
+						'text' => 'No puede revisar su perfil',
+						'blockOption' => !$youBlockTheUser,
+						'button' => (object) [
 							'back' => true,
 							'profile' => $profile,
 							'caption' => false,
