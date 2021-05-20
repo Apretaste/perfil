@@ -54,7 +54,7 @@ class Service
 						'header' => 'Perfil bloqueado',
 						'icon' => 'sentiment_very_dissatisfied',
 						'text' => 'Esta persona le ha bloqueado, o usted ha bloqueado a esta persona, por lo tanto no puede revisar su perfil.',
-						'blockOption' => false,
+						'blockOption' => true,
 						'button' => (object)[
 							'back' => true,
 							'profile' => $profile,
