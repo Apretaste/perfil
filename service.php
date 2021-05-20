@@ -57,9 +57,9 @@ class Service
 						'icon' => 'sentiment_very_dissatisfied',
 						'text' => 'No puede revisar su perfil',
 						'blockOption' => !$youBlockTheUser,
+						'profile' => $profile,
 						'button' => (object) [
 							'back' => true,
-							'profile' => $profile,
 							'caption' => false,
 							'command' => false,
 							'data' => (object) []
