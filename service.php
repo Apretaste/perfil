@@ -2,9 +2,7 @@
 
 use Apretaste\Core;
 use Apretaste\Alert;
-use Apretaste\Chats;
 use Apretaste\Utils;
-use Apretaste\Level;
 use Apretaste\Money;
 use Apretaste\Images;
 use Apretaste\Bucket;
@@ -16,7 +14,6 @@ use Apretaste\Database;
 use Apretaste\Tutorial;
 use Apretaste\Challenges;
 use Apretaste\Notifications;
-use Apretaste\GoogleAnalytics;
 use Kreait\Firebase\Exception\FirebaseException;
 use Kreait\Firebase\Exception\MessagingException;
 
@@ -79,9 +76,10 @@ class Service
 						'text' => 'Esta persona le ha bloqueado, o usted ha bloqueado a esta persona, por lo tanto no puede revisar su perfil.',
 						'blockOption' => false,
 						'button' => (object)[
-							'back' => false,
-							'caption' => 'Mis amigos',
-							'command' => 'AMIGOS',
+							'back' => true,
+							'profile' => $profile,
+							'caption' => false,
+							'command' => false,
 							'data' => (object) []
 						]
 					]);

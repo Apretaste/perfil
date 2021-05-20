@@ -2,28 +2,37 @@
 	<div class="col s12 center-align">
 		<h1><%= header %></h1>
 		<i class="large material-icons"><%= icon %></i>
+
 		<p style="margin:30px 0px;"><%= text %></p>
-		<% if (button.back) { %>
-			<a class="btn green" onclick="apretaste.back();">Atr&aacute;s</a>
-		<% } else { %>
+
+		<% if (button.command) { %>
 			<a class="btn green" onclick="apretaste.send({command: '<%= button.command %>', data:<%= JSON.stringify(button.data) %>})"><%= button.caption %></a>
 		<% }%>
-		<% if(typeof profile !== 'undefined') { %>
-			<a href="#blockModal" class="btn red modal-trigger">
-				<i class="fa fa-ban"></i>
-			</a>
 
-			<div id="blockModal" class="modal">
-				<div class="modal-content">
-					<p>¿Está seguro de bloquear <b>@<%= profile.username %></b>? Este usuario no podrá enviarle más solitudes de
-						amistad, ni mencionarle ni verá sus publicaciones</p>
-				</div>
-				<div class="modal-footer">
-					<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
-					<a onclick="blockUser(<%= profile.id %>);" class="modal-close waves-effect waves-red btn-flat red-text"
-					   style="font-weight: 500">Bloquear</a>
-				</div>
-			</div>
-		<% } %>
 	</div>
 </div>
+
+<% if(typeof profile !== 'undefined') { %>
+	<div class="fixed-action-btn">
+		<a class="btn-floating waves-effect waves-light grey sidenav-trigger second" href="#blockModal">
+			<i class="fa fa-ban"></i>
+		</a>
+		<% if (button.back) { %>
+			<a class="btn-floating btn-large waves-effect waves-light green" href="#!" onclick="apretaste.back();">
+				<i class="fa fa-arrow-left"></i>
+			</a>
+		<% } %>
+	</div>
+
+	<div id="blockModal" class="modal">
+		<div class="modal-content">
+			<p>¿Está seguro de bloquear <b>@<%= profile.username %></b>? Este usuario no podrá enviarle más solitudes de
+				amistad, ni mencionarle ni verá sus publicaciones</p>
+		</div>
+		<div class="modal-footer">
+			<a href="#!" class="modal-close waves-effect waves-light btn-flat">Cancelar</a>
+			<a onclick="blockUser(<%= profile.id %>);" class="modal-close waves-effect waves-red btn-flat red-text"
+			   style="font-weight: 500">Bloquear</a>
+		</div>
+	</div>
+<% } %>
