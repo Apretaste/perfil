@@ -15,12 +15,12 @@
 							<i class="fas fa-star fa-stack-1x yellow-text"></i>
 						</span>
 					<% } else { %>
-						<span class="fa-stack" onclick="selectDefaultImage(<%= image.id %>, this)">
+						<span class="fa-stack" onclick="selectDefaultImage('<%= image.id %>', this)">
 							<i class="fas fa-circle grey-text fa-stack-2x"></i>
 							<i class="fas fa-star fa-stack-1x"></i>
 						</span>
 
-						<span class="fa-stack trash" onclick="deleteImage(<%= image.id %>, this)">
+						<span class="fa-stack trash" onclick="deleteImage('<%= image.id %>', this)">
 							<i class="fas fa-circle grey-text fa-stack-2x"></i>
 							<i class="fas fa-trash fa-stack-1x"></i>
 						</span>
