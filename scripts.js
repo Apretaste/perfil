@@ -1081,3 +1081,8 @@ function sendComment() {
 		showToast('Escriba algo');
 	}
 }
+
+function sendCommentCallback(comment) {
+	$('#comment').val('');
+	showToast('Mensaje enviado');
+}
