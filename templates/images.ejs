@@ -26,6 +26,10 @@
 						</span>
 					<% } %>
 				</div>
+			<% } else {%>
+				<span class="fa-stack trash" onclick="sendImageToChat(<%= image.id %>)">
+					<i class="fas fa-comments grey-text fa-stack-2x"></i>
+				</span>
 			<% } %>
 		</div>
 	<% }) %>
@@ -50,3 +54,17 @@
 		   onclick="uploadPicture()"><i class="fa fa-cloud-upload-alt"></i></a>
 	</div>
 <% } %>
+
+
+<div id="newCommentModal" class="modal bottom-sheet">
+	<div class="modal-content">
+		<div class="input-field">
+			<textarea id="comment" class="materialize-textarea" oninput="remainder()"></textarea>
+			<label for="comment">Mensaje privado (<span id="remainder">0</span>/250)</label>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<a onclick="hideKeyboard()" class="modal-close waves-effect waves-light btn-flat">Cerrar</a>
+		<a onclick="sendComment()" class="modal-close waves-effect waves-green btn-flat green-text">Comentar</a>
+	</div>
+</div>

@@ -1022,3 +1022,62 @@ function blockUser(id) {
 function blockUserCallback(id) {
 	apretaste.send({command: 'AMIGOS BLOCKED', useCache: false});
 }
+
+
+function remainder(size) {
+	if (size == null) {
+		size = 250;
+	}
+	// get message and remainder amount
+	var comment = $('#comment').val().trim();
+	var remainder = (comment.length <= size) ? (size - comment.length) : 0;
+
+	// restrict comment size
+	if (remainder <= 0) {
+		comment = comment.substring(0, size);
+		$('#comment').val(comment);
+	}
+
+	// update remainder amount
+	$('#remainder').html(comment.length);
+}
+
+
+function hideKeyboard() {
+	if (
+		document.activeElement &&
+		document.activeElement.blur &&
+		typeof document.activeElement.blur === 'function'
+	) {
+		document.activeElement.blur()
+	}
+}
+
+let currentImage = null;
+function sendImageToChat(id){
+	currentImage = id;
+	$('#comment').show();
+}
+
+function sendComment() {
+
+	hideKeyboard();
+	var message = $('#comment').val().trim();
+
+	if (comment.length >= 2) {
+		apretaste.send({
+			command: 'CHAT PERFILIMAGE',
+			data: {
+				message: message,
+				image: currentImage
+			},
+			redirect: false,
+			async: true,
+			callback: {name: 'sendCommentAsyncCallback'}
+		});
+
+		sendCommentCallback(comment.escapeHTML());
+	} else {
+		showToast('Escriba algo');
+	}
+}
