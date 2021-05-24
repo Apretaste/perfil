@@ -1059,7 +1059,9 @@ function hideKeyboard() {
 let currentImage = null;
 function sendImageToChat(id){
 	currentImage = id;
-	$('#comment').show();
+	var instance = M.Modal.getInstance($('#comment'));
+	instance.open();
+	// $('#comment').show();
 }
 
 function sendComment() {
