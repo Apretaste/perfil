@@ -428,13 +428,16 @@ $(function () {
 	if (typeof profile != "undefined") {
 		resizeImg();
 		showProvince();
-		var interests = [];
-		profile.interests.forEach(function (interest) {
-			interests.push({tag: interest});
-		});
-		profile.interests = JSON.stringify(interests);
-		$('.chips').chips();
-		$('.chips-initial').chips({data: interests});
+
+		if (typeof profile.interests != "undefined") {
+			var interests = [];
+			profile.interests.forEach(function (interest) {
+				interests.push({tag: interest});
+			});
+			profile.interests = JSON.stringify(interests);
+			$('.chips').chips();
+			$('.chips-initial').chips({data: interests});
+		}
 
 		var profileProps = $('#profile-props');
 		if (profileProps.children().length == 0) profileProps.remove();
@@ -687,7 +690,7 @@ function showToast(text) {
 function deleteImage(id, e) {
 	// confirm deletion
 	var areYouSure = confirm('¿Está seguro de eliminar esta imagen?');
-	if(!areYouSure) return false;
+	if (!areYouSure) return false;
 
 	// change in the backend
 	apretaste.send({
