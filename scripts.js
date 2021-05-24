@@ -1069,7 +1069,7 @@ function sendComment() {
 	hideKeyboard();
 	var message = $('#comment').val().trim();
 
-	if (comment.length >= 2) {
+	// if (comment.length >= 2) {
 		apretaste.send({
 			command: 'CHAT PERFILIMAGE',
 			data: {
@@ -1082,9 +1082,9 @@ function sendComment() {
 		});
 
 		sendCommentCallback(comment.escapeHTML());
-	} else {
+/*	} else {
 		showToast('Escriba algo');
-	}
+	}*/
 }
 
 function sendCommentCallback(comment) {
