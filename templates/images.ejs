@@ -29,8 +29,9 @@
 				</div>
 			<% } else if (!friend) {%>
 				<div class="action-bar">
-					<span class="fa-stack trash" onclick="sendImageToChat(<%= image.id %>)" style="float:right;">
-						<i class="fas fa-comments green-text fa-stack-2x"></i>
+					<span class="fa-stack" onclick="sendImageToChat(<%= image.id %>)">
+						<i class="fas fa-circle grey-text fa-stack-2x"></i>
+						<i class="fas fa-comments fa-stack-1x"></i>
 					</span>
 				</div>
 			<% } %>
