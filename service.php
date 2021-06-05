@@ -284,6 +284,7 @@ class Service
 		$content = [
 			'images' => $imagesList,
 			'ownProfile' => $ownProfile,
+			'friend' => $request->person->isFriendOf($id),
 			'profile' => (object) [
 				'id' => $id
 			],
