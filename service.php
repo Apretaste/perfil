@@ -68,7 +68,7 @@ class Service
 				}
 
 				// run powers for amulet SHADOWMODE
-				if (Amulets::isActive(Amulets::SHADOWMODE, $profile->id)) {
+				if (Amulets::isActive(Amulets::SHADOWMODE, $profile->id) && !$request->person->isFriendOf($profile->id) /* @note && !$ownProfile */) {
 					return $response->setTemplate('message.ejs', [
 						'header' => 'Shadow-Mode',
 						'icon' => 'visibility_off',
