@@ -531,7 +531,7 @@ class Service
 			'avatar' => $person->avatar,
 			'avatarColor' => $person->avatarColor,
 			'username' => $person->username,
-			'aboutMe' => $person->personToText(),
+			'aboutMe' => $person->aboutMe,
 			'firstName' => $person->firstName,
 			'lastName' => $person->lastName,
 			'fullName' => $person->fullName,
