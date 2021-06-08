@@ -81,17 +81,31 @@
     <div class="bottom-space"></div>
     <div class="fixed-action-btn actions">
         <% if(ownProfile){ %>
-            <% if(shareAvailable){ %>
-                <a class="btn-floating waves-effect waves-light grey third" onclick="shareProfile()">
-                    <i class="material-icons">share</i>
-                </a>
-            <% } %>
             <a class="btn-floating waves-effect waves-light grey second" onclick="apretaste.back()">
                 <i class="material-icons">arrow_back</i>
             </a>
-            <a class="btn-floating btn-large waves-effect waves-light" onclick="openEditProfile()">
-                <i class="fa fa-pen"></i>
+            <a class="btn-floating btn-large green">
+                <i class="fa fa-ellipsis-h"></i>
             </a>
+            <ul>
+                <% if(shareAvailable){ %>
+                    <li>
+                        <a class="btn-floating waves-effect waves-light grey third" onclick="shareProfile()">
+                            <i class="material-icons">share</i>
+                        </a>
+                    </li>
+                <% } %>
+                <li>
+                    <a class="btn-floating btn-large waves-effect waves-light" onclick="openEditProfile()">
+                        <i class="fa fa-pen"></i>
+                    </a>
+                </li>
+                <li>
+                    <a onclick="pizarraSearch()" class="btn-floating green">
+                        <i class="fa fa-hashtag"></i>
+                    </a>
+                </li>
+            </ul>
         <% } else if(type == 'friends') { %>
             <a class="btn-floating waves-effect waves-light grey second" href="#!" onclick="apretaste.back()">
                 <i class="material-icons">arrow_back</i>
