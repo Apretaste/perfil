@@ -756,6 +756,12 @@ function showProvince() {
 
 function validateUsername(event) {
 	var username = $('#username');
+
+	if (username.substr(-3).toLowerCase() === 'bot') {
+		showToast('El nombre de usuario no debe contener terminar en la palabra "bot"');
+		return false;
+	}
+
 	var value = username.val();
 	var valid = /[^a-zA-Z0-9@]+/.exec(value);
 

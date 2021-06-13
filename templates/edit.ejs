@@ -14,7 +14,7 @@
         <!-- USERNAME -->
         <div class="input-field col s12">
             <i class="material-icons prefix grey-text text-darken-2">person</i>
-            <input id="username" type="text" value="@<%= profile.username %>" class="validate" oninput="validateUsername(event)"/>
+            <input id="username" type="text" value="@<%= profile.username %>" class="validate" oninput="return validateUsername(event)"/>
             <label for="username">Username</label>
         </div>
 
