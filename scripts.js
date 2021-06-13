@@ -775,6 +775,10 @@ function submitProfileData() {
 	names.forEach(function (prop) {
 		if ($('#' + prop).val() != profile[prop] && $('#' + prop).val() != null && $('#' + prop).val() != "") {
 			data[prop] = $('#' + prop).val();
+			if (prop === 'username' && data[prop].substr(-3).toLowerCase() === 'bot') {
+				showToast('El nombre de usuario no debe contener terminar en la palabra "bot"');
+				return false;
+			}
 			profile[prop] = $('#' + prop).val();
 		}
 	});
@@ -788,7 +792,7 @@ function submitProfileData() {
 	var cleanUsername = $('#username').val().replace('@', '');
 	if (cleanUsername != profile.username && cleanUsername != '') data.username = cleanUsername;
 	if (!isNaN(cleanUsername)) {
-		showToast('El username debe contener al menos una letra');
+		showToast('El nombre de usuario debe contener al menos una letra');
 		return;
 	}
 

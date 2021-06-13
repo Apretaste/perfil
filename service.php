@@ -482,6 +482,22 @@ class Service
 	 */
 	public function _update(Request $request, Response $response)
 	{
+		if (isset($request->input->data->username)) {
+			$u = $request->input->data->username;
+			if (substr(strtolower($u),-3) === 'bot') {
+				return $response->setTemplate('message.ejs', [
+					'header' => 'Error',
+					'icon' => '',
+					'text' => 'Los nombres de usuarios no pueden terminar en "bot"',
+					'blockOption' => false,
+					'profile' => $request->person,
+					'button' => (object)[
+						'back' => true
+					]
+				]);
+			}
+		}
+
 		// update the profile
 		Person::update($request->person->id, $request->input->data);
 
