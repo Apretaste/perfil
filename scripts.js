@@ -758,7 +758,7 @@ function validateUsername(event) {
 	var username = $('#username');
 
 	if (username.substr(-3).toLowerCase() === 'bot') {
-		showToast('El nombre de usuario no debe contener terminar en la palabra "bot"');
+		showToast('El nombre de usuario no debe terminar en la palabra "bot"');
 		return false;
 	}
 
@@ -793,10 +793,11 @@ function submitProfileData() {
 	// add username to data object
 	var cleanUsername = $('#username').val().replace('@', '');
 
+	/*
 	if (cleanUsername.substr(-3).toLowerCase() === 'bot') {
-		showToast('El nombre de usuario no debe contener terminar en la palabra "bot"');
+		showToast('El nombre de usuario no debe terminar en la palabra "bot"');
 		return false;
-	}
+	}*/
 
 	if (cleanUsername != profile.username && cleanUsername != '') data.username = cleanUsername;
 	if (!isNaN(cleanUsername)) {
