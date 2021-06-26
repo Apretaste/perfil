@@ -24,7 +24,6 @@ class Service
 	 *
 	 * @param Request $request
 	 * @param Response $response
-	 * @return Response|void
 	 * @throws Alert
 	 */
 	public function _main(Request $request, Response $response)
@@ -51,25 +50,27 @@ class Service
 				// check if current user blocked the user to lookup, or is blocked by
 				$relation = $request->person->getBlockedRelation($profile->id);
 				if ($relation) {
-					$youBlockTheUser = ((int)$relation->user1 === $request->person->id) || ((int)$relation->user2 === $request->person->id && (int) $relation->bi === 1);
-					return $response->setTemplate('message.ejs', [
+					$youBlockTheUser = ((int)$relation->user1 === $request->person->id) || ((int)$relation->user2 === $request->person->id && (int)$relation->bi === 1);
+					$response->setTemplate('message.ejs', [
 						'header' => 'Perfil bloqueado',
 						'icon' => 'sentiment_very_dissatisfied',
 						'text' => 'No puede revisar su perfil',
 						'blockOption' => !$youBlockTheUser,
 						'profile' => $profile,
-						'button' => (object) [
+						'button' => (object)[
 							'back' => true,
 							'caption' => false,
 							'command' => false,
-							'data' => (object) []
+							'data' => (object)[]
 						]
 					]);
+
+					return;
 				}
 
 				// run powers for amulet SHADOWMODE
-				if (Amulets::isActive(Amulets::SHADOWMODE, $profile->id) && !$request->person->isFriendOf($profile->id) /* @note && !$ownProfile */) {
-					return $response->setTemplate('message.ejs', [
+				if (Amulets::isActive(Amulets::SHADOWMODE, $profile->id) && !$request->person->isFriendOf($profile->id)/* @note && !$ownProfile */) {
+					$response->setTemplate('message.ejs', [
 						'header' => 'Shadow-Mode',
 						'icon' => 'visibility_off',
 						'text' => 'La magia oscura de un amuleto rodea este perfil y te impide verlo. Por mucho que intentes romperlo, el hechizo del druida es poderoso.',
@@ -79,6 +80,8 @@ class Service
 							'back' => true
 						]
 					]);
+
+					return;
 				}
 
 				// run powers for amulet DETECTIVE
@@ -94,7 +97,7 @@ class Service
 
 		// check if the person exist. If not, message the requestor
 		if (!$profile) {
-			return $response->setTemplate('message.ejs', [
+			$response->setTemplate('message.ejs', [
 				'header' => 'El perfil no existe',
 				'icon' => 'sentiment_very_dissatisfied',
 				'text' => 'Lo sentimos, pero el perfil que usted busca no pudo ser encontrado. Puede que el nombre de usuario haya cambiado o la persona haya salido de la app.',
@@ -103,6 +106,7 @@ class Service
 					'back' => true
 				]
 			]);
+			return;
 		}
 
 		// set the tags
@@ -116,7 +120,6 @@ class Service
 			'profile' => self::profileMin($profile),
 			'ownProfile' => $ownProfile,
 			'type' => $type ?? 'none',
-			'title' => 'Perfil',
 			'emptySocialLinks' => $emptySocialLinks,
 			'myCredit' => $request->person->credit
 		];
@@ -126,11 +129,8 @@ class Service
 			$response->setCache();
 		}
 
-		$template = $profile->isInfluencer ? 'main-influencer.ejs' : 'main.ejs';
-
 		// send data to the template
-		$response->setLayout('perfil.ejs');
-		$response->setTemplate($template, $content);
+		$response->setComponent('Main', $content);
 	}
 
 	/**
@@ -143,7 +143,7 @@ class Service
 	public function _editar(Request $request, Response $response)
 	{
 		if ($request->person->isInfluencer) {
-			$response->setTemplate('message.ejs', [
+			$response->setComponent('Message', [
 				'header' => 'Lo sentimos',
 				'icon' => 'sentiment_very_dissatisfied',
 				'blockOption' => false,
@@ -159,7 +159,7 @@ class Service
 		];
 
 		// crate send information to the view
-		$response->setTemplate('edit.ejs', $content);
+		$response->setComponent('Edit', $content);
 	}
 
 	/**
@@ -277,7 +277,7 @@ class Service
 		// get the images array
 		$images = [];
 		foreach ($imagesList as $image) {
-			$images[] = Bucket::getPathByEnvironment('perfil', $image->file);
+			$images[] = Bucket::get('perfil', $image->file);
 		}
 
 		// create the content
@@ -285,7 +285,7 @@ class Service
 			'images' => $imagesList,
 			'ownProfile' => $ownProfile,
 			'friend' => $request->person->isFriendOf($id),
-			'profile' => (object) [
+			'profile' => (object)[
 				'id' => $id
 			],
 			'title' => 'Imágenes'
@@ -327,7 +327,7 @@ class Service
 
 				// send notification
 				Notifications::alert($influencer, "@{$request->person->username} te ha donado §$amount", 'attach_money',
-					(object) [
+					(object)[
 						'command' => 'PERFIL',
 						'data' => [
 							'id' => $request->person->id
@@ -369,55 +369,39 @@ class Service
 	 */
 	public function _foto(Request $request, Response $response)
 	{
-		$picture = $request->input->data->picture ?? false;
 		$pictureName = $request->input->data->pictureName ?? false;
 		$updatePicture = $request->input->data->updatePicture ?? false;
 
 		// do not allow empty files
-		if ($picture || $pictureName) {
+		if ($pictureName) {
 			// get the image name and path
-			$fileName = Utils::randomHash();
+			$fileName = Utils::randomHash() . '.jpg';
+			$filePath = $request->input->files[$pictureName];
 
-			if (!$picture) {
-				$picture = base64_encode(file_get_contents($request->input->files[$pictureName]));
-			}
-
-			$filePath = Images::saveBase64Image($picture, TEMP_PATH . $fileName);
-			$fileName = basename($filePath);
-			if (stripos($fileName, '.') === false) $fileName .= '.jpg';
 			Bucket::save("perfil", $filePath, $fileName);
 
-			// save changes on the database
-			Database::query("INSERT INTO person_images(id_person, file) VALUES('{$request->person->id}', '$fileName')");
 			if ($updatePicture) {
+				// new profile picture
 				Database::query("
 					UPDATE person SET picture='$fileName' WHERE id='{$request->person->id}';
 					UPDATE person_images SET `default`=0 WHERE id_person='{$request->person->id}';
 					UPDATE person_images SET `default`=1 WHERE file='$fileName';");
+
+				if (isset($request->person->completion) && $request->person->completion > 70) {
+					Challenges::complete('complete-profile', $request->person->id);
+				}
+
+				Challenges::complete('update-profile-picture', $request->person->id);
+			} else {
+				// new picture in the gallery
+				Database::query("INSERT INTO person_images(id_person, file) VALUES('{$request->person->id}', '$fileName')");
+
+				// notify to friends
+				Notifications::alertMyFriends($request->person->id,
+					"@{$request->person->username} ha publicado una nueva foto en su galería",
+					'info_outline', "{command: \"PERFIL IMAGENES\", data:{id: {$request->person->id}}}");
 			}
-		} elseif (isset($request->input->data->id)) {
-			$id = $request->input->data->id;
-			$image = Database::query("SELECT file FROM person_images WHERE id='$id' AND id_person='{$request->person->id}'")[0]->file ?? false;
-			if ($image) {
-				Database::query("
-					UPDATE person SET picture='$image' WHERE id='{$request->person->id}';
-					UPDATE person_images SET `default`=0 WHERE id_person='{$request->person->id}';
-					UPDATE person_images SET `default`=1 WHERE id='$id';");
-			}
-		} else {
-			return;
 		}
-
-		if (isset($request->person->completion) && $request->person->completion > 70) {
-			Challenges::complete('complete-profile', $request->person->id);
-		}
-
-		// notify to friends
-		Notifications::alertMyFriends($request->person->id,
-						"@{$request->person->username} ha publicado una nueva foto en su galería",
-						'info_outline', "{command: \"PERFIL IMAGENES\", data:{id: {$request->person->id}}}");
-
-		Challenges::complete('update-profile-picture', $request->person->id);
 	}
 
 	/**
@@ -484,7 +468,7 @@ class Service
 	{
 		if (isset($request->input->data->username)) {
 			$u = $request->input->data->username;
-			if (substr(strtolower($u),-3) === 'bot') {
+			if (substr(strtolower($u), -3) === 'bot') {
 				return $response->setTemplate('message.ejs', [
 					'header' => 'Error',
 					'icon' => '',
@@ -525,7 +509,7 @@ class Service
 	private static function profileMin(Person $person): object
 	{
 		if ($person->isInfluencer) {
-			return (object) [
+			return (object)[
 				'id' => $person->id,
 				'username' => $person->username,
 				'aboutMe' => $person->aboutMe,
@@ -542,7 +526,7 @@ class Service
 			];
 		}
 
-		return (object) [
+		return (object)[
 			'id' => $person->id,
 			'avatar' => $person->avatar,
 			'avatarColor' => $person->avatarColor,
@@ -552,6 +536,7 @@ class Service
 			'lastName' => $person->lastName,
 			'fullName' => $person->fullName,
 			'gender' => $person->gender,
+			'picture' => $person->picture,
 			'sexualOrientation' => $person->sexualOrientation,
 			'dayOfBirth' => $person->dayOfBirth,
 			'monthOfBirth' => $person->monthOfBirth,
@@ -580,7 +565,8 @@ class Service
 			'telegram' => $person->telegram ?? false,
 			'whatsapp' => $person->whatsapp ?? false,
 			'website' => $person->website ?? false,
-			'isInfluencer' => false
+			'isInfluencer' => false,
+			'gallery' => $person->gallery
 		];
 	}
 }
