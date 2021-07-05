@@ -12,7 +12,7 @@ module.exports = {
 		'FormEdit': httpVueLoader(apretaste.servicePath + 'components/FormEdit.vue')
 	},
 	data: function () {
-		return apretaste.state;
+		return apretaste.request;
 	}
 }
 </script>

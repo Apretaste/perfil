@@ -1,7 +1,7 @@
 <template>
 	<div class="row">
 		<div class="col-12">
-			<ap-text :text="profile.aboutMe"></ap-text>
+			<ap-text :data="{text: profile.aboutMe}"></ap-text>
 			<ap-chip class="m-1" v-for="chip in chips" :data="chip"></ap-chip>
 		</div>
 	</div>

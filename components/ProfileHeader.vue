@@ -7,7 +7,7 @@
 			id="username"
 			class="text-center"
 			:class="profile.gender"
-			:text="'@'+profile.username"
+			:data="{text: '@'+profile.username}"
 		></ap-text>
 	</div>
 </template>
@@ -32,8 +32,7 @@ module.exports = {
 	computed: {
 		avatar: function () {
 			const avatar = {
-				face: this.profile.avatar,
-				color: this.profile.avatarColor,
+				letter: this.profile.username[0],
 				size: this.avatarSize,
 				online: false,
 				influencer: this.profile.isInfluencer
@@ -42,7 +41,6 @@ module.exports = {
 			if (this.profile.isInfluencer) {
 				avatar.picture = apretaste.componentsPath + 'images/influencers/' + this.username + '.png';
 			} else {
-				avatar.border = {size: 4, color: 'white'};
 				avatar.picture = this.profile.picture;
 			}
 
@@ -57,6 +55,7 @@ module.exports = {
 	left: 50%;
 	transform: translateX(-50%);
 	position: absolute;
+	border: 4px solid white;
 }
 
 #username {

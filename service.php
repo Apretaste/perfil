@@ -115,6 +115,15 @@ class Service
 		// check if the person has no social links
 		$emptySocialLinks = empty($profile->facebook) && empty($profile->twitter) && empty($profile->instagram) && empty($profile->telegram) && empty($profile->whatsapp) && empty($profile->website);
 
+		$images = [];
+		if ($profile->picture) {
+			$images[] = Bucket::get('perfil', $profile->picture);
+		}
+
+		foreach ($profile->gallery as $img) {
+			$images[] = Bucket::get('perfil', $img->file);
+		}
+
 		// pass variables to the template
 		$content = [
 			'profile' => self::profileMin($profile),
@@ -130,7 +139,7 @@ class Service
 		}
 
 		// send data to the template
-		$response->setComponent('Main', $content);
+		$response->setComponent('Main', $content, $images);
 	}
 
 	/**
@@ -216,21 +225,6 @@ class Service
 	}
 
 	/**
-	 * Edit your avatar
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 * @throws Alert
-	 */
-	public function _avatar(Request $request, Response $response)
-	{
-		$response->setTemplate('avatar_select.ejs', [
-			'currentAvatar' => $request->person->avatar,
-			'currentColor' => $request->person->avatarColor
-		]);
-	}
-
-	/**
 	 * Delete an image from the gallery
 	 *
 	 * @param Request $request
@@ -253,47 +247,6 @@ class Service
 
 		// delete the file from the HD
 		unset($request->input->data->id);
-
-		// return the response
-		$this->_imagenes($request, $response);
-	}
-
-	/**
-	 * Show the image gallery
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 * @throws Exception
-	 */
-	public function _imagenes(Request $request, Response $response)
-	{
-		// get the ID of the person to check
-		$id = $request->input->data->id ?? $request->person->id;
-		$ownProfile = $request->person->id == $id;
-
-		// get the list of images for the person
-		$imagesList = Database::query("SELECT id, file, `default` FROM person_images WHERE id_person=$id AND active=1");
-
-		// get the images array
-		$images = [];
-		foreach ($imagesList as $image) {
-			$images[] = Bucket::get('perfil', $image->file);
-		}
-
-		// create the content
-		$content = [
-			'images' => $imagesList,
-			'ownProfile' => $ownProfile,
-			'friend' => $request->person->isFriendOf($id),
-			'profile' => (object)[
-				'id' => $id
-			],
-			'title' => 'Imágenes'
-		];
-
-		// send data to the view
-		$response->setLayout('perfil.ejs');
-		$response->setTemplate('images.ejs', $content, $images);
 	}
 
 	/**
@@ -394,12 +347,17 @@ class Service
 				Challenges::complete('update-profile-picture', $request->person->id);
 			} else {
 				// new picture in the gallery
-				Database::query("INSERT INTO person_images(id_person, file) VALUES('{$request->person->id}', '$fileName')");
-
+				$id = Database::query("INSERT INTO person_images(id_person, file) VALUES('{$request->person->id}', '$fileName')");
+				$image = Bucket::get('perfil', $fileName);
 				// notify to friends
 				Notifications::alertMyFriends($request->person->id,
 					"@{$request->person->username} ha publicado una nueva foto en su galería",
 					'info_outline', "{command: \"PERFIL IMAGENES\", data:{id: {$request->person->id}}}");
+
+				$response->setContent([
+					'id' => $id,
+					'file' => basename($image)
+				], [$image]);
 			}
 		}
 	}
@@ -528,8 +486,6 @@ class Service
 
 		return (object)[
 			'id' => $person->id,
-			'avatar' => $person->avatar,
-			'avatarColor' => $person->avatarColor,
 			'username' => $person->username,
 			'aboutMe' => $person->aboutMe,
 			'firstName' => $person->firstName,

@@ -34,12 +34,6 @@
             <label for="first_name">Nombre</label>
         </div>
 
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">person</i>
-            <input id="last_name" type="text" class="validate" value="<%= profile.lastName %>">
-            <label for="last_name">Apellido</label>
-        </div>
-
         <!-- GENDER -->
         <div class="input-field col s12 m6">
             <i class="material-icons prefix grey-text text-darken-2">wc</i>
@@ -114,58 +108,6 @@
             <label for="year_of_birth">Año de nacimiento</label>
         </div>
 
-        <!-- BODY TYPE -->
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">face</i>
-            <select id="body_type" class="validate">
-                <option value=""></option>
-                <% Object.keys(props.body.values).forEach(function(key){ %>
-                    <% var selected = key == profile.body ? 'selected' : '' %>
-                    <option <%= selected %> value="<%= key %>"><%= props.body.values[key] %></option>
-                <% }) %>
-            </select>
-            <label for="body_type">Cuerpo</label>
-        </div>
-
-        <!-- EYES -->
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">face</i>
-            <select id="eyes" class="validate">
-                <option value=""></option>
-                <% Object.keys(props.eyes.values).forEach(function(key){ %>
-                    <% var selected = key == profile.eyes ? 'selected' : '' %>
-                    <option <%= selected %> value="<%= key %>"><%= props.eyes.values[key] %></option>
-                <% }) %>
-            </select>
-            <label for="eyes">Ojos</label>
-        </div>
-
-        <!-- HAIR -->
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">face</i>
-            <select id="hair" class="validate">
-                <option value=""></option>
-                <% Object.keys(props.hair.values).forEach(function(key){ %>
-                    <% var selected = key == profile.hair ? 'selected' : '' %>
-                    <option <%= selected %> value="<%= key %>"><%= props.hair.values[key] %></option>
-                <% }) %>
-            </select>
-            <label for="hair">Cabello</label>
-        </div>
-
-        <!-- SKIN -->
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">face</i>
-            <select id="skin" class="validate">
-                <option value=""></option>
-                <% Object.keys(props.skin.values).forEach(function(key){ %>
-                    <% var selected = key == profile.skin ? 'selected' : '' %>
-                    <option <%= selected %> value="<%= key %>"><%= props.skin.values[key] %></option>
-                <% }) %>
-            </select>
-            <label for="skin">Piel</label>
-        </div>
-
         <!-- MARITAL STATUS -->
         <div class="input-field col s12 m6">
             <i class="material-icons prefix grey-text text-darken-2">favorite</i>
@@ -205,20 +147,7 @@
             <label for="occupation">Ocupación</label>
         </div>
 
-        <!-- COUNTRY -->
-        <div class="input-field col s12 m6">
-            <i class="material-icons prefix grey-text text-darken-2">place</i>
-            <select id="country" class="validate" onchange="showProvince()">
-                <option value=""></option>
-                <% Object.keys(props.country.values).forEach(function(key){ %>
-                    <% var selected = key == profile.country ? 'selected' : '' %>
-                    <option <%= selected %> value="<%= props.country.values[key] %>"><%= key %></option>
-                <% }) %>
-            </select>
-            <label for="country">País</label>
-        </div>
-
-        <!-- PROVINCE-->
+        <!-- PROVINCE AÑADIR FUERA DE CUBA -->
         <div class="input-field province-div col s12 m6">
             <i class="material-icons prefix grey-text text-darken-2">place</i>
             <select id="province" class="validate">
@@ -228,7 +157,7 @@
                     <option <%= selected %> value="<%= key %>"><%= props.province.values[key] %></option>
                 <% }) %>
             </select>
-            <label for="province">Provincia</label>
+            <label for="province">Localización</label>
         </div>
 
         <!-- RELIGION -->

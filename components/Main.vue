@@ -2,9 +2,9 @@
 	<div class="container-fluid">
 		<profile-header :profile="profile"></profile-header>
 		<profile-description :profile="profile"></profile-description>
-		<gallery :images="profile.gallery"></gallery>
+		<gallery ref="gallery" v-model="profile.gallery" :can-edit="ownProfile"></gallery>
 		<social-media :profile="profile"></social-media>
-		<ap-fab :data="ui.fabOptions"></ap-fab>
+		<ap-fab :data="fabOptions"></ap-fab>
 	</div>
 </template>
 
@@ -17,14 +17,21 @@ module.exports = {
 		'SocialMedia': httpVueLoader(apretaste.servicePath + 'components/SocialMedia.vue')
 	},
 	data: function () {
-		Vue.set(apretaste.state.ui, 'fabOptions', [
+		const state = apretaste.request;
+
+		state.fabOptions = [
 			{icon: 'fas fa-share-alt', onTap: this.share},
 			{icon: 'fas fa-arrow-left', onTap: apretaste.back},
-			{icon: 'fas fa-pen', onTap: this.openEdit},
 			{icon: 'fas fa-hashtag', onTap: this.searchInPizarra},
-		]);
+		];
 
-		return apretaste.state;
+		if (state.ownProfile) {
+			state.fabOptions.push({icon: 'fas fa-pen', onTap: this.openEdit});
+		} else {
+			// Other options
+		}
+
+		return state;
 	},
 	methods: {
 		share: function () {
