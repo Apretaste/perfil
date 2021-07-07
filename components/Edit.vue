@@ -1,7 +1,7 @@
 <template>
 	<div class="container-fluid">
 		<photo-edit ref="photoEdit" v-model="profile.picture" :is-influencer="profile.isInfluencer"></photo-edit>
-		<form-edit :profile="profile"></form-edit>
+		<form-edit :profile="profile" ref="form"></form-edit>
 	</div>
 </template>
 

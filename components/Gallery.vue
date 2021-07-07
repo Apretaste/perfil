@@ -4,8 +4,9 @@
 			<ap-image v-bind="buildImg(image)"></ap-image>
 		</div>
 
-		<div v-if="images.length < 6 && canEdit" class="col-6 my-2" @click="addImage">
-			<i class="fa fa-plus fa-lg"></i>
+		<div v-if="images.length < 6 && canEdit" class="col-6 my-2" id="add-img" @click="addImage">
+			<i class="fa fa-plus fa-lg" style="font-size: 2rem"></i>
+			<span>Añadir foto</span>
 		</div>
 	</div>
 </template>
@@ -25,7 +26,8 @@ module.exports = {
 
 			const imgData = {
 				src: image.file,
-				actions: []
+				actions: [],
+				square: true
 			};
 
 			if (this.canEdit) {
@@ -92,5 +94,21 @@ module.exports = {
 </script>
 
 <style scoped>
+#add-img {
+	text-align: center;
+	position: relative;
+}
 
+#add-img i {
+	position: absolute;
+	top: calc(50% - 2rem);
+	font-size: 2rem;
+	transform: translate(-50%);
+}
+
+#add-img span {
+	position: absolute;
+	top: 50%;
+	transform: translate(-50%);
+}
 </style>

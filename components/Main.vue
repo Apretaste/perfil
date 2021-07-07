@@ -1,5 +1,5 @@
 <template>
-	<div class="container-fluid">
+	<div>
 		<profile-header :profile="profile"></profile-header>
 		<profile-description :profile="profile"></profile-description>
 		<gallery ref="gallery" v-model="profile.gallery" :can-edit="ownProfile"></gallery>

@@ -18,7 +18,9 @@ module.exports = {
 	props: ['profile'],
 	data: function () {
 		const avatarSize = (window.innerHeight / 4) + 8;
-		const avatarPosition = {top: (avatarSize / 4) + 'px'};
+
+		// 4 for the padding
+		const avatarPosition = {top: (avatarSize / -2) - 4 + 'px'};
 		const textPosition = {top: (avatarSize * 1.25) + 'px'}
 
 		return {
