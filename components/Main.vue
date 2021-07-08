@@ -1,9 +1,9 @@
 <template>
-	<div>
+	<div class="mb-5">
 		<profile-header :profile="profile"></profile-header>
 		<profile-description :profile="profile"></profile-description>
 		<gallery ref="gallery" v-model="profile.gallery" :can-edit="ownProfile"></gallery>
-		<social-media :profile="profile"></social-media>
+		<social-media :profile="profile" class="my-2"></social-media>
 		<ap-fab :data="fabOptions"></ap-fab>
 	</div>
 </template>

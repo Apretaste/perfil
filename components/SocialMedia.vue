@@ -42,6 +42,7 @@ module.exports = {
 				}, {
 					name: 'website',
 					icon: 'fas fa-globe',
+					link: ''
 				}
 			]
 		};
@@ -50,7 +51,9 @@ module.exports = {
 		mediaList: function () {
 			const list = [];
 
-			for (const socialLink in this.socialLinks) {
+			for (const key in this.socialLinks) {
+				const socialLink = this.socialLinks[key];
+
 				if (this.profile[socialLink.name]) {
 					list.push(this.buildMedia(socialLink));
 				}
@@ -62,12 +65,13 @@ module.exports = {
 	methods: {
 		buildMedia: function (socialLink) {
 			const media = this.profile[socialLink.name];
+			const thisRef = this;
 
 			return {
 				icon: socialLink.icon,
 				title: socialLink.caption + media,
 				onTap: function () {
-					this.openMedia(socialLink.name)
+					thisRef.openMedia(socialLink.link + media)
 				}
 			};
 		},

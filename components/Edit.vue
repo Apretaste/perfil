@@ -1,5 +1,5 @@
 <template>
-	<div class="container-fluid">
+	<div>
 		<photo-edit ref="photoEdit" v-model="profile.picture" :is-influencer="profile.isInfluencer"></photo-edit>
 		<form-edit :profile="profile" ref="form"></form-edit>
 	</div>

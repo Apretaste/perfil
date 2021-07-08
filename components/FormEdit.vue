@@ -1,5 +1,5 @@
 <template>
-	<div class="row">
+	<div class="row mb-5">
 		<ap-input
 			class="col-12"
 			:data="{icon:'fas fa-user', label:'@username', value: profile.username}"
@@ -7,7 +7,7 @@
 		></ap-input>
 		<ap-area
 			class="col-12"
-			:data="{icon:'fas fa-user', label:'Acerca de', value: profile.aboutMe}"
+			:data="{icon:'fas fa-user', label:'Acerca de', value: profile.aboutMe, maxLength: 140}"
 			ref="about_me"
 		></ap-area>
 		<ap-input
@@ -39,7 +39,7 @@
 		<ap-combo
 			class="col-12"
 			:data="educationCombo"
-			ref="highest_school_level"
+			ref="education"
 		></ap-combo>
 		<ap-combo
 			class="col-12"
@@ -62,10 +62,19 @@
 			ref="cellphone"
 		></ap-input>
 
+		<ap-input
+			v-for="social in socialLinks"
+			:key="social.name"
+			class="col-12"
+			:data="{icon:social.icon, label:social.caption, value: profile[social.name]}"
+			:ref="social.name"
+		></ap-input>
+
 		<div class="col-12">
 			<ap-fab :data="[{icon: 'fa fa-save', onTap: this.submitProfileData}]"></ap-fab>
-			<ap-toast v-if="error != null" :text="error"></ap-toast>
 		</div>
+
+		<ap-toast ref="toast"></ap-toast>
 	</div>
 </template>
 
@@ -74,7 +83,6 @@ module.exports = {
 	props: ['profile'],
 	data: function () {
 		return {
-			error: null,
 			genderCombo: {
 				icon: 'fas fa-male',
 				label: 'Género',
@@ -178,40 +186,66 @@ module.exports = {
 					{value: 'ISLA_DE_LA_JUVENTUD', caption: 'Isla de la Juventud'},
 					{value: 'OUT_OF_CUBA', caption: 'Fuera de Cuba'}
 				]
-			}
+			},
+			socialLinks: [
+				{
+					name: 'facebook',
+					caption: 'Facebook',
+					icon: 'fab fa-facebook-f',
+				}, {
+					name: 'twitter',
+					caption: 'Twitter',
+					icon: 'fab fa-twitter',
+				}, {
+					name: 'instagram',
+					caption: 'Instagram',
+					icon: 'fab fa-instagram',
+				}, {
+					name: 'telegram',
+					caption: 'Telegram',
+					icon: 'fab fa-telegram-plane',
+				}, {
+					name: 'whatsapp',
+					caption: 'Whatsapp',
+					icon: 'fab fa-whatsapp',
+				}, {
+					name: 'website',
+					caption: 'Website',
+					icon: 'fas fa-globe',
+				}
+			]
 		};
-	},
-	watch: {
-		error: function (val) {
-			const thisElement = this;
-			if (val != null) {
-				setTimeout(function () {
-					thisElement.error = null;
-				}, 5000);
-			}
-		}
 	},
 	methods: {
 		submitProfileData: function () {
 			// array of possible values
-			const props = ['first_name', 'last_name', 'about_me', 'year_of_birth', 'month_of_birth', 'day_of_birth', 'province', 'gender', 'sexual_orientation', 'marital_status', 'religion', 'highest_school_level', 'occupation', 'cellphone'];
+			const props = ['first_name', 'last_name', 'about_me', 'year_of_birth', 'month_of_birth', 'day_of_birth', 'province', 'gender', 'sexual_orientation', 'marital_status', 'religion', 'education', 'occupation', 'cellphone', 'facebook', 'twitter', 'instagram', 'telegram', 'whatsapp', 'website'];
+			const social = ['facebook', 'twitter', 'instagram', 'telegram', 'whatsapp', 'website'];
 
 			// create object to send to the backend
 			const data = {};
 			const thisElement = this;
+			var hasChanges = false;
 			props.forEach(function (prop) {
-				const ref = thisElement.$refs[prop];
+				var ref = thisElement.$refs[prop];
 				if (!ref) {
 					return;
 				}
 
+				if (social.indexOf(prop) !== -1) {
+					// If refs is used inside a v-for the ref is an array
+					ref = ref[0];
+				}
+
+				const camelCaseProp = thisElement.toCamelCase(prop);
 				if (
-					ref.value() !== thisElement.profile[prop] &&
+					ref.value() !== thisElement.profile[camelCaseProp] &&
 					ref.value() != null &&
 					ref.value() !== ""
 				) {
 					data[prop] = ref.value();
-					thisElement.profile[prop] = ref.value();
+					thisElement.profile[camelCaseProp] = ref.value();
+					hasChanges = true;
 				}
 			});
 
@@ -219,7 +253,7 @@ module.exports = {
 			const cleanUsername = this.$refs['username'].value().replace('@', '');
 
 			if (cleanUsername.substr(-3).toLowerCase() === 'bot') {
-				this.error = 'El nombre de usuario no debe terminar en la palabra "bot"';
+				this.$refs.toast.show('El nombre de usuario no debe terminar en la palabra "bot"');
 				return false;
 			}
 
@@ -228,13 +262,17 @@ module.exports = {
 			}
 
 			if (!isNaN(cleanUsername)) {
-				this.error = 'El nombre de usuario debe contener al menos una letra';
+				this.$refs.toast.show('El nombre de usuario debe contener al menos una letra');
 				return;
 			}
 
+			if (data['education']) {
+				data['highest_school_level'] = data['education'];
+			}
+
 			// do not send empty petitions
-			if (data) {
-				this.error = "Usted no ha hecho ningún cambio";
+			if (!hasChanges) {
+				this.$refs.toast.show("Usted no ha hecho ningún cambio");
 				return;
 			}
 
@@ -249,10 +287,17 @@ module.exports = {
 			});
 
 			// show success alert
-			this.error = "Sus cambios han sido guardados";
+			this.$refs.toast.show("Sus cambios han sido guardados");
 		},
 		onSaveCallback: function () {
 			apretaste.send({'command': 'PERFIL', useCache: false});
+		},
+		toCamelCase: function (s) {
+			return s.replace(/([-_][a-z])/ig, function ($1) {
+				return $1.toUpperCase()
+					.replace('-', '')
+					.replace('_', '');
+			});
 		}
 	}
 }
