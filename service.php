@@ -479,6 +479,7 @@ class Service
 				'telegram' => $person->telegram ?? false,
 				'whatsapp' => $person->whatsapp ?? false,
 				'website' => $person->website ?? false,
+				'tags' => $person->tags,
 				'isInfluencer' => true,
 				'influencerData' => $person->getInfluencerData()
 			];
@@ -512,9 +513,7 @@ class Service
 			'friendList' => $person->getFriendsCount(),
 			'experience' => $person->experience,
 			'ranking' => $person->weekRank,
-			'profile_tags' => $person->profile_tags ?? false,
-			'profession_tags' => $person->profession_tags ?? false,
-			'location_tags' => $person->location_tags ?? false,
+			'tags' => $person->tags,
 			'facebook' => $person->facebook ?? false,
 			'twitter' => $person->twitter ?? false,
 			'instagram' => $person->instagram ?? false,

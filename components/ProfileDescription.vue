@@ -107,20 +107,8 @@ module.exports = {
 				this.openLevelsHelp
 			));
 
-			for (const i in this.profile.profile_tags) {
-				const tag = this.profile.profile_tags[i];
-
-				chips.push(this.buildChip(tag));
-			}
-
-			for (const i in this.profile.profession_tags) {
-				const tag = this.profile.profession_tags[i];
-
-				chips.push(this.buildChip(tag));
-			}
-
-			for (const i in this.profile.location_tags) {
-				const tag = this.profile.location_tags[i];
+			for (const i in this.profile.tags) {
+				const tag = this.profile.tags[i];
 
 				chips.push(this.buildChip(tag));
 			}
