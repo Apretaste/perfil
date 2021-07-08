@@ -107,15 +107,23 @@ module.exports = {
 				this.openLevelsHelp
 			));
 
-			chips.push(this.buildChip(
-				this.profile.religion,
-				'fa fa-praying-hands'
-			));
+			for (const i in this.profile.profile_tags) {
+				const tag = this.profile.profile_tags[i];
 
-			chips.push(this.buildChip(
-				this.profile.province,
-				'fa fa-map'
-			));
+				chips.push(this.buildChip(tag));
+			}
+
+			for (const i in this.profile.profession_tags) {
+				const tag = this.profile.profession_tags[i];
+
+				chips.push(this.buildChip(tag));
+			}
+
+			for (const i in this.profile.location_tags) {
+				const tag = this.profile.location_tags[i];
+
+				chips.push(this.buildChip(tag));
+			}
 
 			return chips;
 		},
