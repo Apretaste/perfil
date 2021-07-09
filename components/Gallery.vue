@@ -4,10 +4,21 @@
 			<ap-image v-bind="buildImg(image)"></ap-image>
 		</div>
 
-		<div v-if="images.length < 6 && canEdit" class="col-6 my-2" id="add-img" @click="addImage">
+		<div v-if="canEdit" class="col-6 my-2" id="add-img" @click="addImage">
 			<i class="fa fa-plus fa-lg" style="font-size: 2rem"></i>
 			<span>Añadir foto</span>
 		</div>
+
+		<ap-drawer
+			:data="confirmDialogData"
+			ref="imgDeleteDialog"
+		></ap-drawer>
+		<ap-input-drawer
+			:data="replyDialogData"
+			ref="replyDialog"
+		></ap-input-drawer>
+
+		<ap-toast ref="toast"></ap-toast>
 	</div>
 </template>
 
@@ -20,6 +31,26 @@ module.exports = {
 		event: 'change'
 	},
 	props: ['images', 'canEdit'],
+	data: function () {
+		return {
+			confirmDialogData: {
+				id: 'confirmDelete',
+				options: [{
+					icon: 'fa fa-trash-alt', caption: 'Confirmar',
+					onTap: this.deleteImg
+				}]
+			},
+			replyDialogData: {
+				maxLength: 250,
+				icon: 'fa fa-comment',
+				label: 'Mensaje privado',
+				isArea: true,
+				onComplete: this.sendImgReply
+			},
+			imgToDelete: null,
+			imgToReply: null
+		}
+	},
 	methods: {
 		buildImg: function (image) {
 			const refsToThis = this;
@@ -33,25 +64,43 @@ module.exports = {
 			if (this.canEdit) {
 				imgData.actions.push({
 					icon: 'fa fa-trash', onTap: function () {
-						refsToThis.deleteImg(image);
+						refsToThis.confirmDelete(image);
 					}
 				});
 			} else {
 				imgData.actions.push({
 					icon: 'fa fa-comment', onTap: function () {
-						refsToThis.showMsgModal(image);
+						refsToThis.showReplyModal(image);
 					}
 				});
 			}
 
 			return imgData;
 		},
-		showMsgModal: function (image) {
-
+		showReplyModal: function (image) {
+			this.imgToReply = image;
+			this.$refs.replyDialog.show();
 		},
-		deleteImg: function (image) {
+		sendImgReply: function (msg) {
+			apretaste.send({
+				command: 'CHAT PERFILIMAGE',
+				data: {
+					message: msg,
+					image: this.imgToReply.id
+				},
+				redirect: false
+			});
+
+			this.$refs.toast.show('Mensaje enviado');
+		},
+		confirmDelete: function (image) {
+			this.imgToDelete = image;
+			this.$refs.imgDeleteDialog.show();
+		},
+		deleteImg: function () {
+			const image = this.imgToDelete;
+
 			if (this.canEdit) {
-				// TODO confirm
 				apretaste.send({
 					command: 'PERFIL BORRAR',
 					data: {id: image.id},
@@ -59,15 +108,17 @@ module.exports = {
 				});
 
 				var imgIndex = this.images.indexOf(image);
-				this.images.splice(imgIndex, 1)
-			} else {
-				// TODO
-				// Open modal to write comment
-				// Send to the chat
-				// Show callback
+				this.images.splice(imgIndex, 1);
+
+				this.$refs.toast.show('Imagen eliminada');
 			}
 		},
 		addImage: function () {
+			if (this.images.length >= 6) {
+				this.$refs.toast.show('Solo se permiten 6 imagenes');
+				return;
+			}
+
 			apretaste.loadImage('vm.$refs.main.$refs.gallery.onImageLoaded');
 		},
 		onImageLoaded: function (path) {
@@ -97,6 +148,7 @@ module.exports = {
 #add-img {
 	text-align: center;
 	position: relative;
+	height: 150px;
 }
 
 #add-img i {
