@@ -37,7 +37,8 @@ module.exports = {
 				letter: this.profile.username[0],
 				size: this.avatarSize,
 				online: false,
-				influencer: this.profile.isInfluencer
+				influencer: this.profile.isInfluencer,
+				color: this.profile.avatarColor,
 			};
 
 			if (this.profile.isInfluencer) {
