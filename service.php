@@ -51,18 +51,12 @@ class Service
 				$relation = $request->person->getBlockedRelation($profile->id);
 				if ($relation) {
 					$youBlockTheUser = ((int)$relation->user1 === $request->person->id) || ((int)$relation->user2 === $request->person->id && (int)$relation->bi === 1);
-					$response->setTemplate('message.ejs', [
+					$response->setComponent('Message', [
 						'header' => 'Perfil bloqueado',
-						'icon' => 'sentiment_very_dissatisfied',
+						'icon' => 'fa-ban',
 						'text' => 'No puede revisar su perfil',
 						'blockOption' => !$youBlockTheUser,
-						'profile' => $profile,
-						'button' => (object)[
-							'back' => true,
-							'caption' => false,
-							'command' => false,
-							'data' => (object)[]
-						]
+						'profile' => $profile
 					]);
 
 					return;
@@ -70,15 +64,12 @@ class Service
 
 				// run powers for amulet SHADOWMODE
 				if (Amulets::isActive(Amulets::SHADOWMODE, $profile->id) && !$request->person->isFriendOf($profile->id)/* @note && !$ownProfile */) {
-					$response->setTemplate('message.ejs', [
+					$response->setComponent('Message', [
 						'header' => 'Shadow-Mode',
-						'icon' => 'visibility_off',
+						'icon' => 'fa fa-eye-slash',
 						'text' => 'La magia oscura de un amuleto rodea este perfil y te impide verlo. Por mucho que intentes romperlo, el hechizo del druida es poderoso.',
 						'blockOption' => true,
-						'profile' => $profile,
-						'button' => (object)[
-							'back' => true
-						]
+						'profile' => $profile
 					]);
 
 					return;
@@ -97,14 +88,10 @@ class Service
 
 		// check if the person exist. If not, message the requestor
 		if (!$profile) {
-			$response->setTemplate('message.ejs', [
+			$response->setComponent('Message', [
 				'header' => 'El perfil no existe',
-				'icon' => 'sentiment_very_dissatisfied',
-				'text' => 'Lo sentimos, pero el perfil que usted busca no pudo ser encontrado. Puede que el nombre de usuario haya cambiado o la persona haya salido de la app.',
-				'blockOption' => false,
-				'button' => (object)[
-					'back' => true
-				]
+				'icon' => 'fa fa-sad-cry',
+				'text' => 'Lo sentimos, pero el perfil que usted busca no pudo ser encontrado. Puede que el nombre de usuario haya cambiado o la persona haya salido de la app.'
 			]);
 			return;
 		}
@@ -154,8 +141,7 @@ class Service
 		if ($request->person->isInfluencer) {
 			$response->setComponent('Message', [
 				'header' => 'Lo sentimos',
-				'icon' => 'sentiment_very_dissatisfied',
-				'blockOption' => false,
+				'icon' => 'fa fa-sad-cry',
 				'text' => 'Los creadores de contenido no pueden editar su perfil directamente, contactanos para mas información.'
 			]);
 
@@ -187,7 +173,7 @@ class Service
 		}
 
 		// send response to the view
-		$response->setTemplate('levels.ejs', ['experience' => $request->person->experience], $images);
+		$response->setComponent('Levels', ['experience' => $request->person->experience], $images);
 	}
 
 	/**
@@ -221,7 +207,7 @@ class Service
 
 		// send data to the view
 		$response->setCache();
-		$response->setTemplate('experience.ejs', ['experience' => $experience]);
+		$response->setComponent('Experience', ['experience' => $experience]);
 	}
 
 	/**
@@ -262,10 +248,9 @@ class Service
 		$amount = $request->input->data->amount;
 
 		if ($request->person->credit < $amount || $amount < 0.1) {
-			$response->setTemplate('message.ejs', [
+			$response->setComponent('Message', [
 				'header' => 'Crédito insuficiente',
-				'icon' => 'sentiment_very_dissatisfied',
-				'blockOption' => false,
+				'icon' => 'fa fa-sad-cry',
 				'text' => "No tienes suficiente crédito, tu crédito actual es §{$request->person->credit}."
 			]);
 			return;
@@ -288,26 +273,23 @@ class Service
 					]
 				);
 
-				$response->setTemplate('message.ejs', [
+				$response->setComponent('Message', [
 					'header' => 'Su donación se ha realizado',
-					'icon' => 'attach_money',
-					'blockOption' => false,
+					'icon' => 'fa fa-dollar-sign',
 					'text' => "Gracias por donar §$amount de crédito a @{$isCreator->username}. Estos fondos serán usados para llegar a más personas y hacer un trabajo de más calidad."
 				]);
 			} catch (Alert $alert) {
-				$response->setTemplate('message.ejs', [
+				$response->setComponent('Message', [
 					'header' => 'Error al transferir',
-					'icon' => 'sentiment_very_dissatisfied',
-					'blockOption' => false,
+					'icon' => 'fa fa-sad-cry',
 					'text' => $alert->message
 				]);
 			}
 
 		} else {
-			$response->setTemplate('message.ejs', [
+			$response->setComponent('Message', [
 				'header' => 'Usuario invalido',
-				'icon' => 'sentiment_very_dissatisfied',
-				'blockOption' => false,
+				'icon' => 'fa fa-sad-cry',
 				'text' => "El usuario al que intentas donar créditos no es un creador de contenido."
 			]);
 		}
@@ -363,27 +345,6 @@ class Service
 	}
 
 	/**
-	 * Show the form of where you hear about the app
-	 *
-	 * @param Request $request
-	 * @param Response $response
-	 * @throws Exception
-	 */
-	public function _origen(Request $request, Response $response)
-	{
-		// get the person to add origin
-		$content = new stdClass();
-		$content->origin = $request->person->origin;
-		$content->origins = Core::$origins;
-
-		// complete tutorial
-		Tutorial::complete($request->person->id, 'app_origin');
-
-		// send data to the view
-		$response->setTemplate('origin.ejs', $content);
-	}
-
-	/**
 	 * Block an user
 	 *
 	 * @param Request $request
@@ -427,16 +388,7 @@ class Service
 		if (isset($request->input->data->username)) {
 			$u = $request->input->data->username;
 			if (substr(strtolower($u), -3) === 'bot') {
-				return $response->setTemplate('message.ejs', [
-					'header' => 'Error',
-					'icon' => '',
-					'text' => 'Los nombres de usuarios no pueden terminar en "bot"',
-					'blockOption' => false,
-					'profile' => $request->person,
-					'button' => (object)[
-						'back' => true
-					]
-				]);
+				return;
 			}
 		}
 
