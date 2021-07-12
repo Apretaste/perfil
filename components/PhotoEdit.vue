@@ -72,7 +72,7 @@ module.exports = {
 <style scoped>
 #editButton {
 	position: absolute;
-	bottom: 8px;
-	right: 8px;
+	bottom: 12px;
+	right: 16px;
 }
 </style>

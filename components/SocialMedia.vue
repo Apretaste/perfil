@@ -42,7 +42,8 @@ module.exports = {
 				}, {
 					name: 'website',
 					icon: 'fas fa-globe',
-					link: ''
+					link: '',
+					caption: ''
 				}
 			]
 		};

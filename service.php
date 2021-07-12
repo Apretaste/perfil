@@ -138,6 +138,7 @@ class Service
 	 */
 	public function _editar(Request $request, Response $response)
 	{
+		// TODO review
 		if ($request->person->isInfluencer) {
 			$response->setComponent('Message', [
 				'header' => 'Lo sentimos',
@@ -148,13 +149,18 @@ class Service
 			return;
 		}
 
+		$images = [];
+		if ($request->person->picture) {
+			$images[] = Bucket::get('perfil', $request->person->picture);
+		}
+
 		// create the content array
 		$content = [
 			'profile' => self::profileMin($request->person)
 		];
 
 		// crate send information to the view
-		$response->setComponent('Edit', $content);
+		$response->setComponent('Edit', $content, $images);
 	}
 
 	/**
@@ -425,6 +431,7 @@ class Service
 				'aboutMe' => $person->aboutMe,
 				'gender' => $person->gender,
 				'interests' => $person->interests,
+				'avatarColor' => $person->avatarColor,
 				'facebook' => $person->facebook ?? false,
 				'twitter' => $person->twitter ?? false,
 				'instagram' => $person->instagram ?? false,
@@ -447,6 +454,7 @@ class Service
 			'gender' => $person->gender,
 			'picture' => $person->picture,
 			'sexualOrientation' => $person->sexualOrientation,
+			'avatarColor' => $person->avatarColor,
 			'dayOfBirth' => $person->dayOfBirth,
 			'monthOfBirth' => $person->monthOfBirth,
 			'yearOfBirth' => $person->yearOfBirth,

@@ -1,8 +1,10 @@
 <template>
 	<div class="row">
 		<div class="col-12">
-			<ap-text :data="{text: profile.aboutMe}"></ap-text>
-			<ap-chip class="m-1" v-for="chip in chips" :data="chip"></ap-chip>
+			<ap-text :data="{text: profile.aboutMe}" class="mb-2"></ap-text>
+			<div class="mb-2">
+				<ap-chip class="m-1" v-for="chip in chips" :data="chip"></ap-chip>
+			</div>
 		</div>
 	</div>
 </template>
@@ -68,7 +70,18 @@ module.exports = {
 					maxExperience: 1000,
 					benefits: ['Beneficios anteriores', 'Acceso al "Club Diamante"', '§1 de crédito cada mes']
 				},
-			]
+			],
+			tagsIcons: {
+				location: 'fa fa-map-marker-alt',
+				gender: 'fas fa-male',
+				sexualOrientation: 'fa fa-heart',
+				maritalStatus: 'fa fa-heart',
+				skin: 'fa fa-user',
+				religion: 'fa fa-place-of-worship',
+				age: 'fa fa-user',
+				education: 'fa fa-graduation-cap',
+				occupation: 'fa fa-business-time'
+			},
 		};
 	},
 	computed: {
@@ -110,7 +123,9 @@ module.exports = {
 			for (const i in this.profile.tags) {
 				const tag = this.profile.tags[i];
 
-				chips.push(this.buildChip(tag));
+				const icon = this.tagsIcons[i];
+
+				chips.push(this.buildChip(tag, icon));
 			}
 
 			return chips;

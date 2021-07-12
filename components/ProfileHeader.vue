@@ -7,7 +7,7 @@
 			id="username"
 			class="text-center"
 			:class="profile.gender"
-			:data="{text: '@'+profile.username}"
+			:data="{text: '@'+profile.username, ignore: ['usernames'], size: '18px'}"
 		></ap-text>
 	</div>
 </template>
@@ -21,14 +21,14 @@ module.exports = {
 
 		// 4 for the padding
 		const avatarPosition = {top: (avatarSize / -2) - 4 + 'px'};
-		const textPosition = {top: (avatarSize * 1.25) + 'px'}
+		const textPosition = {top: ((avatarSize * 1.25) + 8) + 'px'}
 
 		return {
 			avatarSize: avatarSize,
 			avatarPosition: avatarPosition,
 			textPosition: textPosition,
 			topBgSize: (avatarSize * 0.75) + 'px',
-			totalSize: (avatarSize * 1.4) + 'px'
+			totalSize: (avatarSize * 1.5) + 'px'
 		};
 	},
 	computed: {

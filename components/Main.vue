@@ -5,10 +5,10 @@
 		<gallery ref="gallery" v-model="profile.gallery" :can-edit="ownProfile"></gallery>
 		<social-media :profile="profile" class="my-2"></social-media>
 		<ap-fab :data="fabOptions"></ap-fab>
-	</div>
 
-	<ap-drawer ref="drawer"></ap-drawer>
-	<ap-toast ref="toast"></ap-toast>
+		<ap-drawer ref="drawer"></ap-drawer>
+		<ap-toast ref="toast"></ap-toast>
+	</div>
 </template>
 
 <script>
@@ -27,10 +27,11 @@ module.exports = {
 			const fabOptions = [
 				{icon: 'fas fa-share-alt', onTap: this.share},
 				{icon: 'fas fa-arrow-left', onTap: apretaste.back},
-				{icon: 'fas fa-hashtag', onTap: this.searchInPizarra},
+				{icon: 'fas fa-thumbs-up', onTap: this.searchInPizarra},
 			];
 
 			if (this.ownProfile) {
+				fabOptions.push({icon: 'fas fa-image', onTap: this.addImage});
 				fabOptions.push({icon: 'fas fa-pen', onTap: this.openEdit});
 			} else if (this.type === 'friends') {
 				fabOptions.push({icon: 'fa fa-ban', onTap: this.openBlockDrawer});
@@ -57,6 +58,9 @@ module.exports = {
 				link: 'http://apretaste.me/profile/' + this.profile.username
 			});
 		},
+		addImage: function () {
+			this.$refs.gallery.addImage();
+		},
 		openEdit: function () {
 			apretaste.send({command: 'perfil editar'});
 		},
@@ -69,8 +73,8 @@ module.exports = {
 			});
 		},
 		openBlockDrawer: function () {
-			this.openDrawer('¿Está seguro de bloquear <b>' + this.profile.username +
-				'</b>? Este usuario no podrá enviarle más solitudes de\n' +
+			this.openDrawer('¿Está seguro de bloquear a <b>@' + this.profile.username +
+				'</b>? Este usuario no podrá enviarle más solitudes de' +
 				'amistad, ni mencionarle ni verá sus publicaciones', {
 				icon: 'fa fa-ban',
 				caption: 'Bloquear',
@@ -92,7 +96,7 @@ module.exports = {
 			});
 		},
 		openAcceptDrawer: function () {
-			this.openDrawer('¿Aceptar solicitud de amistad de <b>@' + profile.username + '</b>?', {
+			this.openDrawer('¿Aceptar solicitud de amistad de <b>@' + this.profile.username + '</b>?', {
 				icon: 'fa fa-user-plus', caption: 'Aceptar solicitud',
 				onTap: this.acceptFriend
 			});
@@ -104,7 +108,7 @@ module.exports = {
 			});
 		},
 		openAddDrawer: function () {
-			this.openDrawer('¿Agregar a <b>@' + profile.username + '</b> a sus amigos?', {
+			this.openDrawer('¿Agregar a <b>@' + this.profile.username + '</b> a sus amigos?', {
 				icon: 'fa fa-user-plus', caption: 'Enviar solicitud',
 				onTap: this.addFriend
 			});
@@ -173,6 +177,7 @@ module.exports = {
 			this.$refs.toast.show('Solicitud cancelada');
 		},
 		addFriend: function () {
+			console.log('add frieeend');
 			this.type = 'waiting';
 
 			apretaste.send({
@@ -184,7 +189,9 @@ module.exports = {
 			this.$refs.toast.show('Solicitud enviada');
 		},
 		openDrawer: function (title, option) {
-			this.$refs.drawer.show(title, [option]);
+			this.$refs.drawer.show(title, [option, {
+				icon: 'fa fa-times', caption: 'Cerrar'
+			}]);
 		}
 	}
 }

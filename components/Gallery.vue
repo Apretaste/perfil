@@ -1,12 +1,7 @@
 <template>
 	<div class="row">
-		<div class="col-6 my-2" v-for="image in images">
+		<div class="col-6" v-for="image in images">
 			<ap-image v-bind="buildImg(image)"></ap-image>
-		</div>
-
-		<div v-if="canEdit" class="col-6 my-2" id="add-img" @click="addImage">
-			<i class="fa fa-plus fa-lg" style="font-size: 2rem"></i>
-			<span>Añadir foto</span>
 		</div>
 
 		<ap-drawer
@@ -35,10 +30,16 @@ module.exports = {
 		return {
 			confirmDialogData: {
 				id: 'confirmDelete',
-				options: [{
-					icon: 'fa fa-trash-alt', caption: 'Confirmar',
-					onTap: this.deleteImg
-				}]
+				title: '¿Desea borrar esta foto?',
+				options: [
+					{
+						icon: 'fa fa-trash-alt', caption: 'Confirmar',
+						onTap: this.deleteImg
+					},
+					{
+						icon: 'fa fa-times', caption: 'Cerrar'
+					}
+				]
 			},
 			replyDialogData: {
 				maxLength: 250,
@@ -58,7 +59,8 @@ module.exports = {
 			const imgData = {
 				src: image.file,
 				actions: [],
-				square: true
+				square: true,
+				radius: '.25rem'
 			};
 
 			if (this.canEdit) {
@@ -145,22 +147,11 @@ module.exports = {
 </script>
 
 <style scoped>
-#add-img {
-	text-align: center;
-	position: relative;
-	height: 150px;
+.row > *:nth-child(odd) {
+	padding: 6px 6px 6px 12px;
 }
 
-#add-img i {
-	position: absolute;
-	top: calc(50% - 2rem);
-	font-size: 2rem;
-	transform: translate(-50%);
-}
-
-#add-img span {
-	position: absolute;
-	top: 50%;
-	transform: translate(-50%);
+.row > *:nth-child(even) {
+	padding: 6px 12px 6px 6px;
 }
 </style>

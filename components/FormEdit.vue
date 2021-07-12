@@ -71,7 +71,7 @@
 		></ap-input>
 
 		<div class="col-12">
-			<ap-fab :data="[{icon: 'fa fa-save', onTap: this.submitProfileData}]"></ap-fab>
+			<ap-fab :data="fabButton"></ap-fab>
 		</div>
 
 		<ap-toast ref="toast"></ap-toast>
@@ -83,6 +83,10 @@ module.exports = {
 	props: ['profile'],
 	data: function () {
 		return {
+			fabButton: [
+				{icon: 'fa fa-save', onTap: this.submitProfileData},
+				{icon: 'fas fa-arrow-left', onTap: apretaste.back},
+			],
 			genderCombo: {
 				icon: 'fas fa-male',
 				label: 'Género',
